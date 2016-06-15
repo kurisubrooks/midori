@@ -13,7 +13,7 @@ const bot = new Discord.Client({
 module.exports = {
     bot: bot,
     post: function(channel, message, options) {
-        if (options.author) message += `[${options.author}]\n`
+        if (options && options.author) message = `**[${options.author}]** ${message}`
         bot.sendMessage(channel, message, {}, (error, response) => {
             if (error) this.error(response, "api")
         })
@@ -39,11 +39,9 @@ module.exports = {
         })
     },
     error: function(message, from) {
-        _.each(config.debug, (v) => {
-            this.post({
-                channel: v,
-                message: `**Error:** An error was thrown${(from) ? " from \`" + from + ".js\`" : ""}:\n\`\`\`${message}\`\`\``
-            })
+        console.log(`[Error in ${from}.js] ${message}`)
+        _.each(config.debug, (channel) => {
+            this.post(channel, `**Error:** An error was thrown${(from) ? " from \`" + from + ".js\`" : ""}:\n\`\`\`${message}\`\`\``)
         })
     }
 }
