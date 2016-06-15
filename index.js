@@ -68,6 +68,7 @@ core.bot.on("message", (message) => {
                         keychain: keys,
                         command: command,
                         masters: config.masters,
+                        user: user.username,
                         trigger: {
                             id: user.id,
                             username: user.username,
