@@ -8,13 +8,16 @@ module.exports = {
     "debug": ["187527424026607616"], //@kaori#mahou
   //"debug": ["188512903513505792"], //@kaori#notices
     "subprocesses": [
-        
+
     ],
     "commands": {
         "command": {
-            "description": "To test things, of course!",
-            "alias": ["t"],
-            "usage": ["to(,from)", "query"]
+            "description": "Hello, World!",
+            "usage": []
+        },
+        "weather": {
+            "description": "Get the Current Weather",
+            "usage": ["query"]
         }
     }
 }
