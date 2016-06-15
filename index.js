@@ -2,6 +2,7 @@
 "use strict";
 
 const _ = require("lodash")
+const fs = require("fs")
 const path = require("path")
 const core = require("./core")
 const keys = require("./keys")
@@ -31,22 +32,32 @@ core.bot.on("message", (message) => {
         var command = args.splice(0, 1)[0].toLowerCase().slice(config.sign.length)
         var exists = command in config.commands
 
-        try {
-            var module = require(path.join(__dirname, "commands", command + ".js"))
+        if (exists) {
+            try {
+                var location = path.join(__dirname, "commands", command + ".js")
 
-            module.main(core.bot, channel, user, args, id, {
-                config: config,
-                command: command,
-                masters: config.masters,
-                trigger: {
-                    id: user.id,
-                    username: user.username,
-                    status: user.status,
-                    bot: user.bot
-                }
-            })
-        } catch (error) {
-            if (error) core.error(error, "index")
+                fs.access(location, fs.F_OK, (error) => {
+                    if (error) {
+                        core.error(error, "index")
+                        return
+                    }
+
+                    var module = require(location);
+                    module.main(core, channel, user, args, id, message, {
+                        config: config,
+                        command: command,
+                        masters: config.masters,
+                        trigger: {
+                            id: user.id,
+                            username: user.username,
+                            status: user.status,
+                            bot: user.bot
+                        }
+                    })
+                })
+            } catch (error) {
+                if (error) core.error(error, "index")
+            }
         }
     }
 })
