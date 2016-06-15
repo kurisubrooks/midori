@@ -1,5 +1,5 @@
 // nano²
-"use strict";
+"use strict"
 
 const _ = require("lodash")
 const fs = require("fs")

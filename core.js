@@ -1,5 +1,5 @@
 // nano²
-"use strict";
+"use strict"
 
 const Discord = require("discord.js")
 const _ = require("lodash")
