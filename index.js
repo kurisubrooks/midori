@@ -65,6 +65,7 @@ core.bot.on("message", (message) => {
                     var module = require(location);
                     module.main(core, channel, user, args, id, message, {
                         config: config,
+                        keychain: keys,
                         command: command,
                         masters: config.masters,
                         trigger: {
