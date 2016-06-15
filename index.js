@@ -10,7 +10,7 @@ const config = require("./config")
 
 console.log("Nano: Started")
 
-// When Ready to Use
+// Spawn Subprocesses
 core.bot.on("ready", (event) => {
     console.log("Discord: Ready")
 
@@ -23,11 +23,6 @@ core.bot.on("ready", (event) => {
             throw error
        }
    });
-})
-
-// Reconnect on Disconnect
-core.bot.on("disconnected", () => {
-    core.bot.loginWithToken(keys.token)
 })
 
 // Warnings and Errors
