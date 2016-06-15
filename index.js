@@ -8,8 +8,33 @@ const core = require("./core")
 const keys = require("./keys")
 const config = require("./config")
 
-console.log("Nano: Ready")
+console.log("Nano: Started")
 
+// When Ready to Use
+core.bot.on("ready", (event) => {
+    console.log("Discord: Ready")
+
+    _.each(config.subprocesses, (command) => {
+       try {
+            var subprocess = require(path.join(__dirname, "subprocesses", command + ".js"));
+            subprocess.main(core, config, __dirname)
+       } catch(error) {
+            core.error(`Failed to start subprocess \`${command}.js\`\n${error}`, "index")
+            throw error
+       }
+   });
+})
+
+// Reconnect on Disconnect
+core.bot.on("disconnected", () => {
+    core.bot.loginWithToken(keys.token)
+})
+
+// Warnings and Errors
+core.bot.on("warn", (warning) => core.error(warning, "index"))
+core.bot.on("error", (error) => core.error(error, "index"))
+
+// New Message
 core.bot.on("message", (message) => {
     var server = (message.server) ? message.server.name : "DM"
     var channel = message.channel
