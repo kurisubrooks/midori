@@ -17,7 +17,7 @@ core.bot.on("ready", (event) => {
     _.each(config.subprocesses, (command) => {
        try {
             var subprocess = require(path.join(__dirname, "subprocesses", command + ".js"));
-            subprocess.main(core, config, __dirname)
+            subprocess.main(core, config, keys, __dirname)
        } catch(error) {
             core.error(`Failed to start subprocess \`${command}.js\`\n${error}`, "index")
             throw error
@@ -35,7 +35,7 @@ core.bot.on("message", (message) => {
     var channel = message.channel
     var attachments = message.attachments[0] || undefined
     var user = message.author
-    var text = message.content
+    var text = message.cleanContent
     var id = message.id
 
     message.image = (attachments && text.length < 1) ? true : false
