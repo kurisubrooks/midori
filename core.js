@@ -16,6 +16,7 @@ module.exports = {
     post: function(data, callback) {
         if (data.author) data.message = `**[${data.author}]** ${data.message}`
         if (!data.options || typeof data.options !== "object") data.options = {}
+
         bot.sendMessage(data.channel, data.message, data.options, (error, response) => {
             if (error) console.error("core.post: " + error)
             if (callback) callback(error, response)

@@ -16,20 +16,20 @@ core.bot.on("ready", (event) => {
 
     _.each(config.subprocesses, (command) => {
        try {
-            var subprocess = require(path.join(__dirname, "subprocesses", command + ".js"));
+            var subprocess = require(path.join(__dirname, "subprocesses", command + ".js"))
             subprocess.main(core, config, keys, __dirname)
        } catch(error) {
             core.error(`Failed to start subprocess \`${command}.js\`\n${error}`, "index")
             throw error
        }
-   });
+   })
 })
 
 // Warnings and Errors
 core.bot.on("warn", (warning) => core.error(warning, "index"))
 core.bot.on("error", (error) => core.error(error, "index"))
 
-// New Message
+// Message Event
 core.bot.on("message", (message) => {
     var server = (message.server) ? message.server.name : "DM"
     var channel = message.channel
@@ -57,13 +57,9 @@ core.bot.on("message", (message) => {
                 var location = path.join(__dirname, "commands", command + ".js")
 
                 fs.access(location, fs.F_OK, (error) => {
-                    if (error) {
-                        core.error(error, "index")
-                        return
-                    }
+                    if (error) { core.error(error, "index"); return }
 
-                    var module = require(location);
-                    module.main(core, channel, user, args, id, message, {
+                    require(location).main(core, channel, user, args, id, message, {
                         config: config,
                         keychain: keys,
                         command: command,

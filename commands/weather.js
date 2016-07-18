@@ -135,7 +135,7 @@ exports.main = (core, channel, user, args, id, event, extra) => {
             return path.join(__dirname, "../", "resources", "weather", input)
         }
 
-        var generator = function() {
+        var main = function() {
             const canvas = new Canvas(400, 290)
             const ctx = canvas.getContext("2d")
 
@@ -237,6 +237,6 @@ exports.main = (core, channel, user, args, id, event, extra) => {
             }, 1000)
         }
 
-        generator()
+        main()
     })
 }
