@@ -74,7 +74,7 @@ core.bot.on("message", (message) => {
                     })
                 })
             } catch (error) {
-                if (error) core.error(error, "index")
+                core.error(error, "index")
             }
         }
     }
