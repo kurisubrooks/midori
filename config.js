@@ -8,6 +8,10 @@ module.exports = {
     "debug": ["187527424026607616"], //@kaori#mahou
     "subprocesses": [],
     "commands": {
+        "exit": {
+            "description": "Restart Nano",
+            "usage": []
+        },
         "weather": {
             "description": "Get the Current Weather",
             "usage": ["query"]
