@@ -7,24 +7,25 @@ const path = require("path")
 const moment = require("moment")
 const request = require("request")
 const Canvas = require("canvas")
-const config = require("../config")
 
 exports.main = (core, channel, user, args, id, event, extra) => {
     if (args.length === 0) {
-        if (config.weather.hasOwnProperty(extra.trigger.id)) {
-            args = config.weather[extra.trigger.id]
+        if (extra.config.weather.hasOwnProperty(extra.trigger.id)) {
+            args = extra.config.weather[extra.trigger.id]
         } else {
             core.post({ channel: channel, author: extra.user, message: "Missing Query" }); return
         }
     }
 
-    var key = extra.keychain.wunderground
+    var key1 = extra.keychain.wunderground1
+    var key2 = extra.keychain.wunderground2
+    var key3 = extra.keychain.wunderground3
     var query = encodeURIComponent(args.join(" "))
 
     var urls = {
-        cycle:   `http://api.wunderground.com/api/${key}/astronomy/q/${query}.json`,
-        current: `http://api.wunderground.com/api/${key}/conditions/q/${query}.json`,
-        hourly:  `http://api.wunderground.com/api/${key}/hourly/q/${query}.json`
+        cycle:   `http://api.wunderground.com/api/${key1}/astronomy/q/${query}.json`,
+        current: `http://api.wunderground.com/api/${key2}/conditions/q/${query}.json`,
+        hourly:  `http://api.wunderground.com/api/${key3}/hourly/q/${query}.json`
     }
 
     request.get({ url: urls.current }, (error, response) => {
@@ -38,7 +39,13 @@ exports.main = (core, channel, user, args, id, event, extra) => {
 
         var res = JSON.parse(response.body).response
 
+        console.log(res)
+
         if (res.error) {
+            if (res.error.type == "keynotfound") {
+                core.post({ channel: channel, author: extra.user, message: "Rate Limit Exceeded, Try again later" }); return
+            }
+
             core.post({ channel: channel, author: extra.user, message: res.error.description }); return
         }
 
@@ -163,7 +170,7 @@ exports.main = (core, channel, user, args, id, event, extra) => {
 
                 // Time
                 ctx.font = "400 12px Roboto"
-                ctx.fillStyle = "#000000"
+                ctx.fillStyle = "#000"
                 ctx.shadowColor = "rgba(255, 255, 255, 0.4)"
                 ctx.shadowOffsetY = 2
                 ctx.shadowBlur = 2
@@ -171,7 +178,7 @@ exports.main = (core, channel, user, args, id, event, extra) => {
 
                 // Place
                 ctx.font = "500 18px Roboto"
-                ctx.fillStyle = "#FFFFFF"
+                ctx.fillStyle = "#FFF"
                 ctx.shadowColor = "rgba(0, 0, 0, 0.4)"
                 ctx.fillText(place, 20, 56)
 
@@ -180,27 +187,27 @@ exports.main = (core, channel, user, args, id, event, extra) => {
                 ctx.fillText(temperature + "°", 16, 145)
 
                 // Condition
-                ctx.font = "500 14px Roboto"
+                ctx.font = "500 15px Roboto"
                 ctx.textAlign = "center"
-                ctx.fillText(condition, 325, 148)
+                ctx.fillText(condition, 327, 148)
 
                 // Details
-                ctx.font = "500 14px Roboto"
+                ctx.font = "500 15px Roboto"
                 ctx.shadowColor = "rgba(0, 0, 0, 0)"
                 ctx.textAlign = "left"
-                ctx.fillStyle = "#000000"
+                ctx.fillStyle = "#000"
                 ctx.fillText("Current details", 20, 194)
 
                 // Titles
-                ctx.font = "400 14px Roboto"
-                ctx.fillStyle = "#777777"
+                ctx.font = "400 15px Roboto"
+                ctx.fillStyle = "#777"
                 ctx.fillText("Feels like", 20, 220)
                 ctx.fillText("Humidity", 20, 240)
                 ctx.fillText("Wind Speed", 20, 260)
 
                 // Values
-                ctx.font = "400 14px Roboto"
-                ctx.fillStyle = "#000000"
+                ctx.font = "400 15px Roboto"
+                ctx.fillStyle = "#000"
                 ctx.fillText(feelslike + "°", 170, 220)
                 ctx.fillText(humidity, 170, 240)
                 ctx.fillText(windspeed + " km/h", 170, 260)
@@ -217,7 +224,7 @@ exports.main = (core, channel, user, args, id, event, extra) => {
                         core.delete(event)
                         fs.unlink(path.join(__dirname, "../", "resources", "weather", "out", id + ".png"))
                     })
-                }, 1000)
+                }, 500)
             })
         }
 

@@ -6,7 +6,7 @@ const fs = require("fs")
 const path = require("path")
 const core = require("./core")
 const keys = require("./keys")
-const config = require("./config")
+const config = require("./config.json")
 
 console.log("Nano: Started")
 

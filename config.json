@@ -1,15 +1,14 @@
-// nano²
-"use strict";
-
-module.exports = {
+{
     "sign": "/",
-    "user": "188394341708857346", //@nano²
+    "user": "188394341708857346",
     "masters": [
-        "132368482120499201",   // @kurisu
-        "95534503971258368"     // @justin
+        "132368482120499201",
+        "95534503971258368"
     ],
-    "debug": ["187527424026607616"], //@kaori#mahou
-    "subprocesses": [],
+    "debug": ["187527424026607616"],
+    "subprocesses": [
+        "shake"
+    ],
     "commands": {
         "exit": {
             "admin": true,

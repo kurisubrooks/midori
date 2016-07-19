@@ -1,8 +1,6 @@
 // nano²
 "use strict"
 
-const config = require("../config")
-
 exports.main = (core, channel, user, args, id, event, extra) => {
     if (extra.masters.indexOf(extra.trigger.id) >= 0) {
         core.upload({
