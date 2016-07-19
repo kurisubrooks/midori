@@ -50,14 +50,14 @@ exports.main = (core, channel, user, args, id, event, extra) => {
 
         var place = result.display_location.full
         var timezone = result.local_tz_offset
-        var datetime = moment().utcOffset(timezone).format("D MMMM, hh:mma") // 19 July, 4:57am
+        var datetime = moment().utcOffset(timezone).format("D MMMM, h:mma") // 19 July, 4:57am
         var temperature = result.temp_c
         var condition = result.weather
         var feelslike = result.feelslike_c
         var humidity = result.relative_humidity
         var windspeed = result.wind_kph
 
-        function cycle() {
+        var cycle = function() {
             var time = moment().utcOffset(timezone).format("HH")
             return (time < 6 || time >= 18) ? "night" : "day"
 
@@ -100,7 +100,7 @@ exports.main = (core, channel, user, args, id, event, extra) => {
             })*/
         }
 
-        function icon(cycle) {
+        var icon = function(cycle) {
             var code = result.icon.toLowerCase()
 
                  if (code == "chanceflurries")                      return "flurries"
