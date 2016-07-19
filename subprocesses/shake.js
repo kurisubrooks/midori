@@ -26,8 +26,6 @@ var is_final = true
 exports.main = (core, config, keychain, dir) => {
     const socket = require("socket.io-client")(keychain.shake)
 
-    console.log("Shake Started")
-
     socket.on("connect", () => socket.emit("auth", { version: 2.1 }))
     socket.on("quake.eew", (data) => eew(data))
     socket.on("auth", (data) => {
@@ -37,6 +35,8 @@ exports.main = (core, config, keychain, dir) => {
                 channel: channels.kaori.id,
                 message: "**Shake:** Connected"
             })
+
+            console.log("Shake: Connected")
         } else {
             // Failed to Authenticate
             core.post({
@@ -44,6 +44,7 @@ exports.main = (core, config, keychain, dir) => {
                 message: `**Shake:** Connection Refused, ${data.message}`
             })
 
+            console.log("Shake: Connection Refused, " + data.message)
             throw data.message
         }
     })
@@ -53,6 +54,8 @@ exports.main = (core, config, keychain, dir) => {
             channel: channels.kaori.id,
             message: `**Shake:** Disconnected`
         })
+
+        console.log("Shake: Disconnected")
     })
 
     var eew = function(data) {
