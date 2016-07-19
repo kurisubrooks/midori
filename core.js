@@ -35,17 +35,18 @@ module.exports = {
         })
     },
 
-    delete: function(message) {
+    delete: function(message, callback) {
         bot.deleteMessage(message, {}, (error, response) => {
             if (error) console.error("core.delete: " + error)
+            if (callback) callback(error, response)
         })
     },
 
     upload: function(data, callback) {
-        if (!data.text) data.text = ""
+        if (!data.message) data.message = ""
         if (!data.name) data.name = ""
 
-        bot.sendFile(data.channel, data.file, data.name, data.text, (error, response) => {
+        bot.sendFile(data.channel, data.file, data.name, data.message, (error, response) => {
             if (error) console.error("core.upload: " + error)
             if (callback) callback(error, response)
         })
