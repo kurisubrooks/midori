@@ -8,15 +8,15 @@ const Image = Canvas.Image
 const Font = Canvas.Font
 
 var data = {
-    time: "19 July, 3:08am",
+    time: "20 July, 12:57am",
     location: "Penrith, New South Wales",
-    temperature: "12",
-    base: "cloud",
-    icon: "cloudy_dark",
-    condition: "Overcast",
-    feelslike: "12.0",
-    humidity: "97%",
-    windspeed: "0"
+    temperature: "74",
+    base: "thunderstorm",
+    icon: "unknown",
+    condition: "Mass Extinction",
+    feelslike: "102",
+    humidity: "4%",
+    windspeed: "12"
 }
 
 // Base
@@ -60,12 +60,16 @@ ctx.fillText(data.temperature + "°", 16, 145)
 // Condition Image
 var con = new Image()
     con.src = fs.readFileSync(`${__dirname}/icons/${data.icon}.png`)
-ctx.shadowColor = "rgba(0, 0, 0, 0)"
+ctx.shadowColor = "rgba(0, 0, 0, 0.2)"
+ctx.shadowOffsetY = 1
+ctx.shadowBlur = 5
 ctx.drawImage(con, 276, 22, 105, 105)
 
 // Condition
 ctx.font = "500 14px Roboto"
 ctx.shadowColor = "rgba(0, 0, 0, 0.4)"
+ctx.shadowOffsetY = 2
+ctx.shadowBlur = 2
 ctx.textAlign = "center"
 ctx.fillText(data.condition, 325, 148)
 
