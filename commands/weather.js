@@ -13,7 +13,7 @@ exports.main = (core, channel, user, args, id, event, extra) => {
         if (extra.config.weather.hasOwnProperty(extra.trigger.id)) {
             args = extra.config.weather[extra.trigger.id]
         } else {
-            core.post({ channel: channel, author: extra.user, message: "Missing Query" }); return
+            core.post({ channel: channel, author: extra.user, message: "Where would you like me to get the weather for?" }); return
         }
     }
 
@@ -83,9 +83,9 @@ exports.main = (core, channel, user, args, id, event, extra) => {
 
                     var result = JSON.parse(response.body).moon_phase
 
-                    var now = `${Number(result.current_time.hour)}${Number(result.current_time.minute)}`
-                    var sunrise = `${Number(result.sunrise.hour)}${Number(result.sunrise.minute)}`
-                    var sunset = `${Number(result.sunset.hour)}${Number(result.sunset.minute)}`
+                    var now = Number(result.current_time.hour + result.current_time.minute)
+                    var sunrise = Number(result.sunrise.hour + result.sunrise.minute)
+                    var sunset = Number(result.sunset.hour + result.sunset.minute)
 
                     if (now > sunrise && now < sunset) {
                         resolve("day")
@@ -153,8 +153,6 @@ exports.main = (core, channel, user, args, id, event, extra) => {
             ctx.antialias = "subpixel"
 
             var daynight = cycle().then((res) => {
-                console.log(res)
-
                 // Base Layer
                 var Base = new Image()
                     Base.src = fs.readFileSync(resource(`base/${icon(res)[1]}.png`))
