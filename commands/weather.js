@@ -58,10 +58,7 @@ exports.main = (core, channel, user, args, id, event, extra) => {
         var windspeed = result.wind_kph
 
         var cycle = function() {
-            var time = moment().utcOffset(timezone).format("HH")
-            return (time < 6 || time >= 18) ? "night" : "day"
-
-            /*return new Promise((resolve, reject) => {
+            return new Promise((resolve, reject) => {
                 request.get({ url: urls.cycle }, (error, response) => {
                     if (error) {
                         core.post({ channel: channel, author: extra.user, message: JSON.stringify(error) }); return
@@ -73,23 +70,15 @@ exports.main = (core, channel, user, args, id, event, extra) => {
 
                     var res = JSON.parse(response.body).response
 
-                    console.log("cycle get res")
-                    console.log(res)
-
                     if (res.error) {
                         core.post({ channel: channel, author: extra.user, message: res.error.description }); return
                     }
 
                     var result = JSON.parse(response.body).moon_phase
 
-                    console.log("cycle moon phase res")
-                    console.log(result)
-
                     var now = `${Number(result.current_time.hour)}${Number(result.current_time.minute)}`
                     var sunrise = `${Number(result.sunrise.hour)}${Number(result.sunrise.minute)}`
                     var sunset = `${Number(result.sunset.hour)}${Number(result.sunset.minute)}`
-
-                    console.log(sunrise)
 
                     if (now > sunrise && now < sunset) {
                         resolve("day")
@@ -97,38 +86,38 @@ exports.main = (core, channel, user, args, id, event, extra) => {
                         resolve("night")
                     }
                 })
-            })*/
+            })
         }
 
         var icon = function(cycle) {
             var code = result.icon.toLowerCase()
 
-                 if (code == "chanceflurries")                      return "flurries"
-            else if (code == "chancerain")                          return "showers_rain"
-            else if (code == "chancesleat")                         return "wintry_mix_rain_snow"
-            else if (code == "chancesnow")                          return "snow_showers_snow"
-            else if (code == "chancetstorms" && cycle == "day")     return "isolated_scattered_tstorms_day"
-            else if (code == "chancetstorms" && cycle == "night")   return "isolated_scattered_tstorms_night"
-            else if (code == "clear" && cycle == "day")             return "sunny"
-            else if (code == "clear" && cycle == "night")           return "clear_night"
-            else if (code == "cloudy")                              return "cloudy"
-            else if (code == "flurries")                            return "flurries"
-            else if (code == "fog")                                 return "haze_fog_dust_smoke"
-            else if (code == "hazy")                                return "haze_fog_dust_smoke"
-            else if (code == "mostlycloudy" && cycle == "day")      return "mostly_cloudy_day"
-            else if (code == "mostlycloudy" && cycle == "night")    return "mostly_cloudy_night"
-            else if (code == "mostlysunny")                         return "mostly_sunny"
-            else if (code == "partlycloudy" && cycle == "day")      return "partly_cloudy"
-            else if (code == "partlycloudy" && cycle == "night")    return "partly_cloudy_night"
-            else if (code == "partlysunny")                         return "partly_cloudy"
-            else if (code == "rain")                                return "showers_rain"
-            else if (code == "sleat")                               return "wintry_mix_rain_snow"
-            else if (code == "snow")                                return "snow_showers_snow"
-            else if (code == "sunny")                               return "sunny"
-            else if (code == "tstorms" && cycle == "day")           return "isolated_scattered_tstorms_day"
-            else if (code == "tstorms" && cycle == "night")         return "isolated_scattered_tstorms_night"
-            else if (code == "unknown")                             return "unknown"
-            else                                                    return "unknown"
+                 if (code == "chanceflurries")                    return ["flurries", "snow"]
+            else if (code == "chancerain")                        return ["showers_rain", "showers"]
+            else if (code == "chancesleat")                       return ["wintry_mix_rain_snow", "snow"]
+            else if (code == "chancesnow")                        return ["snow_showers_snow", "snow"]
+            else if (code == "chancetstorms" && cycle == "day")   return ["isolated_scattered_tstorms_day", "tstorm"]
+            else if (code == "chancetstorms" && cycle == "night") return ["isolated_scattered_tstorms_night", "tstorm"]
+            else if (code == "clear" && cycle == "day")           return ["sunny", "sun"]
+            else if (code == "clear" && cycle == "night")         return ["clear_night", "moon"]
+            else if (code == "cloudy")                            return ["cloudy", "cloud"]
+            else if (code == "flurries")                          return ["flurries", "snow"]
+            else if (code == "fog")                               return ["haze_fog_dust_smoke", "snow"]
+            else if (code == "hazy")                              return ["haze_fog_dust_smoke", "snow"]
+            else if (code == "mostlycloudy" && cycle == "day")    return ["mostly_cloudy_day", "cloud"]
+            else if (code == "mostlycloudy" && cycle == "night")  return ["mostly_cloudy_night", "cloud"]
+            else if (code == "mostlysunny")                       return ["mostly_sunny", "sun"]
+            else if (code == "partlycloudy" && cycle == "day")    return ["partly_cloudy", "sun"]
+            else if (code == "partlycloudy" && cycle == "night")  return ["partly_cloudy_night", "moon"]
+            else if (code == "partlysunny")                       return ["partly_cloudy", "sun"]
+            else if (code == "rain")                              return ["showers_rain", "rain"]
+            else if (code == "sleat")                             return ["wintry_mix_rain_snow", "snow"]
+            else if (code == "snow")                              return ["snow_showers_snow", "snow"]
+            else if (code == "sunny")                             return ["sunny", "sun"]
+            else if (code == "tstorms" && cycle == "day")         return ["isolated_scattered_tstorms_day", "tstorm"]
+            else if (code == "tstorms" && cycle == "night")       return ["isolated_scattered_tstorms_night", "tstorm"]
+            else if (code == "unknown")                           return ["unknown", "cloud"]
+            else                                                  return ["unknown", "cloud"]
         }
 
         var resource = function(input) {
@@ -142,28 +131,10 @@ exports.main = (core, channel, user, args, id, event, extra) => {
             const Image = Canvas.Image
             const Font = Canvas.Font
 
-            var daynight = cycle()
-
             var Roboto = new Font("Roboto", resource("fonts/Roboto.ttf"))
                 Roboto.addFace(resource("fonts/Roboto Light.ttf"), "300")
                 Roboto.addFace(resource("fonts/Roboto Regular.ttf"), "400")
                 Roboto.addFace(resource("fonts/Roboto Medium.ttf"), "500")
-
-            var Base = new Image()
-
-            if (new RegExp(["chanceflurries", "chancesleat", "chancesnow", "cloudy", "flurries", "fog", "hazy", "mostlycloudy", "partlysunny", "sleat", "snow"].join("|")).test(result.icon.toLowerCase())) {
-                Base.src = fs.readFileSync(resource("base/cloud.png"))
-                ctx.drawImage(Base, 0, 0)
-            } else if (new RegExp(["chancerain", "chancetstorms", "rain", "tstorms"].join("|")).test(result.icon.toLowerCase())) {
-                Base.src = fs.readFileSync(resource("base/rain.png"))
-                ctx.drawImage(Base, 0, 0)
-            } else if (daynight == "day") {
-                Base.src = fs.readFileSync(resource("base/sun.png"))
-                ctx.drawImage(Base, 0, 0)
-            } else if (daynight == "night") {
-                Base.src = fs.readFileSync(resource("base/moon.png"))
-                ctx.drawImage(Base, 0, 0)
-            }
 
             ctx.addFont(Roboto)
             ctx.shadowColor = "rgba(255, 255, 255, 0.4)"
@@ -174,67 +145,80 @@ exports.main = (core, channel, user, args, id, event, extra) => {
             ctx.filter = "bilinear"
             ctx.antialias = "subpixel"
 
-            // Time
-            ctx.font = "400 12px Roboto"
-            ctx.fillStyle = "#000000"
-            ctx.fillText(datetime, 20, 30)
+            var daynight = cycle().then((res) => {
+                console.log(res)
 
-            // Place
-            ctx.font = "500 18px Roboto"
-            ctx.shadowColor = "rgba(0, 0, 0, 0.4)"
-            ctx.fillStyle = "#FFFFFF"
-            ctx.fillText(place, 20, 56)
+                // Base Layer
+                var Base = new Image()
+                    Base.src = fs.readFileSync(resource(`base/${icon(res)[1]}.png`))
+                    ctx.drawImage(Base, 0, 0)
 
-            // Temperature
-            ctx.font = "400 88px Roboto"
-            ctx.fillText(temperature + "°", 16, 145)
+                // Condition Image
+                var con = new Image()
+                    con.src = fs.readFileSync(resource(`icons/${icon(res)[0]}.png`))
+                ctx.shadowColor = "rgba(0, 0, 0, 0.2)"
+                ctx.shadowOffsetY = 1
+                ctx.shadowBlur = 5
+                ctx.drawImage(con, 276, 22, 105, 105)
 
-            // Condition Image
-            var con = new Image()
-                con.src = fs.readFileSync(resource(`icons/${icon(daynight)}.png`))
-            ctx.shadowColor = "rgba(0, 0, 0, 0)"
-            ctx.drawImage(con, 276, 22, 105, 105)
+                // Time
+                ctx.font = "400 12px Roboto"
+                ctx.fillStyle = "#000000"
+                ctx.shadowColor = "rgba(255, 255, 255, 0.4)"
+                ctx.shadowOffsetY = 2
+                ctx.shadowBlur = 2
+                ctx.fillText(datetime, 20, 30)
 
-            // Condition
-            ctx.font = "500 14px Roboto"
-            ctx.shadowColor = "rgba(0, 0, 0, 0.4)"
-            ctx.textAlign = "center"
-            ctx.fillText(condition, 325, 148)
+                // Place
+                ctx.font = "500 18px Roboto"
+                ctx.fillStyle = "#FFFFFF"
+                ctx.shadowColor = "rgba(0, 0, 0, 0.4)"
+                ctx.fillText(place, 20, 56)
 
-            // Details
-            ctx.font = "500 14px Roboto"
-            ctx.shadowColor = "rgba(0, 0, 0, 0)"
-            ctx.textAlign = "left"
-            ctx.fillStyle = "#000000"
-            ctx.fillText("Current details", 20, 194)
+                // Temperature
+                ctx.font = "400 88px Roboto"
+                ctx.fillText(temperature + "°", 16, 145)
 
-            // Titles
-            ctx.font = "400 14px Roboto"
-            ctx.fillStyle = "#777777"
-            ctx.fillText("Feels like", 20, 220)
-            ctx.fillText("Humidity", 20, 240)
-            ctx.fillText("Wind Speed", 20, 260)
+                // Condition
+                ctx.font = "500 14px Roboto"
+                ctx.textAlign = "center"
+                ctx.fillText(condition, 325, 148)
 
-            // Values
-            ctx.font = "400 14px Roboto"
-            ctx.fillStyle = "#000000"
-            ctx.fillText(feelslike + "°", 170, 220)
-            ctx.fillText(humidity, 170, 240)
-            ctx.fillText(windspeed + " km/h", 170, 260)
+                // Details
+                ctx.font = "500 14px Roboto"
+                ctx.shadowColor = "rgba(0, 0, 0, 0)"
+                ctx.textAlign = "left"
+                ctx.fillStyle = "#000000"
+                ctx.fillText("Current details", 20, 194)
 
-            // Save Image
-            var id = new Date().getTime()
-            canvas.createPNGStream().pipe(fs.createWriteStream(resource(`out/${id}.png`)))
+                // Titles
+                ctx.font = "400 14px Roboto"
+                ctx.fillStyle = "#777777"
+                ctx.fillText("Feels like", 20, 220)
+                ctx.fillText("Humidity", 20, 240)
+                ctx.fillText("Wind Speed", 20, 260)
 
-            setTimeout(function() {
-                core.upload({
-                    channel: channel,
-                    file: path.join(__dirname, "../", "resources", "weather", "out", id + ".png")
-                }, (err, res) => {
-                    core.delete(event)
-                    fs.unlink(path.join(__dirname, "../", "resources", "weather", "out", id + ".png"))
-                })
-            }, 1000)
+                // Values
+                ctx.font = "400 14px Roboto"
+                ctx.fillStyle = "#000000"
+                ctx.fillText(feelslike + "°", 170, 220)
+                ctx.fillText(humidity, 170, 240)
+                ctx.fillText(windspeed + " km/h", 170, 260)
+
+                // Save Image
+                var id = new Date().getTime()
+                canvas.createPNGStream().pipe(fs.createWriteStream(resource(`out/${id}.png`)))
+
+                setTimeout(function() {
+                    core.upload({
+                        channel: channel,
+                        file: path.join(__dirname, "../", "resources", "weather", "out", id + ".png")
+                    }, (err, res) => {
+                        core.delete(event)
+                        fs.unlink(path.join(__dirname, "../", "resources", "weather", "out", id + ".png"))
+                    })
+                }, 1000)
+            })
         }
 
         main()
