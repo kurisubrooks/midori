@@ -1,2 +1,2 @@
 # nano²
-Brand spanking new Nano with 100% more spit shine
+Brand spanking new Nano with 100% less shit code
