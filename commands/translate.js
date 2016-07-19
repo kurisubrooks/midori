@@ -35,8 +35,12 @@ var langs = {
 
 function check_iso(lang) {
     lang = lang.toLowerCase()
-    if (lang in langs) return langs[lang]
-    else return "Unknown"
+
+    if (lang in langs) {
+        return langs[lang]
+    } else {
+        return "Unknown"
+    }
 }
 
 function romaji(core, keychain, input, channel) {
@@ -51,10 +55,16 @@ function romaji(core, keychain, input, channel) {
 
     return new Promise((resolve, reject) => {
         request.post(options, function(error, resp, body) {
-            if (error || resp.statusCode !== 200) console.error(error)
+            if (error || resp.statusCode !== 200) {
+                console.error(error)
+            }
+
             else if (body !== undefined) {
                 xml.parseString(body, function(err, res) {
-                    if (err) console.error(err)
+                    if (err) {
+                        console.error(err)
+                    }
+
                     else if (res !== undefined) {
                         var output = []
 
@@ -108,8 +118,8 @@ exports.main = (core, channel, user, args, id, event, extra) => {
     var fetch = {
         headers: { "User-Agent": "Mozilla/5.0" },
         url: extra.keychain.google_translate + qs.stringify({
-            dt: "t", // data type
             client: "gtx", // client type
+            dt: "t", // data type
             sl: frlang, // from language
             tl: tolang, // to language
             q: translate // query
@@ -118,20 +128,22 @@ exports.main = (core, channel, user, args, id, event, extra) => {
 
     request.get(fetch, (err, res, body) => {
         if (err) {
-            core.bot.error(err, "translate")
-            return
-        } else if (res.statusCode !== 200) {
-            core.bot.error(`Status Code was not 200, saw ${res.statusCode} instead`, "translate")
-            return
-        } else if (body.startsWith(",", 1)) {
-            core.bot.error(`Malformed Response:\n${body}`, "translate")
-            return
-        } else if (args[0] == " " || !(args[0].split(",")[0] in langs)) {
-            core.bot.error(`Unknown/Unsupported Language`, "translate")
-            return
+            core.post({ channel: channel, author: extra.user, message: JSON.stringify(err) }); return
         }
 
-        var response = JSON.parse(body.replace(/\,+/g, ","))
+        else if (res.statusCode !== 200) {
+            core.post({ channel: channel, author: extra.user, message: `Unknown Error, Malformed Request or other API Error. [${response.statusCode}]` }); return
+        }
+
+        else if (body.startsWith(",", 1)) {
+            core.post({ channel: channel, author: extra.user, message: `Malformed API Response:\n${body}` }); return
+        }
+
+        else if (args[0] == " " || !(args[0].split(",")[0] in langs)) {
+            core.post({ channel: channel, author: extra.user, message: `Unknown/Unsupported Language` }); return
+        }
+
+        var response    = JSON.parse(body.replace(/\,+/g, ","))
         var translation = response[0][0][0]
         var query       = (typeof response[0][0][1] === "string") ? response[0][0][1] : translate
         var from_lang   = response[1]
@@ -139,7 +151,7 @@ exports.main = (core, channel, user, args, id, event, extra) => {
         var to_roma     = (tolang == "ja") ? translation : query
 
         var from_fancy = check_iso(from_lang)
-        var to_fancy   = check_iso(to_lang)
+        var to_fancy = check_iso(to_lang)
         var other = ""
 
         if (response[3]) {
@@ -156,8 +168,11 @@ exports.main = (core, channel, user, args, id, event, extra) => {
             romaji(core, extra.keychain, to_roma, channel).then((furigana) => {
                 var format_roma = `**Romaji:** ${furigana.join("")}`
 
-                if (from_lang === "ja") format.splice(1, 0, format_roma)
-                else if (to_lang === "ja") format.push(format_roma)
+                if (from_lang === "ja") {
+                    format.splice(1, 0, format_roma)
+                } else if (to_lang === "ja") {
+                    format.push(format_roma)
+                }
 
                 core.post({
                     channel: channel,
