@@ -170,12 +170,12 @@ exports.main = (core, channel, user, args, id, event, extra) => {
                 ctx.drawImage(con, 276, 22, 105, 105)
 
                 // Time
-                ctx.font = "400 12px Roboto"
+                ctx.font = "500 15px Roboto"
                 ctx.fillStyle = "#000"
                 ctx.shadowColor = "rgba(255, 255, 255, 0.4)"
                 ctx.shadowOffsetY = 2
                 ctx.shadowBlur = 2
-                ctx.fillText(datetime, 20, 30)
+                ctx.fillText(datetime, 20, 32)
 
                 // Place
                 ctx.font = "500 18px Roboto"
