@@ -9,14 +9,10 @@ const request = require("request")
 
 var channels = {
     "general": {
-        "id": "132368736119291904", // @kurisubrooks#general
-        "last": "",
-        "previous": ""
+        "id": "132368736119291904" // @kurisubrooks#general
     },
     "kaori": {
-        "id": "198304206476673024", // @kaori#quakes
-        "last": "",
-        "previous": ""
+        "id": "198304206476673024" // @kaori#quakes
     }
 }
 
@@ -60,8 +56,6 @@ exports.main = (core, config, keychain, dir) => {
 
     var eew = function(data) {
         if (previous_quake != data.id || data.situation == 1) {
-            previous_quake = data.id
-
             var url = `https://maps.googleapis.com/maps/api/staticmap?` + qs.stringify({
                 zoom: 6,
                 size: "386x159",
@@ -87,7 +81,7 @@ exports.main = (core, config, keychain, dir) => {
                             reject(response.statusCode); return
                         }
 
-                        fs.writeFile(resource("out/map.png"), body, "binary", (err) => {
+                        fs.writeFile(resource(`out/${data.id}_map.png`), body, "binary", (err) => {
                             if (err) reject(err)
                             resolve()
                         })
@@ -119,7 +113,7 @@ exports.main = (core, config, keychain, dir) => {
 
                     // Map
                     var map = new Image()
-                        map.src = fs.readFileSync(resource("./map.png"))
+                        map.src = fs.readFileSync(resource(`out/${data.id}_map.png`))
                     ctx.drawImage(map, 7, 73)
 
                     // Epicenter
@@ -138,27 +132,50 @@ exports.main = (core, config, keychain, dir) => {
                     ctx.fillText("Information is preliminary", 56, 258)
 
                     // Save
-                    var id = new Date().getTime()
-                    canvas.createPNGStream().pipe(fs.createWriteStream(resource(`out/${id}.png`)))
+                    canvas.createPNGStream().pipe(fs.createWriteStream(resource(`out/${data.id}.png`)))
 
-                    setTimeout(function() {
-                        core.upload({
-                            channel: channels.general.id,
-                            file: resource(`out/${id}.png`)
-                        }, (err, res) => {
-                            channels.general.previous = res
-                        })
+                    if (previous_quake != data.id) {
+                        previous_quake = data.id
 
                         setTimeout(function() {
                             core.upload({
+                                channel: channels.general.id,
+                                file: resource(`out/${data.id}.png`)
+                            }, (err, res) => {
+                                channels.general.previous = res
+                            })
+
+                            core.upload({
                                 channel: channels.kaori.id,
-                                file: resource(`out/${id}.png`)
+                                file: resource(`out/${data.id}.png`)
                             }, (err, res) => {
                                 channels.kaori.previous = res
-                                fs.unlink(resource(`out/${id}.png`))
+                                fs.unlink(resource(`out/${data.id}.png`))
+                                fs.unlink(resource(`out/${data.id}_map.png`))
                             })
                         }, 200)
-                    }, 200)
+                    } else if (data.situation == 1) {
+                        previous_quake = data.id
+
+                        core.delete([channels.general.previous, channels.kaori.previous])
+                             delete channels.general.previous
+                             delete channels.kaori.previous
+
+                        setTimeout(function() {
+                            core.upload({
+                                channel: channels.general.id,
+                                file: resource(`out/${data.id}.png`)
+                            })
+
+                            core.upload({
+                                channel: channels.kaori.id,
+                                file: resource(`out/${data.id}.png`)
+                            }, (err, res) => {
+                                fs.unlink(resource(`out/${data.id}.png`))
+                                fs.unlink(resource(`out/${data.id}_map.png`))
+                            })
+                        }, 200)
+                    }
                 })
             }
 
