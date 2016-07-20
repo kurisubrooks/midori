@@ -13,7 +13,7 @@ exports.main = (core, channel, user, args, id, event, extra) => {
         if (extra.config.weather.hasOwnProperty(extra.trigger.id)) {
             args = extra.config.weather[extra.trigger.id]
         } else {
-            core.post({ channel: channel, author: extra.user, message: "Where would you like me to get the weather for?" }); return
+            core.post({ channel: channel, author: extra.user, message: "Please provide a query" }); return
         }
     }
 
@@ -140,10 +140,13 @@ exports.main = (core, channel, user, args, id, event, extra) => {
 
             var Roboto = new Font("Roboto", resource("fonts/Roboto.ttf"))
                 Roboto.addFace(resource("fonts/Roboto Light.ttf"), "300")
-                Roboto.addFace(resource("fonts/Roboto Regular.ttf"), "400")
                 Roboto.addFace(resource("fonts/Roboto Medium.ttf"), "500")
 
+            var NotoSans = new Font("Noto", resource("fonts/NotoSans Regular.otf"))
+                NotoSans.addFace(resource("fonts/NotoSans Medium.otf"), "500")
+
             ctx.addFont(Roboto)
+            ctx.addFont(NotoSans)
             ctx.shadowColor = "rgba(255, 255, 255, 0.4)"
             ctx.shadowOffsetY = 2
             ctx.shadowBlur = 2
