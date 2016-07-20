@@ -36,7 +36,7 @@ module.exports = {
     },
 
     delete: function(message, callback) {
-        if (message.constructor === Array) {
+        if (message instanceof Array) {
             bot.deleteMessages(message, (error, response) => {
                 if (error) console.error("core.delete_multiple: " + error)
                 if (callback) callback(error, response)
