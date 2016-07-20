@@ -36,10 +36,17 @@ module.exports = {
     },
 
     delete: function(message, callback) {
-        bot.deleteMessage(message, {}, (error, response) => {
-            if (error) console.error("core.delete: " + error)
-            if (callback) callback(error, response)
-        })
+        if (message.constructor === Array) {
+            bot.deleteMessages(message, (error, response) => {
+                if (error) console.error("core.delete_multiple: " + error)
+                if (callback) callback(error, response)
+            })
+        } else {
+            bot.deleteMessage(message, {}, (error, response) => {
+                if (error) console.error("core.delete: " + error)
+                if (callback) callback(error, response)
+            })
+        }
     },
 
     upload: function(data, callback) {
@@ -52,7 +59,7 @@ module.exports = {
         })
     },
 
-    error: function(message, from) {
+    error: function(message, from, callback) {
         if (typeof message === "object") message = JSON.stringify(message)
 
         console.log(`[ERROR] ${from}.js - ${message}`)
@@ -61,6 +68,9 @@ module.exports = {
             this.post({
                 channel: channel,
                 message: `**[ERROR]** \`${from}.js\`\n\`\`\`${message}\`\`\``
+            }, (error, response) => {
+                if (error) console.error("core.error: " + error)
+                if (callback) callback(error, response)
             })
         })
     }
