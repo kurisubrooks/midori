@@ -28,78 +28,14 @@ var langs = {
     "ru": "Russian",
     "sv": "Swedish",
     "tl": "Filipino",
-    "zh": "Chinese (tw)",
-    "zh-cn": "Chinese (zh)",
-    "zh-tw": "Chinese (tw)"
-}
-
-function check_iso(lang) {
-    lang = lang.toLowerCase()
-
-    if (lang in langs) {
-        return langs[lang]
-    } else {
-        return "Unknown"
-    }
-}
-
-function romaji(core, keychain, input, channel) {
-    var options = {
-        headers: { "User-Agent": "Mozilla/5.0" },
-        url: "http://jlp.yahooapis.jp/FuriganaService/V1/furigana",
-        form: {
-            appid: keychain.yahoo_romkan,
-            sentence: input
-        }
-    }
-
-    return new Promise((resolve, reject) => {
-        request.post(options, function(error, resp, body) {
-            if (error || resp.statusCode !== 200) {
-                console.error(error)
-            }
-
-            else if (body !== undefined) {
-                xml.parseString(body, function(err, res) {
-                    if (err) {
-                        console.error(err)
-                    }
-
-                    else if (res !== undefined) {
-                        var output = []
-
-                        if (res.ResultSet) {
-                            try {
-                                _.forEach(res.ResultSet.Result[0].WordList[0].Word, (value) => {
-                                    if (value.Roman) {
-                                        if (value.Roman[0] == " ") return
-                                        output.push(value.Roman[0])
-                                    } else if (value.Surface) {
-                                        if (value.Surface[0] == " ") return
-                                        output.push(value.Surface[0])
-                                    } else {
-                                        return
-                                    }
-                                })
-                            } catch(e) {
-                                core.error(JSON.stringify(e), "translate")
-                            }
-                        } else {
-                            resolve(["Nil"])
-                        }
-
-                        resolve(output)
-                    }
-                })
-            }
-        })
-    })
+    "zh": "Chinese (TW)",
+    "zh-cn": "Chinese (ZH)",
+    "zh-tw": "Chinese (TW)"
 }
 
 exports.main = (core, channel, user, args, id, event, extra) => {
     if (args.length < 1) {
-        core.bot.reply(event, "Missing Args, use !help to see command usage")
-        return
+        core.post({ channel: channel, author: extra.user, message: "Please provide a query" }); return
     }
 
     var lang = args[0].split(",")
@@ -123,6 +59,59 @@ exports.main = (core, channel, user, args, id, event, extra) => {
             sl: frlang, // from language
             tl: tolang, // to language
             q: translate // query
+        })
+    }
+
+    var check_iso = function(lang) {
+        return (lang.toLowerCase() in langs) ? langs[lang] : "Unknown"
+    }
+
+    var romaji = function(core, keychain, input, channel) {
+        var options = {
+            headers: { "User-Agent": "Mozilla/5.0" },
+            url: "http://jlp.yahooapis.jp/FuriganaService/V1/furigana",
+            form: {
+                appid: keychain.yahoo_romkan,
+                sentence: input
+            }
+        }
+
+        return new Promise((resolve, reject) => {
+            request.post(options, function(err, res, body) {
+                if (err || res.statusCode !== 200) {
+                    reject(err)
+                } else if (body !== undefined) {
+                    xml.parseString(body, function(err, res) {
+                        if (err) {
+                            reject(err)
+                        } else if (res !== undefined) {
+                            var output = []
+
+                            if (res.ResultSet) {
+                                try {
+                                    _.forEach(res.ResultSet.Result[0].WordList[0].Word, (value) => {
+                                        if (value.Roman) {
+                                            if (value.Roman[0] == " ") return
+                                            output.push(value.Roman[0])
+                                        } else if (value.Surface) {
+                                            if (value.Surface[0] == " ") return
+                                            output.push(value.Surface[0])
+                                        } else {
+                                            return
+                                        }
+                                    })
+                                } catch(e) {
+                                    core.error(JSON.stringify(e), "translate")
+                                }
+                            } else {
+                                resolve(["Nil"])
+                            }
+
+                            resolve(output)
+                        }
+                    })
+                }
+            })
         })
     }
 
@@ -165,7 +154,9 @@ exports.main = (core, channel, user, args, id, event, extra) => {
         var format = [`**${from_fancy}:** ${query}`, `**${to_fancy}:** ${translation.toUpperLowerCase()}`]
 
         if (to_lang === "ja" || from_lang === "ja") {
-            romaji(core, extra.keychain, to_roma, channel).then((furigana) => {
+            romaji(core, extra.keychain, to_roma, channel).then((furigana, error) => {
+                if (error) core.post({ channel: channel, author: extra.user, message: "Error: " + JSON.stringify(error) })
+
                 var format_roma = `**Romaji:** ${furigana.join("")}`
 
                 if (from_lang === "ja") {
