@@ -16,8 +16,7 @@ bot.on("ready", (event) => {
     console.log(chalk.blue.bold("Discord: Ready"))
 
     // Connect to Voice Channels
-    _.each(config.audioChannels, (channel, idk) => {
-        console.log(channel, idk)
+    _.each(config.audioChannels, (channel) => {
         bot.joinVoiceChannel(channel, (error, conn) => {
             if (error) util.error(error, "index")
         })
