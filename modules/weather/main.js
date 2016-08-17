@@ -93,7 +93,7 @@ module.exports = (bot, channel, user, args, id, event, extra) => {
                 let chanceofrain = Math.round((weather.current.precipProbability * 100) / 5) * 5
                 let temperature = Math.round(weather.current.temperature * 10) / 10
                 let feelslike = Math.round(weather.current.apparentTemperature * 10) / 10
-                let humidity = weather.current.humidity * 100
+                let humidity = Math.round(weather.current.humidity * 100)
                 let windspeed = weather.current.windSpeed
 
                 let canvas = new Canvas(400, 290)
@@ -150,7 +150,7 @@ module.exports = (bot, channel, user, args, id, event, extra) => {
                     // Condition
                     ctx.font = "14px Roboto"
                     ctx.textAlign = "center"
-                    ctx.fillText(condition, 325, 148)
+                    ctx.fillText(condition, 328, 148)
 
                     // Condition Image
                     ctx.shadowBlur = 5
@@ -189,12 +189,12 @@ module.exports = (bot, channel, user, args, id, event, extra) => {
                     })
 
                     // Debug
-                    console.log(`${chalk.magenta.bold("Location:")} ${chalk.magenta(location)} [${chalk.magenta(geocode)}]`)
-                    console.log(`${chalk.magenta.bold("Base:")} ${chalk.magenta(base.src)}`)
-                    console.log(`${chalk.magenta.bold("Icon:")} ${chalk.magenta(icon)}`)
-                    console.log(`${chalk.magenta.bold("Temperature:")} ${chalk.magenta(temperature)}° (${chalk.magenta(feelslike)}°)`)
-                    console.log(`${chalk.magenta.bold("Rain Chance:")} ${chalk.magenta(chanceofrain)}%`)
-                    console.log(`${chalk.magenta.bold("Humidity:")} ${chalk.magenta(humidity)}%`)
+                    console.log(chalk.magenta.bold("Location:"), chalk.magenta(location), chalk.magenta(`[${geocode}]`))
+                    console.log(chalk.magenta.bold("Base:"), chalk.magenta(base.src))
+                    console.log(chalk.magenta.bold("Icon:"), chalk.magenta(icon))
+                    console.log(chalk.magenta.bold("Temperature:"), chalk.magenta(`${temperature}°`), chalk.magenta(`(${feelslike}°)`))
+                    console.log(chalk.magenta.bold("Rain Chance:"), chalk.magenta(`${chanceofrain}%`))
+                    console.log(chalk.magenta.bold("Humidity"), chalk.magenta(`${humidity}%`))
                 }
 
                 generate()
