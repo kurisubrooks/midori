@@ -1,11 +1,19 @@
 {
   "name": "midori",
-  "version": "0.1.0",
-  "description": "",
+  "version": "0.1.1",
+  "description": "advanced modular bot framework",
   "main": "index.js",
-  "scripts": {
-    "test": "node index"
-  },
   "author": "kurisubrooks",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "canvas": "^1.4.0",
+    "chalk": "^1.1.3",
+    "discord.js": "^8.1.0",
+    "lodash": "^4.15.0",
+    "moment": "^2.14.1",
+    "qs": "^6.2.1",
+    "request": "^2.74.0",
+    "socket.io-client": "^1.4.8",
+    "xml2js": "^0.4.17"
+  }
 }
