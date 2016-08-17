@@ -12,7 +12,7 @@ String.prototype.toUpperLowerCase = function() {
 module.exports = {
     error: function(message, from, channel) {
         if (typeof message === "object") message = JSON.stringify(message, null, 4)
-        if (!channel) channel = "187527424026607616"
+        if (!channel) channel = "187527424026607616" //#mahou
 
         let time = moment().format("h:mm:ssa")
         let err_format = moment().format("D_MMMM_YYYY")
