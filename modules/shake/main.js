@@ -66,7 +66,7 @@ let eew = (bot, util, data, dir) => {
         // Epicenter
         ctx.font = "17px Roboto"
         ctx.fillStyle = "#FFF"
-        ctx.fillText(data.details.epicenter.en, 20, 32)
+        ctx.fillText(data.details.epicenter.en, 20, 35)
 
         // Details
         ctx.font = "15px Roboto"
@@ -76,7 +76,7 @@ let eew = (bot, util, data, dir) => {
         // Footer
         ctx.font = "15px Roboto"
         ctx.fillStyle = "#000"
-        ctx.fillText("Information is preliminary", 56, 256)
+        ctx.fillText("Information is preliminary", 56, 257)
 
         // Post Image
         if (previous_quake != data.id) {
