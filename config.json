@@ -5,6 +5,13 @@
     "admin": ["132368482120499201"],
 
     "commands": {
+        "admin": {
+            "description": "Administrative Commands"
+        },
+        "translate": {
+            "alias": ["t"],
+            "description": "Translate with Google"
+        },
         "weather": {
             "alias": ["w"],
             "description": "Gives the Weather"
@@ -29,8 +36,10 @@
     ],
 
     "audio": [
-        "!", "!!", "!!!",
-        "%nhk",
-        "%test"
+        "!",
+        "!!",
+        "!!!",
+        "quake",
+        "わぁい"
     ]
 }
