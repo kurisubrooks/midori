@@ -1,69 +1,82 @@
-// nano²
 "use strict"
 
 const _ = require("lodash")
 const fs = require("fs")
 const path = require("path")
-const core = require("./core")
-const keys = require("./keys")
-const config = require("./config.json")
+const chalk = require("chalk")
+const Discord = require("discord.js")
+const bot = new Discord.Client({ autoReconnect: true })
 
-console.log("Nano: Started")
+const util = require("./util.js")
+const config = require("./config.json")
+const keychain = require("./keychain.json")
 
 // Spawn Subprocesses
-core.bot.on("ready", (event) => {
-    console.log("Discord: Ready")
+bot.on("ready", (event) => {
+    console.log(chalk.blue.bold("Discord: Ready"))
 
-    _.each(config.subprocesses, (command) => {
-       try {
-            var subprocess = require(path.join(__dirname, "subprocesses", command + ".js"))
-            subprocess.main(core, config, keys, __dirname)
-       } catch(error) {
-            core.error(`Failed to start subprocess \`${command}.js\`\n${error}`, "index")
+    // Connect to Voice Channels
+    _.each(config.audioChannels, (channel, idk) => {
+        console.log(channel, idk)
+        bot.joinVoiceChannel(channel, (error, conn) => {
+            if (error) util.error(error, "index")
+        })
+    })
+
+    // Spawn Subprocesses
+    _.each(config.subprocesses, (v, command) => {
+        try {
+            require(path.join(__dirname, "modules", command, "main.js"))(bot, util, config, keychain, __dirname)
+        } catch(error) {
+            util.error(`Failed to start subprocess "${command}"\n${error}`, "index")
             throw error
-       }
-   })
+        }
+    })
 })
 
 // Warnings and Errors
-core.bot.on("warn", (warning) => core.error(warning, "index"))
-core.bot.on("error", (error) => core.error(error, "index"))
+bot.on("warn", (warning) => util.error(warning, "index"))
+bot.on("error", (error) => util.error(error, "index"))
 
 // Message Event
-core.bot.on("message", (message) => {
-    var server = (message.server) ? message.server.name : "DM"
-    var channel = message.channel
-    var attachments = message.attachments[0] || undefined
-    var user = message.author
-    var text = message.cleanContent
-    var id = message.id
+bot.on("message", (message) => {
+    let server = message.server ? message.server.name : "DM"
+    let channel = message.channel
+    let attachments = message.attachments[0] || undefined
+    let user = message.author
+    let text = message.cleanContent
+    let id = message.id
 
-    message.image = (attachments && text.length < 1) ? true : false
-    message.self = (config.user == user.id) ? true : false
+    message.image = attachments && text.length < 1 ? true : false
+    message.self = config.userid == user.id ? true : false
 
     if (user.bot) return
     if (text.length < 1 && !attachments) return
-    if (attachments) text += (message.image) ? "<image>" : " <image>"
+    if (attachments) text += message.image ? "<image>" : " <image>"
 
-    console.log(`[${server}${(channel.name) ? "#" + channel.name : ""}]<${user.name}>: ${text}`)
+    console.log(chalk.yellow.bold(`[${server}${(channel.name) ? "#" + channel.name : ""}]<${user.name}>:`), chalk.yellow(`${text}`))
 
     if (message.content.startsWith(config.sign)) {
-        var args = text.split(" ")
-        var command = args.splice(0, 1)[0].toLowerCase().slice(config.sign.length)
-        var exists = command in config.commands
+        let args = text.split(" ")
+        let command = args.splice(0, 1)[0].toLowerCase().slice(config.sign.length)
+        let exists = command in config.commands
 
         if (exists) {
             try {
-                var location = path.join(__dirname, "commands", command + ".js")
+                let location = path.join(__dirname, "modules", command, "main.js")
 
                 fs.access(location, fs.F_OK, (error) => {
-                    if (error) { core.error(error, "index"); return }
+                    if (error) {
+                        util.error(error, "index")
+                        return
+                    }
 
-                    require(location).main(core, channel, user, args, id, message, {
+                    require(location)(bot, channel, user, args, id, message, {
+                        util: util,
                         config: config,
-                        keychain: keys,
+                        keychain: keychain,
                         command: command,
-                        masters: config.masters,
+                        masters: config.admin,
                         user: user.username,
                         trigger: {
                             id: user.id,
@@ -74,8 +87,25 @@ core.bot.on("message", (message) => {
                     })
                 })
             } catch (error) {
-                core.error(error, "index")
+                util.error(error, "index")
             }
         }
+    } else if (config.audio.indexOf(message.content) >= 0) {
+        config.audio.forEach((v) => {
+            if (v === message.content) {
+                bot.voiceConnections.forEach((connection) => {
+                    connection.playFile(`./sounds/${v}.mp3`, (error) => {
+                        if (error) util.error(error, "index")
+                    })
+                })
+
+                return
+            }
+        })
     }
 })
+
+// Start Process
+console.log(chalk.blue.bold("Process: Started"))
+bot.loginWithToken(keychain.discord)
+exports.bot = bot

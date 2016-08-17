@@ -1,35 +1,36 @@
 {
+    "name": "midori",
     "sign": "/",
-    "user": "188394341708857346",
-    "masters": [
-        "132368482120499201",
-        "95534503971258368"
-    ],
-    "debug": ["187527424026607616"],
-    "subprocesses": [
-        "shake"
-    ],
+    "userid": "188394341708857346",
+    "admin": ["132368482120499201"],
+
     "commands": {
-        "exit": {
-            "admin": true,
-            "description": "Shutdown/Restart Nano",
-            "usage": [],
-            "aliases": ["fuckoff"]
-        },
         "weather": {
-            "description": "Get the Current Weather",
-            "usage": ["query"],
-            "aliases": ["w"]
-        },
-        "translate": {
-            "description": "Translate to any language",
-            "usage": ["to[,from]", "query"],
-            "aliases": ["t"]
+            "alias": ["w"],
+            "description": "Gives the Weather"
         }
     },
+
+    "subprocesses": {
+        "shake": {
+            "description": "Earthquake Alerts"
+        }
+    },
+
     "weather": {
-        "132368482120499201": ["Penrith", "Australia"],
-        "169842543410937856": ["Penrith", "Australia"],
+        "132368482120499201": ["Penrith", "NSW", "Australia"],
+        "169842543410937856": ["Werrington", "NSW", "Australia"],
         "95534503971258368":  ["Kolkata", "India"]
-    }
+    },
+
+    "audioChannels": [
+        "213277098108780544",
+        "204967720213676032"
+    ],
+
+    "audio": [
+        "!", "!!", "!!!",
+        "%nhk",
+        "%test"
+    ]
 }
