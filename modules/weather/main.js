@@ -78,23 +78,16 @@ module.exports = (bot, channel, user, args, id, event, extra) => {
 
                 // Parse JSON
                 let data = JSON.parse(body)
-
-                let weather = {
-                    current: data.currently,
-                    hourly: data.hourly,
-                    daily: data.daily
-                }
-
                 let offset = data.offset
                 let datetime = moment().utcOffset(data.offset).format("D MMMM, h:mma")
-                let localtime = weather.current.time
-                let condition = weather.current.summary
-                let icon = weather.current.icon
-                let chanceofrain = Math.round((weather.current.precipProbability * 100) / 5) * 5
-                let temperature = Math.round(weather.current.temperature * 10) / 10
-                let feelslike = Math.round(weather.current.apparentTemperature * 10) / 10
-                let humidity = Math.round(weather.current.humidity * 100)
-                let windspeed = weather.current.windSpeed
+                let localtime = data.currently.time
+                let condition = data.currently.summary
+                let icon = data.currently.icon
+                let chanceofrain = Math.round((data.currently.precipProbability * 100) / 5) * 5
+                let temperature = Math.round(data.currently.temperature * 10) / 10
+                let feelslike = Math.round(data.currently.apparentTemperature * 10) / 10
+                let humidity = Math.round(data.currently.humidity * 100)
+                let windspeed = data.currently.windSpeed
 
                 let canvas = new Canvas(400, 290)
                 let ctx = canvas.getContext("2d")
