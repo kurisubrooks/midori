@@ -140,55 +140,55 @@ let nihonShiki = {
 // For use with toHiragana
 let hiraganaMap = {}
 
-Object.keys(hiraganaMonographs).forEach(function(key) {
+Object.keys(hiraganaMonographs).forEach((key) => {
     let value = hiraganaMonographs[key]
     if (!(value in hiraganaMap)) {
         hiraganaMap[value] = key
     }
 })
 
-Object.keys(hiraganaDigraphs).forEach(function(key) {
+Object.keys(hiraganaDigraphs).forEach((key) => {
     let value = hiraganaDigraphs[key]
     if (!(value in hiraganaMap)) {
         hiraganaMap[value] = key
     }
 })
 
-let hiraganaRegex = new RegExp(Object.keys(hiraganaMap).sort(function(a, b) {
+let hiraganaRegex = new RegExp(Object.keys(hiraganaMap).sort((a, b) => {
     return b.length - a.length
 }).join("|"), "g")
 
 // For use with toKatakana
 let katakanaMap = {}
 
-Object.keys(katakanaMonographs).forEach(function(key) {
+Object.keys(katakanaMonographs).forEach((key) => {
     let value = katakanaMonographs[key]
     if (!(value in katakanaMap)) {
         katakanaMap[value] = key
     }
 })
 
-Object.keys(katakanaDigraphs).forEach(function(key) {
+Object.keys(katakanaDigraphs).forEach((key) => {
     let value = katakanaDigraphs[key]
     if (!(value in katakanaMap)) {
         katakanaMap[value] = key
     }
 })
 
-Object.keys(katakanaTrigraphs).forEach(function(key) {
+Object.keys(katakanaTrigraphs).forEach((key) => {
     let value = katakanaTrigraphs[key]
     if (!(value in katakanaMap)) {
         katakanaMap[value] = key
     }
 })
 
-let katakanaRegex = new RegExp(Object.keys(katakanaMap).sort(function(a, b) {
+let katakanaRegex = new RegExp(Object.keys(katakanaMap).sort((a, b) => {
     return b.length - a.length
 }).join("|"), "g")
 
 // API
 
-exports.fromKana = function(str) {
+exports.fromKana = (str) => {
     // Initial transliteration
     str = bulkReplace(str, hiraganaDigraphs)
     str = bulkReplace(str, katakanaDigraphs)
@@ -212,7 +212,7 @@ exports.fromKana = function(str) {
     return str
 }
 
-exports.toHiragana = function(str) {
+exports.toHiragana = (str) => {
     // All conversion is done in upper-case
     str = str.toUpperCase()
 
@@ -229,7 +229,7 @@ exports.toHiragana = function(str) {
     return str
 }
 
-exports.toKatakana = function(str) {
+exports.toKatakana = (str) => {
     // All conversion is done in upper-case
     str = str.toUpperCase()
 
@@ -246,7 +246,7 @@ exports.toKatakana = function(str) {
     return str
 }
 
-exports.cleanRomaji = function(str) {
+exports.cleanRomaji = (str) => {
     // Follows many of the suggestions from:
     // http://nayuki.eigenstate.org/page/variations-on-japanese-romanization
 
@@ -273,14 +273,14 @@ exports.cleanRomaji = function(str) {
     return str
 }
 
-exports.containsHiragana = function(str) {
-    return new RegExp(Object.keys(hiraganaMonographs).join('|')).test(str)
+exports.containsHiragana = (str) => {
+    return new RegExp(Object.keys(hiraganaMonographs).join("|")).test(str)
 }
 
-exports.containsKatakana = function(str) {
-    return new RegExp(Object.keys(katakanaMonographs).join('|')).test(str)
+exports.containsKatakana = (str) => {
+    return new RegExp(Object.keys(katakanaMonographs).join("|")).test(str)
 }
 
-exports.containsKana = function(str) {
+exports.containsKana = (str) => {
     return (exports.containsHiragana(str) || exports.containsKatakana(str))
 }
