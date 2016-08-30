@@ -22,15 +22,19 @@ module.exports = {
 
         console.log(chalk.red.bold(`[${time}, ${from}.js]`), chalk.red(message))
 
-        index.bot.sendMessage(channel, data_format, {}, (error, response) => {
-            if (error) {
-                if (error.status === 502) {
-                    console.error("Discord", "Bad Gateway")
-                } else {
-                    console.error(error)
+        try {
+            index.bot.sendMessage(channel, data_format, {}, (error, response) => {
+                if (error) {
+                    if (error.status === 502) {
+                        console.error("Discord", "Bad Gateway")
+                    } else {
+                        console.error(error)
+                    }
                 }
-            }
-        })
+            })
+        } catch(e) {
+            console.error(e)
+        }
 
         fs.access(file_format, fs.F_OK, (err) => {
             fs.appendFileSync(file_format, data_format + "\n\n")
