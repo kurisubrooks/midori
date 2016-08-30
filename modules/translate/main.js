@@ -6,6 +6,7 @@ const XML = require("xml2js")
 const xml = new XML.Parser()
 const chalk = require("chalk")
 const request = require("request")
+const romkan = require("./romaji")
 
 let langs = {
     "da": "Danish",
@@ -54,25 +55,38 @@ module.exports = (bot, channel, user, args, id, event, extra) => {
 
         return new Promise((resolve, reject) => {
             request.post(options, function(err, res, body) {
-                if (err || res.statusCode !== 200) reject(err)
-                else if (body !== undefined) {
+                if (err || res.statusCode !== 200) {
+                    console.error(err)
+                    reject(err)
+                } else if (body !== undefined) {
                     xml.parseString(body, function(err, res) {
-                        if (err) reject(err)
-                        else if (res !== undefined) {
+                        if (err) {
+                            console.error(err)
+                            reject(err)
+                        } else if (res !== undefined) {
                             let output = []
+
                             if (res.ResultSet) {
                                 try {
                                     _.forEach(res.ResultSet.Result[0].WordList[0].Word, (value) => {
-                                        if (value.Roman) {
-                                            if (value.Roman[0] == " ") return
-                                            output.push(value.Roman[0])
+                                        console.log(value)
+
+                                        if (value.Furigana) {
+                                            if (value.Furigana[0] == " ") return
+                                            output.push(romkan.fromKana(value.Furigana[0]).toLowerCase())
                                         } else if (value.Surface) {
                                             if (value.Surface[0] == " ") return
                                             output.push(value.Surface[0])
-                                        } else return
+                                        }
                                     })
-                                } catch(err) { reject(JSON.stringify(err)) }
-                            } else resolve(["null"])
+                                } catch(err) {
+                                    console.error(err)
+                                    reject(JSON.stringify(err))
+                                }
+                            } else {
+                                console.error("null")
+                                resolve(["null"])
+                            }
 
                             resolve(output)
                         }
@@ -146,6 +160,7 @@ module.exports = (bot, channel, user, args, id, event, extra) => {
                 }
 
                 let romaji = `**Romaji:** ${furigana.join(" ")}`
+                console.log(chalk.magenta.bold("Romaji:"), chalk.magenta(furigana.join(" ")))
 
                 if (fr_language === "ja") {
                     format.splice(1, 0, romaji)
