@@ -43,12 +43,12 @@ bot.on("message", (message) => {
     let server = message.guild ? message.guild.name : "DM"
     let channel = message.channel
     let attachments = message.attachments[0] || undefined
-    let user = message.author
+    let user = message.member
     let text = message.cleanContent
     let id = message.id
 
     message.image = attachments && text.length < 1 ? true : false
-    message.self = config.userid == user.id ? true : false
+    message.self = config.userid === user.id ? true : false
 
     if (user.bot) return
     if (text.length < 1 && !attachments) return
@@ -57,7 +57,7 @@ bot.on("message", (message) => {
     let display = {
         server: server,
         channel: channel.name ? `#${channel.name}` : "",
-        user: user.nickname ? user.nickname : user.username,
+        user: user.nickname ? user.nickname : user.user.username,
         message: text
     }
 
