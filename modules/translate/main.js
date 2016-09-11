@@ -33,9 +33,9 @@ let langs = {
     "zh-tw": "Chinese"
 }
 
-module.exports = (bot, channel, user, args, id, event, extra) => {
+module.exports = (bot, channel, user, args, id, message, extra) => {
     if (args.length < 1) {
-        bot.sendMessage(channel, "Please provide a query")
+        bot.channels.get(channel).sendMessage("Please provide a query")
         return
     }
 
@@ -167,18 +167,12 @@ module.exports = (bot, channel, user, args, id, event, extra) => {
                 } else if (to_language === "ja") {
                     format.push(romaji)
                 }
-
-                bot.sendMessage(channel, `${user}:\n${format.join("\n")}`, (err, res) => {
-                    if (err) util.error(err, "translate", channel)
-                    bot.deleteMessage(event)
-                })
-            })
-        } else {
-            bot.sendMessage(channel, `${user}:\n${format.join("\n")}`, (err, res) => {
-                if (err) util.error(err, "translate", channel)
-                bot.deleteMessage(event)
             })
         }
+
+        bot.channels.get(channel).sendMessage(`${user}:\n${format.join("\n")}`)
+            .then(() => message.delete())
+            .catch(error => util.error(error, "translate", channel))
 
         // Debug
         console.log(chalk.magenta.bold("Query:"), chalk.magenta(to_translate))

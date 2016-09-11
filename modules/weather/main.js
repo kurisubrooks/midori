@@ -7,14 +7,13 @@ const moment = require("moment")
 const path = require("path")
 const fs = require("fs")
 
-module.exports = (bot, channel, user, args, id, event, extra) => {
+module.exports = (bot, channel, user, args, id, message, extra) => {
     if (args.length === 0) {
         if (extra.config.weather.hasOwnProperty(extra.trigger.id)) {
             args = extra.config.weather[extra.trigger.id]
         } else {
-            bot.sendMessage(channel, `Please provide a query`, (error, response) => {
-                if (error) util.error(error)
-            })
+            channel.sendMessage(`Please provide a query`)
+                .catch(error => util.error(error))
         }
     }
 
@@ -54,7 +53,7 @@ module.exports = (bot, channel, user, args, id, event, extra) => {
             let places = []
             let get = data.results.forEach((v) => places.push("`" + v.formatted_address + "`"))
 
-            bot.sendMessage(channel, `Did you mean: ${places.join(", ")}`, (error, response) => {
+            channel.sendMessage(`Did you mean: ${places.join(", ")}`, (error, response) => {
                 if (error) util.error(error)
             })
 
@@ -172,14 +171,9 @@ module.exports = (bot, channel, user, args, id, event, extra) => {
                     ctx.fillText(`${chanceofrain}%`, 170, 260)
 
                     // Save
-                    bot.sendFile(channel, canvas.toBuffer(), (err) => {
-                        if (err) {
-                            util.error(err, "weather", channel)
-                            return
-                        }
-
-                        bot.deleteMessage(event)
-                    })
+                    channel.sendFile(canvas.toBuffer())
+                        .then(msg => message.delete())
+                        .catch(error => util.error(error, "weather", channel))
 
                     // Debug
                     console.log(chalk.magenta.bold("Location:"), chalk.magenta(location), chalk.magenta(`[${geocode}]`))

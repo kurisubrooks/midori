@@ -12,7 +12,7 @@ String.prototype.toUpperLowerCase = function() {
 module.exports = {
     error: function(message, from, channel) {
         if (typeof message === "object") message = JSON.stringify(message, null, 4)
-        if (!channel) channel = "187527424026607616" //#mahou
+        if (!channel) channel = index.bot.channels.get("222762743038476298") //#midori
 
         let time = moment().format("h:mm:ssa")
         let err_format = moment().format("D_MMMM_YYYY")
@@ -23,15 +23,12 @@ module.exports = {
         console.log(chalk.red.bold(`[${time}, ${from}.js]`), chalk.red(message))
 
         try {
-            index.bot.sendMessage(channel, data_format, {}, (error, response) => {
-                if (error) {
-                    if (error.status === 502) {
-                        console.error("Discord", "Bad Gateway")
-                    } else {
-                        console.error(error)
-                    }
-                }
-            })
+            channel.sendMessage(data_format)
+                .catch(error => {
+                    if (error.status === 502) console.error("Discord", "Bad Gateway")
+                    else if (error.status === 401) console.error("Discord", "Unauthorized")
+                    else console.error(error)
+                })
         } catch(e) {
             console.error(e)
         }

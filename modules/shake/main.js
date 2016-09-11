@@ -13,7 +13,7 @@ let disconnected = false
 
 let channels = [
     "132368736119291904", // kurisubrooks #general
-    "187527424026607616", // kaori        #mahou
+    "222762743038476298", // kaori        #midori
     "198304206476673024"  // kaori        #quakes
 ]
 
@@ -83,52 +83,58 @@ let eew = (bot, util, data, dir) => {
             previous_quake = data.id
 
             // kurisu
-            bot.sendFile(channels[0], canvas.toBuffer(), (err, res) => {
-                if (err) { util.error(err, "shake"); return }
-                if (res) console.log(chalk.magenta.bold("Debug:"), chalk.magenta("Posted Image to " + channels[0]))
-                kurisu_previous = res
-            })
+            bot.channels.get(channels[2]).sendFile(canvas.toBuffer())
+                .then(msg => {
+                    console.log(chalk.magenta.bold("Debug:"), chalk.magenta(`Posted Image to ${channels[0]}`))
+                    kurisu_previous = msg
+                })
+                .catch(error => util.error(error, "shake"))
 
             // kaori
-            bot.sendFile(channels[2], canvas.toBuffer(), (err, res) => {
-                if (err) { util.error(err, "shake"); return }
-                if (res) console.log(chalk.magenta.bold("Debug:"), chalk.magenta("Posted Image to " + channels[2]))
-                kaori_previous = res
-            })
+            bot.channels.get(channels[2]).sendFile(canvas.toBuffer())
+                .then(msg => {
+                    console.log(chalk.magenta.bold("Debug:"), chalk.magenta(`Posted Image to ${channels[2]}`))
+                    kaori_previous = msg
+                })
+                .catch(error => util.error(error, "shake"))
 
             // Play Alert
-            bot.voiceConnections.forEach((connection) => {
+            /*bot.voiceConnections.forEach((connection) => {
                 connection.playFile(`${dir}/sounds/quake.mp3`, (err, res) => {
                     if (err) util.error(err, "shake")
                     if (res) console.log(chalk.magenta.bold("Debug:"), chalk.magenta("Playing quake.mp3"))
                 })
-            })
+            })*/
         } else if (data.situation === 1) {
             previous_quake = data.id
 
-            bot.deleteMessage(kurisu_previous, {}, (err, res) => {
-                if (err) { util.error(err, "shake"); return }
-                if (res) console.log(chalk.magenta.bold("Debug:"), chalk.magenta("Deleted Previous Image from " + channels[0]))
-                kurisu_previous = ""
-            })
+            kurisu_previous.delete()
+                .then(msg => {
+                    console.log(chalk.magenta.bold("Debug:"), chalk.magenta(`Deleted Previous Image from ${channels[0]}`))
+                    kurisu_previous = ""
+                })
+                .catch(error => {
+                    util.error(error, "shake")
+                })
 
-            bot.deleteMessage(kaori_previous, {}, (err, res) => {
-                if (err) { util.error(err, "shake"); return }
-                if (res) console.log(chalk.magenta.bold("Debug:"), chalk.magenta("Deleted Previous Image from " + channels[0]))
-                kaori_previous = ""
-            })
+            kaori_previous.delete()
+                .then(msg => {
+                    console.log(chalk.magenta.bold("Debug:"), chalk.magenta(`Deleted Previous Image from ${channels[2]}`))
+                    kaori_previous = ""
+                })
+                .catch(error => {
+                    util.error(error, "shake")
+                })
 
             // kurisu
-            bot.sendFile(channels[0], canvas.toBuffer(), (err, res) => {
-                if (err) { util.error(err, "shake"); return }
-                if (res) console.log(chalk.magenta.bold("Debug:"), chalk.magenta("Posted Image to " + channels[0]))
-            })
+            bot.channels.get(channels[0]).sendFile(canvas.toBuffer())
+                .then(msg => console.log(chalk.magenta.bold("Debug:"), chalk.magenta(`Posted Image to ${channels[0]}`)))
+                .catch(error => util.error(error, "shake"))
 
             // kaori
-            bot.sendFile(channels[2], canvas.toBuffer(), (err, res) => {
-                if (err) { util.error(err, "shake"); return }
-                if (res) console.log(chalk.magenta.bold("Debug:"), chalk.magenta("Posted Image to " + channels[2]))
-            })
+            bot.channels.get(channels[2]).sendFile(canvas.toBuffer())
+                .then(msg => console.log(chalk.magenta.bold("Debug:"), chalk.magenta(`Posted Image to ${channels[2]}`)))
+                .catch(error => util.error(error, "shake"))
         }
     })
 }
@@ -144,7 +150,7 @@ module.exports = (bot, util, config, keychain, dir) => {
             console.log(chalk.green.bold("Shake: Connected"))
 
             if (disconnected) {
-                bot.postMessage(channels[2], "Reconnected")
+                bot.channels.get(channels[1]).postMessage("Reconnected")
                 disconnected = false
             }
         } else {
@@ -157,7 +163,7 @@ module.exports = (bot, util, config, keychain, dir) => {
     })
 
     socket.on("disconnect", () => {
-        bot.postMessage(channels[2], "Disconnected")
+        bot.channels.get(channels[1]).postMessage("Disconnected")
         console.log(chalk.red.bold("Shake: Disconnected"))
 
         disconnected = true

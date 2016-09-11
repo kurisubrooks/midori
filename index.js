@@ -16,11 +16,12 @@ bot.on("ready", (event) => {
     console.log(chalk.blue.bold("Discord: Ready"))
 
     // Connect to Voice Channels
-    _.each(config.audioChannels, (channel) => {
-        bot.joinVoiceChannel(channel, (error, conn) => {
+    /*_.each(config.audioChannels, (channel, index) => {
+        console.log(config.audioChannels)
+        config.audioChannels[index].join((error, conn) => {
             if (error) util.error(error, "index")
         })
-    })
+    })*/
 
     // Spawn Subprocesses
     _.each(config.subprocesses, (v, command) => {
@@ -39,7 +40,7 @@ bot.on("error", (error) => util.error(error, "index"))
 
 // Message Event
 bot.on("message", (message) => {
-    let server = message.server ? message.server.name : "DM"
+    let server = message.guild ? message.guild.name : "DM"
     let channel = message.channel
     let attachments = message.attachments[0] || undefined
     let user = message.author
@@ -51,9 +52,19 @@ bot.on("message", (message) => {
 
     if (user.bot) return
     if (text.length < 1 && !attachments) return
-    if (attachments) text += message.image ? "<image>" : " <image>"
+    if (attachments) text += message.image ? "<attachment>" : " <attachment>"
 
-    console.log(chalk.yellow.bold(`[${server}${(channel.name) ? "#" + channel.name : ""}]<${user.name}>:`), chalk.yellow(`${text}`))
+    let display = {
+        server: server,
+        channel: channel.name ? `#${channel.name}` : "",
+        user: user.nickname ? user.nickname : user.username,
+        message: text
+    }
+
+    console.log(
+        chalk.yellow.bold(`[${display.server}${display.channel}]<${display.user}>:`),
+        chalk.yellow(`${display.message}`)
+    )
 
     if (message.content.startsWith(config.sign)) {
         let args = text.split(" ")
@@ -89,7 +100,9 @@ bot.on("message", (message) => {
                 util.error(error, "index")
             }
         }
-    } else if (config.audio.indexOf(message.content) >= 0) {
+    }
+
+    /* else if (config.audio.indexOf(message.content) >= 0) {
         config.audio.forEach((v) => {
             if (v === message.content) {
                 bot.voiceConnections.forEach((connection) => {
@@ -101,10 +114,10 @@ bot.on("message", (message) => {
                 return
             }
         })
-    }
+    }*/
 })
 
 // Start Process
 console.log(chalk.blue.bold("Process: Started"))
-bot.loginWithToken(keychain.discord)
+bot.login(keychain.discord)
 exports.bot = bot
