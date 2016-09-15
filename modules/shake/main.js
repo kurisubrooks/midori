@@ -83,7 +83,7 @@ let eew = (bot, util, data, dir) => {
             previous_quake = data.id
 
             // kurisu
-            bot.channels.get(channels[2]).sendFile(canvas.toBuffer())
+            bot.channels.get(channels[0]).sendFile(canvas.toBuffer())
                 .then(msg => {
                     console.log(chalk.magenta.bold("Debug:"), chalk.magenta(`Posted Image to ${channels[0]}`))
                     kurisu_previous = msg
