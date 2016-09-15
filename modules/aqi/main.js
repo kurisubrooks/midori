@@ -100,7 +100,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
             let Image = Canvas.Image
 
             let generate = () => {
-                let Roboto = new Font("Roboto", path.join(__dirname, "./Medium.ttf"))
+                let Roboto = new Font("Roboto", path.join(__dirname, "./Roboto.ttf"))
                 let base = new Image()
                     base.src = path.join(__dirname, "./base.png")
 
@@ -113,11 +113,11 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
                 ctx.fillStyle = "#000000"
 
                 // Place
-                ctx.font = "bold 20px Roboto"
+                ctx.font = "20px Roboto"
                 ctx.fillText(data.location, 25, 41)
 
                 // Condition
-                ctx.font = "bold 18px Roboto"
+                ctx.font = "18px Roboto"
                 ctx.fillStyle = data.style
                 ctx.fillText(data.title, 25, 68)
 
