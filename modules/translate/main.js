@@ -173,12 +173,16 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
                 } else if (to_language === "ja") {
                     format.push(romaji)
                 }
-            })
-        }
 
-        channel.sendMessage(`${user}:\n${format.join("\n")}`)
-            .then(() => message.delete())
-            .catch(error => util.error(error, "translate", channel))
+                channel.sendMessage(`${user}:\n${format.join("\n")}`)
+                    .then(() => message.delete())
+                    .catch(error => util.error(error, "translate", channel))
+            })
+        } else {
+            channel.sendMessage(`${user}:\n${format.join("\n")}`)
+                .then(() => message.delete())
+                .catch(error => util.error(error, "translate", channel))
+        }
 
         // Debug
         console.log(chalk.magenta.bold("Query:"), chalk.magenta(to_translate))
