@@ -8,6 +8,8 @@ const path = require("path")
 const fs = require("fs")
 
 module.exports = (bot, channel, user, args, id, message, extra) => {
+    let util = extra.util
+
     if (args.length === 0) {
         if (extra.config.weather.hasOwnProperty(extra.trigger.id)) {
             args = extra.config.weather[extra.trigger.id]
@@ -17,7 +19,6 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
         }
     }
 
-    let util = extra.util
     let location = encodeURIComponent(args.join("+"))
     let url = `https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=${extra.keychain.google_geocode}`
 
