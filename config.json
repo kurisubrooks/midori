@@ -8,6 +8,9 @@
         "admin": {
             "description": "Administrative Commands"
         },
+        "aqi": {
+            "description": "Get the Air Quality"
+        },
         "test": {
             "description": "Test Image Generation"
         },
@@ -31,6 +34,12 @@
         "132368482120499201": ["Penrith", "NSW", "Australia"],
         "169842543410937856": ["Werrington", "NSW", "Australia"],
         "95534503971258368":  ["Kolkata", "India"]
+    },
+
+    "aqi": {
+        "132368482120499201": ["3255"],
+        "169842543410937856": ["3255"],
+        "95534503971258368":  ["7021"]
     },
 
     "audioChannels": [
