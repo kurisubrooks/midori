@@ -35,12 +35,12 @@ let langs = {
 
 module.exports = (bot, channel, user, args, id, message, extra) => {
     if (args.length < 1) {
-        bot.channels.get(channel).sendMessage("Please provide a query")
+        channel.sendMessage("Please provide a query")
         return
     }
 
     let check_iso = (lang) => {
-        return (lang.toLowerCase() in langs) ? langs[lang.toLowerCase()] : "Unknown"
+        return lang.toLowerCase() in langs ? langs[lang.toLowerCase()] : "Unknown"
     }
 
     let romaji = function(input) {
@@ -69,7 +69,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
                             if (res.ResultSet) {
                                 try {
                                     _.forEach(res.ResultSet.Result[0].WordList[0].Word, (value) => {
-                                        console.log(value)
+                                        //console.log(value)
 
                                         if (value.Furigana) {
                                             if (value.Furigana[0] == " ") return
@@ -98,17 +98,22 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
 
     let util = extra.util
 
+    let slicer = (pos) => {
+        return args.slice(pos)
+        .join(" ")
+        .replace(/。/g, ". ")
+        .replace(/、/g, ", ")
+        .replace(/？/g, "? ")
+        .replace(/！/g, "! ")
+        .replace(/「/g, "\"")
+        .replace(/」/g, "\" ")
+        .replace(/　/g, " ")
+    }
+
     let language    = args[0].split(",")
-    let language_to = language[0] === "zh" ? "zh-TW" : language[0]
+    let language_to = language[0] in langs ? (language[0] === "zh" ? "zh-TW" : language[0]) : "en"
     let language_fr = language.length > 1 ? language[1] : "auto"
-    let to_translate = args.slice(1).join(" ")
-                                    .replace(/。/g, ". ")
-                                    .replace(/、/g, ", ")
-                                    .replace(/？/g, "? ")
-                                    .replace(/！/g, "! ")
-                                    .replace(/「/g, "\"")
-                                    .replace(/」/g, "\" ")
-                                    .replace(/　/g, " ")
+    let to_translate = language[0] in langs ? slicer(1) : slicer(0)
 
     let fetch = {
         headers: { "User-Agent": "Mozilla/5.0" },
@@ -128,9 +133,10 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
         } else if (body.startsWith(",", 1)) {
             util.error("Malformed API Response\n${body}", "translate", channel)
             return
-        } else if (args[0] == " " || !(args[0].split(",")[0] in langs)) {
+        }/* else if (args[0] == " " || !(args[0].split(",")[0] in langs)) {
             util.error("Unknown or Unsupported Language", "translate", channel)
-        }
+            return
+        }*/
 
         let response    = JSON.parse(body.replace(/\,+/g, ","))
         let translation = response[0][0][0]
@@ -170,7 +176,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
             })
         }
 
-        bot.channels.get(channel).sendMessage(`${user}:\n${format.join("\n")}`)
+        channel.sendMessage(`${user}:\n${format.join("\n")}`)
             .then(() => message.delete())
             .catch(error => util.error(error, "translate", channel))
 

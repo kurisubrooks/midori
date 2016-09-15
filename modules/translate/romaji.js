@@ -76,7 +76,7 @@ let katakanaDigraphs = {
     "マー": "MĀ", "ミー": "MĪ", "ムー": "MŪ", "メー": "MĒ", "モー": "MŌ",
     "ヤー": "YĀ", "ユー": "YŪ", "ヨー": "YŌ",
     "ラー": "RĀ", "リー": "RĪ", "ルー": "RŪ", "レー": "RĒ", "ロー": "RŌ",
-    "ワー": "WĀ", "ヰー": "WĪ", "ヱー": "WĒ",    "ヲー": "WŌ", "ンー": "N",
+    "ワー": "WĀ", "ヰー": "WĪ", "ヱー": "WĒ", "ヲー": "WŌ", "ンー": "N",
     "ガー": "GĀ", "ギー": "GĪ", "グー": "GŪ", "ゲー": "GĒ", "ゴー": "GŌ",
     "ザー": "ZĀ", "ジー": "JĪ", "ズー": "ZŪ", "ゼー": "ZĒ", "ゾー": "ZŌ",
     "ダー": "DĀ", "ヂー": "DJĪ", "ヅー": "DZŪ", "デー": "DĒ", "ドー": "DŌ",
@@ -185,8 +185,6 @@ Object.keys(katakanaTrigraphs).forEach((key) => {
 let katakanaRegex = new RegExp(Object.keys(katakanaMap).sort((a, b) => {
     return b.length - a.length
 }).join("|"), "g")
-
-// API
 
 exports.fromKana = (str) => {
     // Initial transliteration
