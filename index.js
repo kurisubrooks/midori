@@ -11,6 +11,11 @@ const util = require("./util.js")
 const config = require("./config.json")
 const keychain = require("./keychain.json")
 
+// Handle Shitcode
+process.on("uncaughtException", (err) => {
+    console.error(chalk.red.bold("[FATAL]"), chalk.red(err))
+})
+
 // Spawn Subprocesses
 bot.on("ready", (event) => {
     console.log(chalk.blue.bold("Discord: Ready"))
@@ -40,34 +45,34 @@ bot.on("error", (error) => util.error(error, "index"))
 
 // Message Event
 bot.on("message", (message) => {
+    let type = message.channel.type
     let server = message.guild ? message.guild.name : "DM"
     let channel = message.channel
-    let attachments = message.attachments[0] || undefined
-    let user = message.member
-    let text = message.cleanContent
+    let attachments = false
+    let user = type === "dm" ? channel.recipient : message.member
+    let msg = message.cleanContent
     let id = message.id
 
-    message.image = attachments && text.length < 1 ? true : false
-    message.self = config.userid === user.id ? true : false
-
-    if (user.bot) return
-    if (text.length < 1 && !attachments) return
-    if (attachments) text += message.image ? "<attachment>" : " <attachment>"
-
     let display = {
-        server: server,
         channel: channel.name ? `#${channel.name}` : "",
-        user: user.nickname ? user.nickname : user.user.username,
-        message: text
+        user: type === "text" ? (user.nickname ? user.nickname : user.user.username) : user.username
     }
 
+    message.attachments.forEach(v => attachments = true)
+    message.image = attachments && msg.length < 1 ? true : false
+    message.self = config.userid === user.id ? true : false
+
+    if (type === "text" && user.user.bot) return
+    if (msg.length < 1 && !attachments) return
+    if (attachments) msg += message.image ? "<attachment>" : " <attachment>"
+
     console.log(
-        chalk.yellow.bold(`[${display.server}${display.channel}]<${display.user}>:`),
-        chalk.yellow(`${display.message}`)
+        chalk.yellow.bold(`[${server}${display.channel}]<${display.user}>:`),
+        chalk.yellow(`${msg}`)
     )
 
     if (message.content.startsWith(config.sign)) {
-        let args = text.split(" ")
+        let args = msg.split(" ")
         let command = args.splice(0, 1)[0].toLowerCase().slice(config.sign.length)
         let exists = command in config.commands
 
@@ -81,17 +86,17 @@ bot.on("message", (message) => {
                         return
                     }
 
-                    require(location)(bot, channel, user, args, id, message, {
+                    require(location)(bot, channel, display.user, args, id, message, {
                         util: util,
                         config: config,
                         keychain: keychain,
                         command: command,
                         masters: config.admin,
-                        user: user.username,
+                        user: user.nickname,
                         trigger: {
                             id: user.id,
                             username: user.username,
-                            status: user.status,
+                            nickname: user.nickname,
                             bot: user.bot
                         }
                     })
