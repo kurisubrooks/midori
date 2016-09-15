@@ -9,8 +9,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
 
         // Stop or Restart Bot
         if (args[0] === "stop") {
-            channel.sendMessage("Restarting")
-                .then(setTimeout(() => process.exit(0), 500))
+            channel.sendMessage("Restarting").then(setTimeout(() => process.exit(0), 500))
 
             /*channel.sendFile("https://i.imgur.com/kiKRmYY.gif", null, "リスタート中、すぐに戻ります", (err, res) => {
                 if (err) util.error(err, "admin")
@@ -30,6 +29,6 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
         }*/
 
     } else {
-        bot.sendMessage(channel, "Insufficient Permissions")
+        channel.sendMessage("Insufficient Permissions")
     }
 }
