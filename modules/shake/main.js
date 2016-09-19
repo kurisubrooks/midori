@@ -91,7 +91,7 @@ let eew = (bot, util, data, dir) => {
         } else if (data.situation === 1) {
             previous_quake[data.id] = data
 
-            previous_quake.delete()
+            previous_message.delete()
                 .then(msg => {
                     previous_message = ""
                     console.log(
