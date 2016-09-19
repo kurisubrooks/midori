@@ -18,7 +18,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
             })*/
 
         // Join or Change Voice Channels
-    } /*else if (args[0] === "voice") {
+        } /*else if (args[0] === "voice") {
             args[1].join((err, conn) => {
                 if (err) util.error(err, "admin")
                 if (conn) {
