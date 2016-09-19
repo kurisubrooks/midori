@@ -12,7 +12,7 @@ String.prototype.toUpperLowerCase = function() {
 module.exports = {
     error: function(message, from, channel) {
         if (typeof message === "object") message = JSON.stringify(message, null, 4)
-        if (!channel) channel = index.bot.channels.get("222762743038476298") //#midori
+        if (!channel) channel = index.bot.channels.get("212917108445544449") //#owlery
 
         let time = moment().format("h:mm:ssa")
         let err_format = moment().format("D_MMMM_YYYY")
