@@ -48,12 +48,13 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
                 return
             }
 
-            body = typeof body === "object" ? body : JSON.parse(body)
+            body = JSON.parse(body)
+            let sauce = body.rxs.obs[0].msg
             //console.log(JSON.stringify(body, null, 4))
 
             let data = {
-                value: body.model.aqi,
-                location: args[0] in defs ? defs[args[0]] : body.model.city.name,
+                value: sauce.model.aqi,
+                location: args[0] in defs ? defs[args[0]] : sauce.model.city.name,
                 title: "Unknown",
                 index: -1,
                 style: "#444444"
