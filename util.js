@@ -1,7 +1,12 @@
+"use strict"
+
 const fs = require("fs")
 const chalk = require("chalk")
+const request = require("request")
 const moment = require("moment")
 const index = require("./index")
+const config = require("./config.json")
+const keychain = require("./keychain.json")
 
 // Helper Prototypes
 String.prototype.toUpperLowerCase = function() {
@@ -10,7 +15,26 @@ String.prototype.toUpperLowerCase = function() {
 
 // Module Functions
 module.exports = {
-    error: function(message, from, channel) {
+    webhook: (event, data) => {
+        let user = keychain.webhooks[user]
+        let body = JSON.stringify(data)
+
+        if (event.guild)
+            if (event.guild.id && event.guild.id in config.webhooks)
+                user = keychain.webhooks[event.guild.id]
+            else
+                this.error("server does not have a webhook id/token")
+        else { return }
+
+        request.post({
+            url: `https://discordapp.com/api/webhooks/${user[0]}/${user[1]}/slack`,
+            form: body
+        }, (error, response, body) => {
+            if (error) console.error(error)
+            if (body !== "ok") console.info(body)
+        })
+    },
+    error: (message, from, channel) => {
         if (typeof message === "object") message = JSON.stringify(message, null, 4)
         if (!channel) channel = index.bot.channels.get("212917108445544449") //#owlery
 

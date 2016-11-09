@@ -1,20 +1,21 @@
 "use strict"
 
+const util = require("./util.js")
+const config = require("./config.json")
+const keychain = require("./keychain.json")
+
 const _ = require("lodash")
 const fs = require("fs")
 const path = require("path")
 const chalk = require("chalk")
 const Discord = require("discord.js")
 const bot = new Discord.Client({ autoReconnect: true })
-
-const util = require("./util.js")
-const config = require("./config.json")
-const keychain = require("./keychain.json")
+//const hook = new Discord.WebhookClient(keychain.webhooks.midori[0], keychain.webhooks.midori[1])
 
 // Handle Shitcode
-process.on("uncaughtException", (err) => {
+/*process.on("uncaughtException", (err) => {
     console.error(chalk.red.bold("[FATAL]"), chalk.red(err))
-})
+})*/
 
 // Spawn Subprocesses
 bot.on("ready", (event) => {
@@ -49,25 +50,26 @@ bot.on("message", (message) => {
     let server = message.guild ? message.guild.name : "DM"
     let channel = message.channel
     let attachments = false
-    let user = type === "dm" ? channel.recipient : message.member
+    let user = type === "dm" ? channel.recipient : message.member ? message.member.user : message.author
     let msg = message.cleanContent
     let id = message.id
 
-    let display = {
-        channel: channel.name ? `#${channel.name}` : "",
-        user: type === "text" ? (user.nickname ? user.nickname : user.user.username) : user.username
-    }
+    //console.log(message)
 
     message.attachments.forEach(v => attachments = true)
     message.image = attachments && msg.length < 1 ? true : false
     message.self = config.userid === user.id ? true : false
 
-    if (type === "text" && user.user.bot) return
+    if (type === "text" && user.bot) return
     if (msg.length < 1 && !attachments) return
     if (attachments) msg += message.image ? "<attachment>" : " <attachment>"
 
+    let channame = channel.name ? "#" + channel.name : ""
+    let username = type === "dm" ? channel.recipient.username : message.member ? (message.member.nickname ? message.member.nickname : message.author.username) : message.author.username
+    let avatar = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.jpg`
+
     console.log(
-        chalk.yellow.bold(`[${server}${display.channel}]<${display.user}>:`),
+        chalk.yellow.bold(`[${server}${channame}]<${username}>:`),
         chalk.yellow(`${msg}`)
     )
 
@@ -86,11 +88,22 @@ bot.on("message", (message) => {
                         return
                     }
 
-                    require(location)(bot, channel, display.user, args, id, message, {
+                    require(location)(bot, channel, username, args, id, message, {
+                        hook: {
+                            bot: {
+                                username: "みどり",
+                                icon: `https://cdn.discordapp.com/avatars/212915056491495424/3476fec9f1d7d85e4fefee18dfe8c659.jpg`
+                            },
+                            user: {
+                                username: username,
+                                icon: avatar
+                            }
+                        },
                         util: util,
                         config: config,
                         keychain: keychain,
                         command: command,
+                        server: message.guild,
                         masters: config.admin,
                         user: user.nickname,
                         trigger: {
@@ -106,20 +119,6 @@ bot.on("message", (message) => {
             }
         }
     }
-
-    /* else if (config.audio.indexOf(message.content) >= 0) {
-        config.audio.forEach((v) => {
-            if (v === message.content) {
-                bot.voiceConnections.forEach((connection) => {
-                    connection.playFile(`./sounds/${v}.mp3`, (error) => {
-                        if (error) util.error(error, "index")
-                    })
-                })
-
-                return
-            }
-        })
-    }*/
 })
 
 // Start Process
