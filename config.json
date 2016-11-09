@@ -4,12 +4,20 @@
     "userid": "188394341708857346",
     "admin": ["132368482120499201"],
 
+    "webhooks": {
+        "183934395416182784": "rioka",
+        "132368736119291904": "midori"
+    },
+
     "commands": {
         "admin": {
             "description": "Administrative Commands"
         },
         "aqi": {
             "description": "Get the Air Quality"
+        },
+        "shibe": {
+            "description": "Shibas to give us reason to live"
         },
         "test": {
             "description": "Test Image Generation"
