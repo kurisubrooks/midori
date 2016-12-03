@@ -13,13 +13,11 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
     }
 
     let util = extra.util
-
-
     let langs = args[0].split(",")
         langs[0] = langs[0].toLowerCase()
-    let to = ISO.validate(langs[0]) ? langs[0] : "en"
+    let to = langs[0] === "tw" ? "tw" : ISO.validate(langs[0]) ? langs[0] : "en"
     let from = langs.length > 1 ? langs[1] : null
-    let query = ISO.validate(langs[0]) ? args.slice(1).join(" ") : args.join(" ")
+    let query = to === langs[0] ? args.slice(1).join(" ") : args.join(" ")
 
     let params = {
         to: to,
@@ -33,8 +31,6 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
         url: "http://kurisu.pw/api/translate?" + qs.stringify(params)
     }
 
-    //console.log(fetch.url)
-
     request.get(fetch, (error, res, body) => {
         if (error) {
             util.error(error, "translate", channel)
@@ -47,37 +43,38 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
         let query    = response.query
         let result   = response.result
 
-        // Debug
-        console.log(chalk.magenta.bold("To:"), chalk.magenta(to))
-        console.log(chalk.magenta.bold("From:"), chalk.magenta(from))
-        console.log(chalk.magenta.bold("Query:"), chalk.magenta(query))
-        console.log(chalk.magenta.bold("Translation:"), chalk.magenta(result))
+        if (response.ok) {
+            // Debug
+            console.log(chalk.magenta.bold("To:"), chalk.magenta(to))
+            console.log(chalk.magenta.bold("From:"), chalk.magenta(from))
+            console.log(chalk.magenta.bold("Query:"), chalk.magenta(query))
+            console.log(chalk.magenta.bold("Translation:"), chalk.magenta(result))
 
-        channel.sendMessage(`${user}:\n**${ISO.getName(from)}**: ${query}\n**${ISO.getName(to)}**: ${result}`)
-            .then(() => message.delete())
-            .catch(error => util.error(error, "translate", channel))
+            let format = `${user}:\n**${ISO.getName(from)}**: ${query}\n**${ISO.getName(to)}**: ${result}`
 
-        /*extra.util.webhook(message, {
-            "username": extra.hook.bot.username,
-            "icon_url": extra.hook.bot.icon,
-            "attachments": [
-                {
-                    "author_name": extra.hook.user.username,
-                    "author_icon": extra.hook.user.icon,
-                    "color": "#DDDDDD",
-                    "text": " ",
-                    "fields": [
-                        {
-                            "title": ISO.getName(from),
-                            "value": query
-                        },
-                        {
-                            "title": ISO.getName(to),
-                            "value": result
-                        }
-                    ]
-                }
-            ]
-        })*/
+            let embed = {
+                color: 0xB699FF,
+                author: {
+                    name: extra.trigger.nickname,
+                    icon_url: extra.trigger.avatar
+                },
+                fields: [
+                    {
+                        name: ISO.getName(from),
+                        value: query
+                    },
+                    {
+                        name: ISO.getName(to),
+                        value: result
+                    }
+                ]
+            }
+
+            channel.sendMessage("", { embed })
+                .then(() => message.delete())
+                .catch(error => util.error(error, "translate", channel))
+        } else {
+            util.error(response.error, "translate", channel)
+        }
     })
 }
