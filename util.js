@@ -35,7 +35,7 @@ module.exports = {
         })
     },
     error: (message, from, channel) => {
-        if (typeof message === "object") message = JSON.stringify(message, null, 4)
+        //if (typeof message === "string") message = JSON.stringify(message, null, 4)
         if (!channel) channel = index.bot.channels.get("212917108445544449") //#owlery
 
         let time = moment().format("h:mm:ssa")
