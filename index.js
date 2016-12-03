@@ -80,16 +80,6 @@ bot.on("message", (message) => {
                     }
 
                     require(location)(bot, channel, username, args, id, message, {
-                        hook: {
-                            bot: {
-                                username: "みどり",
-                                icon: `https://cdn.discordapp.com/avatars/212915056491495424/3476fec9f1d7d85e4fefee18dfe8c659.jpg`
-                            },
-                            user: {
-                                username: username,
-                                icon: avatar
-                            }
-                        },
                         util: util,
                         config: config,
                         keychain: keychain,
