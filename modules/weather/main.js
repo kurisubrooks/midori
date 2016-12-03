@@ -171,7 +171,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
                     ctx.fillText(`${windspeed} km/h`, 170, 240)
                     ctx.fillText(`${chanceofrain}%`, 170, 260)
 
-                    // Save
+                    // Send
                     channel.sendFile(canvas.toBuffer())
                         .then(msg => message.delete())
                         .catch(error => util.error(error, "weather", channel))
