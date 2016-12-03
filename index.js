@@ -1,7 +1,7 @@
 "use strict"
 
-const util = require("./util.js")
-const config = require("./config.json")
+const util = require("./util")
+const config = require("./config")
 const keychain = require("./keychain.json")
 
 const _ = require("lodash")
@@ -97,6 +97,7 @@ bot.on("message", (message) => {
                         server: message.guild,
                         masters: config.admin,
                         user: user.nickname,
+                        colours: config.colours,
                         trigger: {
                             id: user.id,
                             username: user.username,

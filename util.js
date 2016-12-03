@@ -5,7 +5,7 @@ const chalk = require("chalk")
 const request = require("request")
 const moment = require("moment")
 const index = require("./index")
-const config = require("./config.json")
+const config = require("./config")
 const keychain = require("./keychain.json")
 
 // Helper Prototypes
