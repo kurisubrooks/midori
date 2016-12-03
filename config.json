@@ -16,11 +16,14 @@
         "aqi": {
             "description": "Get the Air Quality"
         },
+        "radar": {
+            "description": "Weather Radar"
+        },
+        "search": {
+            "description": "Search with Google"
+        },
         "shibe": {
             "description": "Shibas to give us reason to live"
-        },
-        "test": {
-            "description": "Test Image Generation"
         },
         "translate": {
             "alias": ["t"],
