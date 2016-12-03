@@ -10,7 +10,6 @@ const path = require("path")
 const chalk = require("chalk")
 const Discord = require("discord.js")
 const bot = new Discord.Client({ autoReconnect: true })
-//const hook = new Discord.WebhookClient(keychain.webhooks.midori[0], keychain.webhooks.midori[1])
 
 // Handle Shitcode
 /*process.on("uncaughtException", (err) => {
@@ -20,14 +19,6 @@ const bot = new Discord.Client({ autoReconnect: true })
 // Spawn Subprocesses
 bot.on("ready", (event) => {
     console.log(chalk.blue.bold("Discord: Ready"))
-
-    // Connect to Voice Channels
-    /*_.each(config.audioChannels, (channel, index) => {
-        console.log(config.audioChannels)
-        config.audioChannels[index].join((error, conn) => {
-            if (error) util.error(error, "index")
-        })
-    })*/
 
     // Spawn Subprocesses
     _.each(config.subprocesses, (v, command) => {
@@ -109,7 +100,8 @@ bot.on("message", (message) => {
                         trigger: {
                             id: user.id,
                             username: user.username,
-                            nickname: user.nickname,
+                            nickname: username,
+                            avatar: avatar,
                             bot: user.bot
                         }
                     })
