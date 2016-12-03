@@ -16,6 +16,9 @@
         "aqi": {
             "description": "Get the Air Quality"
         },
+        "define": {
+            "description": "Basic Dictionary"
+        },
         "radar": {
             "description": "Weather Radar"
         },
