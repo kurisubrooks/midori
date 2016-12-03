@@ -31,7 +31,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
             let data = JSON.parse(body, null, 4)
 
             let embed = {
-                color: 0xB699FF,
+                color: extra.colours.default,
                 author: {
                     name: extra.trigger.nickname,
                     icon_url: extra.trigger.avatar
@@ -43,7 +43,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
             _.forEach(data.definitions, (v, k) => {
                 embed.fields.push({
                     name: v.partOfSpeech,
-                    value: `${v.definition} (_${v.partOfSpeech}_)`
+                    value: v.definition
                 })
             })
 

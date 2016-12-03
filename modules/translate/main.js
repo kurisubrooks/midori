@@ -53,7 +53,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
             let format = `${user}:\n**${ISO.getName(from)}**: ${query}\n**${ISO.getName(to)}**: ${result}`
 
             let embed = {
-                color: 0xB699FF,
+                color: extra.colours.default,
                 author: {
                     name: extra.trigger.nickname,
                     icon_url: extra.trigger.avatar

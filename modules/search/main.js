@@ -35,7 +35,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
                     result.link = decodeURIComponent(result.link)
 
                 let embed = {
-                    color: 0xB699FF,
+                    color: extra.colours.default,
                     author: {
                         name: extra.trigger.nickname,
                         icon_url: extra.trigger.avatar
