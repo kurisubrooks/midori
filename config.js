@@ -22,6 +22,7 @@ module.exports = {
         "define": {
             "description": "Basic Dictionary"
         },
+        "embed": { },
         "radar": {
             "description": "Weather Radar"
         },
@@ -31,6 +32,7 @@ module.exports = {
         "shibe": {
             "description": "Shibas to give us reason to live"
         },
+        "test": { },
         "translate": {
             "alias": ["t"],
             "description": "Translate with Google"
