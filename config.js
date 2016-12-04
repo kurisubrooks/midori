@@ -17,12 +17,14 @@ module.exports = {
             "description": "Administrative Commands"
         },
         "aqi": {
-            "description": "Get the Air Quality"
+            "description": "Air Quality"
         },
         "define": {
             "description": "Basic Dictionary"
         },
-        "embed": { },
+        "embed": {
+            "description": "Discord Embed API Preview"
+        },
         "radar": {
             "description": "Weather Radar"
         },
@@ -30,16 +32,15 @@ module.exports = {
             "description": "Search with Google"
         },
         "shibe": {
-            "description": "Shibas to give us reason to live"
+            "description": "Random Image of Shiba Inu"
         },
-        "test": { },
         "translate": {
             "alias": ["t"],
             "description": "Translate with Google"
         },
         "weather": {
             "alias": ["w"],
-            "description": "Gives the Weather"
+            "description": "Get the Weather"
         }
     },
 
