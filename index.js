@@ -3,6 +3,7 @@
 const util = require("./util")
 const config = require("./config")
 const keychain = require("./keychain.json")
+const blacklist = require("./blacklist.json")
 
 const _ = require("lodash")
 const fs = require("fs")
@@ -12,9 +13,11 @@ const Discord = require("discord.js")
 const bot = new Discord.Client({ autoReconnect: true })
 
 // Handle Shitcode
-/*process.on("uncaughtException", (err) => {
+/*
+process.on("uncaughtException", (err) => {
     console.error(chalk.red.bold("[FATAL]"), chalk.red(err))
-})*/
+})
+*/
 
 // Spawn Subprocesses
 bot.on("ready", (event) => {
@@ -64,6 +67,17 @@ bot.on("message", (message) => {
         chalk.yellow(`${msg}`)
     )
 
+    if (server !== "DM" && new RegExp(blacklist.join("|")).test(message.content)) {
+        message.delete()
+            .then(() => user.sendMessage(`Your message was removed because it contains a word that has been blacklisted.`, { embed: { fields: [
+                { name: "Offence", value: "Blacklisted Word" },
+                { name: "Action",  value: "Message Removed" },
+                { name: "Message", value: message.content }
+            ]}}))
+            .catch(e => console.error("Unable to delete blacklisted message", e))
+        return
+    }
+
     if (message.content.startsWith(config.sign)) {
         let args = msg.split(" ")
         let command = args.splice(0, 1)[0].toLowerCase().slice(config.sign.length)
@@ -106,5 +120,5 @@ bot.on("message", (message) => {
 
 // Start Process
 console.log(chalk.blue.bold("Process: Started"))
-bot.login(keychain.discord)
 exports.bot = bot
+bot.login(keychain.discord)
