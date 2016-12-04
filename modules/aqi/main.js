@@ -112,7 +112,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
 
                 // Send
                 channel.sendFile(canvas.toBuffer())
-                    //.then(msg => message.delete())
+                    .then(msg => message.delete())
                     .catch(error => util.error(error, "aqi", channel))
             }
 
