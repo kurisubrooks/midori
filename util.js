@@ -43,15 +43,29 @@ module.exports = {
 
         let file_format = `./logs/${err_format}.log`
         let data_format = `\`${time} — ${from}.js\`\n-----\n\`\`\`\n${message}\n\`\`\``
+        let embed = {
+            "color": config.colours.error,
+            "fields": [
+                { "name": "Module:", "value": from + ".js", "inline": "1" },
+                { "name": "Time:", "value": time, "inline": "1" },
+                { "name": "Message:", "value": message }
+            ]
+        }
 
         console.log(chalk.red.bold(`[${time}, ${from}.js]`), chalk.red(message))
 
         try {
-            channel.sendMessage(data_format)
+            channel.sendMessage("", { embed: embed })
                 .catch(error => {
-                    if (error.status === 502) console.error("Discord", "Bad Gateway")
-                    else if (error.status === 401) console.error("Discord", "Unauthorized")
-                    else console.error(error)
+                    if (error.status === 502) {
+                        console.error("Discord", "Bad Gateway")
+                    } else if (error.status === 401) {
+                        console.error("Discord", "Unauthorized")
+                    } else if (error.status === 400) {
+                        console.error("Discord", "Bad Request")
+                    } else {
+                        console.error(error)
+                    }
                 })
         } catch(e) {
             console.error(e)
