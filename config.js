@@ -47,18 +47,25 @@ module.exports = {
     "subprocesses": {
         "shake": {
             "description": "Earthquake Alerts"
+        },
+        "fires": {
+            "description": "Bush Fire Proximity Alerts"
         }
     },
 
     "weather": {
-        "132368482120499201": ["Penrith", "NSW", "Australia"],
-        "169842543410937856": ["Werrington", "NSW", "Australia"],
-        "95534503971258368":  ["Kolkata", "India"]
+        "132368482120499201": [ "Penrith", "NSW", "Australia" ],
+        "169842543410937856": [ "Werrington", "NSW", "Australia" ],
+        "95534503971258368":  [ "Kolkata", "India" ],
+        "133646822060195850": [ "97225" ],
+        "189696688657530880": [ "Narellan", "NSW", "Australia" ],
+        "97113334289018880": [ "NYC" ],
+        "170618937501941760": [ "Deventer", "NL" ]
     },
 
     "aqi": {
-        "132368482120499201": ["3255"],
-        "169842543410937856": ["3255"],
-        "95534503971258368":  ["7021"]
+        "132368482120499201": [ "3255" ],
+        "169842543410937856": [ "3255" ],
+        "95534503971258368":  [ "7021" ]
     }
 }
