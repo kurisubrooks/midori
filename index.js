@@ -1,45 +1,49 @@
 "use strict"
 
-const util = require("./util")
-const config = require("./config")
-const keychain = require("./keychain.json")
-const blacklist = require("./blacklist.json")
-
 const _ = require("lodash")
 const fs = require("fs")
 const path = require("path")
 const chalk = require("chalk")
 const Discord = require("discord.js")
-const bot = new Discord.Client({ autoReconnect: true })
 
-// Handle Shitcode
-/*
-process.on("uncaughtException", (err) => {
-    console.error(chalk.red.bold("[FATAL]"), chalk.red(err))
-})
-*/
+const bot = new Discord.Client({ autoReconnect: true })
+const util = require("./util")
+const config = require("./config")
+const keychain = require("./keychain.json")
+const blacklist = require("./blacklist.json")
+
+let first_run = true
+console.log(chalk.blue.bold("Process: Started"))
+
+// Connect to Discord
+bot.login(keychain.discord)
 
 // Spawn Subprocesses
-bot.on("ready", (event) => {
+bot.on("ready", () => {
     console.log(chalk.blue.bold("Discord: Ready"))
 
     // Spawn Subprocesses
-    _.each(config.subprocesses, (v, command) => {
-        try {
-            require(path.join(__dirname, "modules", command, "main.js"))(bot, util, config, keychain, __dirname)
-        } catch(error) {
-            util.error(`Failed to start subprocess "${command}"\n${error}`, "index")
-            throw error
-        }
-    })
+    if (first_run) {
+        _.each(config.subprocesses, (v, command) => {
+            try {
+                console.log(chalk.blue.bold("Spawning Subprocess:"), chalk.green.bold(command))
+                require(path.join(__dirname, "modules", command, "main.js"))(bot, util, config, keychain, __dirname)
+            } catch(error) {
+                util.error(`Failed to start subprocess "${command}"\n${error}`, "index")
+                throw error
+            }
+        })
+
+        first_run = false
+    }
 })
 
 // Warnings and Errors
-bot.on("warn", (warning) => util.error(warning, "index"))
-bot.on("error", (error) => util.error(error, "index"))
+bot.on("warn", warning => util.error(warning, "index"))
+bot.on("error", error => util.error(error, "index"))
 
 // Message Event
-bot.on("message", (message) => {
+bot.on("message", message => {
     let type = message.channel.type
     let server = message.guild ? message.guild.name : "DM"
     let channel = message.channel
@@ -50,6 +54,9 @@ bot.on("message", (message) => {
 
     //console.log(message)
 
+    message.avatar = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.jpg`
+    message.displayname = type === "dm" ? channel.recipient.username : message.member ? (message.member.nickname ? message.member.nickname : message.author.username) : message.author.username
+    message.channelname = channel.name ? "#" + channel.name : ""
     message.attachments.forEach(v => attachments = true)
     message.image = attachments && msg.length < 1 ? true : false
     message.self = config.userid === user.id ? true : false
@@ -58,12 +65,8 @@ bot.on("message", (message) => {
     if (msg.length < 1 && !attachments) return
     if (attachments) msg += message.image ? "<attachment>" : " <attachment>"
 
-    let channame = channel.name ? "#" + channel.name : ""
-    let username = type === "dm" ? channel.recipient.username : message.member ? (message.member.nickname ? message.member.nickname : message.author.username) : message.author.username
-    let avatar = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.jpg`
-
     console.log(
-        chalk.yellow.bold(`[${server}${channame}]<${username}>:`),
+        chalk.yellow.bold(`[${server}${message.channelname}]<${message.displayname}>:`),
         chalk.yellow(`${msg}`)
     )
 
@@ -93,7 +96,7 @@ bot.on("message", (message) => {
                         return
                     }
 
-                    require(location)(bot, channel, username, args, id, message, {
+                    require(location)(bot, channel, message.displayname, args, id, message, {
                         util: util,
                         config: config,
                         keychain: keychain,
@@ -105,8 +108,8 @@ bot.on("message", (message) => {
                         trigger: {
                             id: user.id,
                             username: user.username,
-                            nickname: username,
-                            avatar: avatar,
+                            nickname: message.displayname,
+                            avatar: message.avatar,
                             bot: user.bot
                         }
                     })
@@ -118,7 +121,4 @@ bot.on("message", (message) => {
     }
 })
 
-// Start Process
-console.log(chalk.blue.bold("Process: Started"))
 exports.bot = bot
-bot.login(keychain.discord)
