@@ -2,7 +2,6 @@
 
 const _ = require("lodash")
 const qs = require("qs")
-const ISO = require("iso-639-1")
 const chalk = require("chalk")
 const request = require("request")
 
@@ -15,7 +14,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
     let util = extra.util
     let langs = args[0].split(",")
         langs[0] = langs[0].toLowerCase()
-    let to = langs[0] === "tw" ? "tw" : ISO.validate(langs[0]) ? langs[0] : "en"
+    let to = langs[0]
     let from = langs.length > 1 ? langs[1] : null
     let query = to === langs[0] ? args.slice(1).join(" ") : args.join(" ")
 
@@ -50,7 +49,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
             console.log(chalk.magenta.bold("Query:"), chalk.magenta(query))
             console.log(chalk.magenta.bold("Translation:"), chalk.magenta(result))
 
-            let format = `${user}:\n**${ISO.getName(from)}**: ${query}\n**${ISO.getName(to)}**: ${result}`
+            let format = `${user}:\n**${from.name}**: ${query}\n**${to.name}**: ${result}`
 
             let embed = {
                 color: extra.colours.default,
@@ -60,11 +59,11 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
                 },
                 fields: [
                     {
-                        name: ISO.getName(from),
+                        name: from.name,
                         value: query
                     },
                     {
-                        name: ISO.getName(to),
+                        name: to.name,
                         value: result
                     }
                 ]
