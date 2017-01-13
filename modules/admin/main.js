@@ -13,6 +13,8 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
         // Trigger util.error
         } else if (args[0] === "error") {
             util.error("Error Triggered by Admin", "admin", channel)
+        } else if (args[0] === "ping") {
+            channel.sendMessage("Pong!")
         }
 
     } else {
