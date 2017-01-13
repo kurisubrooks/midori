@@ -12,37 +12,50 @@ module.exports = {
         "info": 0x52B7D6
     },
 
-    "commands": {
-        "admin": {
+    "commands": [
+        {
+            "command": "admin",
             "description": "Administrative Commands"
         },
-        "aqi": {
+        {
+            "command": "aqi",
             "description": "Air Quality"
         },
-        "define": {
-            "description": "Basic Dictionary"
+        {
+            "command": "define",
+            "description": "Basic Dictionary",
+            "alias": ["d"]
         },
-        "embed": {
-            "description": "Discord Embed API Preview"
+        {
+            "command": "embed",
+            "description": "Discord Embed API Preview",
+            "alias": ["e"]
         },
-        "radar": {
-            "description": "Weather Radar"
+        {
+            "command": "radar",
+            "description": "Weather Radar",
+            "alias": ["r"]
         },
-        "search": {
-            "description": "Search with Google"
+        {
+            "command": "search",
+            "description": "Search with Google",
+            "alias": ["s"]
         },
-        "shibe": {
+        {
+            "command": "shibe",
             "description": "Random Image of Shiba Inu"
         },
-        "translate": {
-            "alias": ["t"],
-            "description": "Translate with Google"
+        {
+            "command": "translate",
+            "description": "Translate with Google",
+            "alias": ["t"]
         },
-        "weather": {
-            "alias": ["w"],
-            "description": "Get the Weather"
+        {
+            "command": "weather",
+            "description": "Get the Weather",
+            "alias": ["w"]
         }
-    },
+    ],
 
     "subprocesses": {
         "shake": {
@@ -56,7 +69,7 @@ module.exports = {
     "weather": {
         "132368482120499201": [ "Penrith", "NSW", "Australia" ],
         "169842543410937856": [ "Werrington", "NSW", "Australia" ],
-        "95534503971258368":  [ "Kolkata", "India" ],
+        "95534503971258368":  [ "700068", "Kolkata", "India" ],
         "133646822060195850": [ "97225" ],
         "189696688657530880": [ "Narellan", "NSW", "Australia" ],
         "97113334289018880": [ "NYC" ],

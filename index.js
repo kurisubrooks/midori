@@ -34,6 +34,7 @@ bot.on("ready", () => {
             }
         })
 
+        // Prevent Double Trigger
         first_run = false
     }
 })
@@ -49,46 +50,61 @@ bot.on("message", message => {
     let channel = message.channel
     let attachments = false
     let user = type === "dm" ? channel.recipient : message.member ? message.member.user : message.author
-    let msg = message.cleanContent
+    let text = message.cleanContent
     let id = message.id
 
-    //console.log(message)
-
-    message.avatar = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.jpg`
-    message.displayname = type === "dm" ? channel.recipient.username : message.member ? (message.member.nickname ? message.member.nickname : message.author.username) : message.author.username
-    message.channelname = channel.name ? "#" + channel.name : ""
+    // Checks for attached file/image
     message.attachments.forEach(v => attachments = true)
-    message.image = attachments && msg.length < 1 ? true : false
-    message.self = config.userid === user.id ? true : false
+    message.image = attachments && text.length < 1 ? true : false
 
     if (type === "text" && user.bot) return
-    if (msg.length < 1 && !attachments) return
-    if (attachments) msg += message.image ? "<attachment>" : " <attachment>"
+    if (text.length < 1 && !attachments) return
+    if (attachments) text += message.image ? "<attachment>" : " <attachment>"
+
+    // Set user.nickname
+    if (type === "dm") {
+        user.nickname = channel.recipient.username
+    } else {
+        if (message.member) {
+            if (message.member.nickname) {
+                user.nickname = message.member.nickname
+            } else {
+                user.nickname = message.author.username
+            }
+        } else {
+            user.nickname = message.author.username
+        }
+    }
 
     console.log(
-        chalk.yellow.bold(`[${server}${message.channelname}]<${message.displayname}>:`),
-        chalk.yellow(`${msg}`)
+        chalk.yellow.bold(`[${server}${channel.name ? "#" + channel.name : ""}]<${user.nickname}>:`),
+        chalk.yellow(`${text}`)
     )
 
     if (server !== "DM" && new RegExp(blacklist.join("|")).test(message.content)) {
         message.delete()
-            .then(() => user.sendMessage(`Your message was removed because it contains a word that has been blacklisted.`, { embed: { fields: [
-                { name: "Offence", value: "Blacklisted Word" },
-                { name: "Action",  value: "Message Removed" },
-                { name: "Message", value: message.content }
-            ]}}))
+            .then(() => {
+                user.sendMessage(`Your message was removed because it contains a word that has been blacklisted.`,
+                { embed: { fields: [
+                    { name: "Offence", value: "Blacklisted Word" },
+                    { name: "Action",  value: "Message Removed" },
+                    { name: "Message", value: message.content }
+                ]}})
+            })
             .catch(e => console.error("Unable to delete blacklisted message", e))
         return
     }
 
-    if (message.content.startsWith(config.sign)) {
-        let args = msg.split(" ")
+    if (text.startsWith(config.sign)) {
+        let args = text.split(" ")
         let command = args.splice(0, 1)[0].toLowerCase().slice(config.sign.length)
-        let exists = command in config.commands
+        let alias = _.map(_.filter(config.commands, { alias: [ command ] }), "command")
+        if (alias.length > 0) command = alias[0]
+        let matched = _.filter(config.commands, { command: command })
 
-        if (exists) {
+        if (matched.length > 0) {
             try {
-                let location = path.join(__dirname, "modules", command, "main.js")
+                let location = path.join(__dirname, "modules", matched[0].command, "main.js")
 
                 fs.access(location, fs.F_OK, (error) => {
                     if (error) {
@@ -96,7 +112,7 @@ bot.on("message", message => {
                         return
                     }
 
-                    require(location)(bot, channel, message.displayname, args, id, message, {
+                    require(location)(bot, channel, user, args, id, message, {
                         util: util,
                         config: config,
                         keychain: keychain,
@@ -108,13 +124,13 @@ bot.on("message", message => {
                         trigger: {
                             id: user.id,
                             username: user.username,
-                            nickname: message.displayname,
-                            avatar: message.avatar,
+                            nickname: user.nickname,
+                            avatar: user.avatarURL,
                             bot: user.bot
                         }
                     })
                 })
-            } catch (error) {
+            } catch(error) {
                 util.error(error, "index")
             }
         }
