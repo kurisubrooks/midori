@@ -76,11 +76,13 @@ bot.on("message", message => {
         }
     }
 
+    // Log Chat to Console
     console.log(
         chalk.yellow.bold(`[${server}${channel.name ? "#" + channel.name : ""}]<${user.nickname}>:`),
         chalk.yellow(`${text}`)
     )
 
+    // Check Message against Blacklist
     if (server !== "DM" && new RegExp(blacklist.join("|")).test(message.content)) {
         message.delete()
             .then(() => {
@@ -95,6 +97,7 @@ bot.on("message", message => {
         return
     }
 
+    // Command Handler
     if (text.startsWith(config.sign)) {
         let args = text.split(" ")
         let command = args.splice(0, 1)[0].toLowerCase().slice(config.sign.length)
