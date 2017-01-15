@@ -57,6 +57,7 @@ bot.on("message", message => {
     message.attachments.forEach(v => attachments = true)
     message.image = attachments && text.length < 1 ? true : false
 
+    // Basic Formatting Checks
     if (type === "text" && user.bot) return
     if (text.length < 1 && !attachments) return
     if (attachments) text += message.image ? "<attachment>" : " <attachment>"
@@ -90,7 +91,7 @@ bot.on("message", message => {
                 { embed: { fields: [
                     { name: "Offence", value: "Blacklisted Word" },
                     { name: "Action",  value: "Message Removed" },
-                    { name: "Message", value: message.content }
+                    { name: "Message", value: text }
                 ]}})
             })
             .catch(e => console.error("Unable to delete blacklisted message", e))
@@ -109,12 +110,14 @@ bot.on("message", message => {
             try {
                 let location = path.join(__dirname, "modules", matched[0].command, "main.js")
 
+                // Check if File Exists before executing
                 fs.access(location, fs.F_OK, (error) => {
                     if (error) {
                         util.error(error, "index")
                         return
                     }
 
+                    // Execute Module
                     require(location)(bot, channel, user, args, id, message, {
                         util: util,
                         config: config,

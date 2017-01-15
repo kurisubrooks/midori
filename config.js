@@ -1,84 +1,84 @@
 module.exports = {
-    "name": "midori",
-    "sign": "/",
-    "userid": "188394341708857346",
-    "admin": ["132368482120499201"],
+    name: "midori",
+    sign: "/",
+    userid: "188394341708857346",
+    admin: ["132368482120499201"],
 
-    "colours": {
-        "default": 0xB699FF,
-        "success": 0x52C652,
-        "error": 0xE93F3C,
-        "warn": 0xF5AD1E,
-        "info": 0x52B7D6
+    colours: {
+        default: 0xB699FF,
+        success: 0x52C652,
+        error: 0xE93F3C,
+        warn: 0xF5AD1E,
+        info: 0x52B7D6
     },
 
-    "commands": [
+    commands: [
         {
-            "command": "admin",
-            "description": "Administrative Commands"
+            command: "admin",
+            description: "Administrative Commands"
         },
         {
-            "command": "aqi",
-            "description": "Air Quality"
+            command: "aqi",
+            description: "Air Quality"
         },
         {
-            "command": "define",
-            "description": "Basic Dictionary",
-            "alias": ["d"]
+            command: "define",
+            description: "Basic Dictionary",
+            alias: ["d"]
         },
         {
-            "command": "embed",
-            "description": "Discord Embed API Preview",
-            "alias": ["e"]
+            command: "embed",
+            description: "Discord Embed API Preview",
+            alias: ["e"]
         },
         {
-            "command": "radar",
-            "description": "Weather Radar",
-            "alias": ["r"]
+            command: "radar",
+            description: "Weather Radar",
+            alias: ["r"]
         },
         {
-            "command": "search",
-            "description": "Search with Google",
-            "alias": ["s"]
+            command: "search",
+            description: "Search with Google",
+            alias: ["s"]
         },
         {
-            "command": "shibe",
-            "description": "Random Image of Shiba Inu"
+            command: "shibe",
+            description: "Random Image of Shiba Inu"
         },
         {
-            "command": "translate",
-            "description": "Translate with Google",
-            "alias": ["t"]
+            command: "translate",
+            description: "Translate with Google",
+            alias: ["t"]
         },
         {
-            "command": "weather",
-            "description": "Get the Weather",
-            "alias": ["w"]
+            command: "weather",
+            description: "Get the Weather",
+            alias: ["w"]
         }
     ],
 
-    "subprocesses": {
-        "shake": {
-            "description": "Earthquake Alerts"
+    subprocesses: {
+        shake: {
+            description: "Earthquake Alerts"
         },
-        "fires": {
-            "description": "Bush Fire Proximity Alerts"
+        fires: {
+            description: "Bush Fire Proximity Alerts"
         }
     },
 
-    "weather": {
-        "132368482120499201": [ "Penrith", "NSW", "Australia" ],
-        "169842543410937856": [ "Werrington", "NSW", "Australia" ],
-        "95534503971258368":  [ "700068", "Kolkata", "India" ],
-        "133646822060195850": [ "97225" ],
-        "189696688657530880": [ "Narellan", "NSW", "Australia" ],
-        "97113334289018880":  [ "NYC" ],
-        "170618937501941760": [ "Deventer", "NL" ]
+    weather: {
+        132368482120499201: [ "Penrith", "NSW", "Australia" ],
+        169842543410937856: [ "Werrington", "NSW", "Australia" ],
+        95534503971258368:  [ "700068", "Kolkata", "India" ],
+        133646822060195850: [ "97225" ],
+        189696688657530880: [ "Narellan", "NSW", "Australia" ],
+        97113334289018880:  [ "NYC" ],
+        170618937501941760: [ "Deventer", "NL" ]
     },
 
-    "aqi": {
-        "132368482120499201": [ "3255" ],
-        "169842543410937856": [ "3255" ],
-        "95534503971258368":  [ "7021" ]
+    aqi: {
+        132368482120499201: [ "3255" ],
+        169842543410937856: [ "3255" ],
+        95534503971258368:  [ "7021" ]
     }
 }
