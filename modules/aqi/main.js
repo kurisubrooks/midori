@@ -20,7 +20,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
 
     // AQI ID
     if (Boolean(Number(args[0]))) {
-        request("http://kurisu.pw/api/aqi?id=" + args[0], (error, response, body) => {
+        request("https://api.kurisubrooks.com/api/aqi?id=" + args[0], (error, response, body) => {
             try {
                 body = JSON.parse(body)
             } catch(e) {

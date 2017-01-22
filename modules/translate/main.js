@@ -27,7 +27,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
 
     let fetch = {
         headers: { "User-Agent": "Mozilla/5.0" },
-        url: "http://kurisu.pw/api/translate?" + qs.stringify(params)
+        url: "https://api.kurisubrooks.com/api/translate?" + qs.stringify(params)
     }
 
     request.get(fetch, (error, res, body) => {
