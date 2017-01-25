@@ -58,12 +58,8 @@ module.exports = {
     ],
 
     subprocesses: {
-        shake: {
-            description: "Earthquake Alerts"
-        },
-        fires: {
-            description: "Bush Fire Proximity Alerts"
-        }
+        shake: { description: "Earthquake Alerts" },
+        fires: { description: "Bush Fire Proximity Alerts" }
     },
 
     weather: {
