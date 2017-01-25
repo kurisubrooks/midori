@@ -12,7 +12,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
         if (extra.config.weather.hasOwnProperty(extra.trigger.id)) {
             args = extra.config.weather[extra.trigger.id];
         } else {
-            channel.sendMessage(`Please provide a query`)
+            return channel.sendMessage(`Please provide a query`)
                 .catch(error => util.error(error));
         }
     }
@@ -207,4 +207,6 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
 
         return null;
     });
+
+    return null;
 };
