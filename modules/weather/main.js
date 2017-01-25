@@ -84,8 +84,6 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
                 state = {};
             }
 
-            console.log(locality, governing, country);
-
             let geocode = [previous.results[0].geometry.location.lat, previous.results[0].geometry.location.lng];
 
             let link = `https://api.forecast.io/forecast/${extra.keychain.weather}/${geocode.join(",")}?units=auto`;
