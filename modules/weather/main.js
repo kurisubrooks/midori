@@ -1,192 +1,206 @@
-"use strict"
+"use strict";
 
-const chalk = require("chalk")
-const Canvas = require("canvas")
-const request = require("request")
-const moment = require("moment")
-const path = require("path")
-const fs = require("fs")
+const chalk = require("chalk");
+const Canvas = require("canvas");
+const request = require("request");
+const path = require("path");
 
 module.exports = (bot, channel, user, args, id, message, extra) => {
-    let util = extra.util
+    let util = extra.util;
 
     if (args.length === 0) {
         if (extra.config.weather.hasOwnProperty(extra.trigger.id)) {
-            args = extra.config.weather[extra.trigger.id]
+            args = extra.config.weather[extra.trigger.id];
         } else {
             channel.sendMessage(`Please provide a query`)
-                .catch(error => util.error(error))
+                .catch(error => util.error(error));
         }
     }
 
-    let location = encodeURIComponent(args.join("+"))
-    let url = `https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=${extra.keychain.google_geocode}`
+    let location = encodeURIComponent(args.join("+"));
+    let url = `https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=${extra.keychain.google_geocode}`;
 
     request(url, (error, response, body) => {
         // Handle Request Errors
         if (error) {
-            util.error(error, "weather", channel)
-            return
+            return util.error(error, "weather", channel);
         }
 
         // Parse JSON
-        let data = JSON.parse(body)
+        let data = JSON.parse(body);
 
         // Handle API Errors
         if (data.status !== "OK") {
-            console.log(data)
+            console.log(data);
 
             if (data.status === "ZERO_RESULTS") {
-                util.error("Error: Request returned no results", "weather", channel)
+                return util.error("Error: Request returned no results", "weather", channel);
             } else if (data.status === "REQUEST_DENIED") {
-                util.error("Error: Geocode API Request was denied", "weather", channel)
+                return util.error("Error: Geocode API Request was denied", "weather", channel);
             } else if (data.status === "INVALID_REQUEST") {
-                util.error("Error: Invalid Request", "weather", channel)
+                return util.error("Error: Invalid Request", "weather", channel);
             } else if (data.status === "OVER_QUERY_LIMIT") {
-                util.error("Error: Query Limit Exceeded. Try again tomorrow :(", "weather", channel)
+                return util.error("Error: Query Limit Exceeded. Try again tomorrow :(", "weather", channel);
             } else if (data.status === "UNKNOWN_ERROR") {
-                util.error("Error: Unknown", "weather", channel)
-            } return
+                return util.error("Error: Unknown", "weather", channel);
+            }
         }
 
         // Handle Multiple Results
         if (data.results.length > 1) {
-            let places = []
-            let get = data.results.forEach((v) => places.push("`" + v.formatted_address + "`"))
+            let places = [];
+            data.results.forEach(val => places.push(`\`${val.formatted_address}\``));
 
-            channel.sendMessage(`Did you mean: ${places.join(", ")}`, (error, response) => {
-                if (error) util.error(error)
-            })
+            channel.sendMessage(`Did you mean: ${places.join(", ")}`, err => {
+                if (err) util.error(err);
+            });
 
-            return
+            return null;
         }
 
         // Run
         if (data.results.length === 1) {
-            let previous = data
-            let geocode = [previous.results[0].geometry.location.lat, previous.results[0].geometry.location.lng]
-            let location = previous.results[0].formatted_address
+            let previous = data;
+            let city, state;
 
-            let url = `https://api.forecast.io/forecast/${extra.keychain.weather}/${geocode.join(",")}?units=si`
+            let locality = previous.results[0].address_components.find(elem => elem.types.includes("locality"));
+            let governing = previous.results[0].address_components.find(elem => elem.types.includes("administrative_area_level_1"));
+            let country = previous.results[0].address_components.find(elem => elem.types.includes("country"));
 
-            request(url, (error, response, body) => {
+            if (locality) {
+                city = locality;
+                state = governing;
+            } else if (governing) {
+                city = governing;
+                state = country;
+            } else {
+                city = country;
+                state = {};
+            }
+
+            console.log(locality, governing, country);
+
+            let geocode = [previous.results[0].geometry.location.lat, previous.results[0].geometry.location.lng];
+
+            let link = `https://api.forecast.io/forecast/${extra.keychain.weather}/${geocode.join(",")}?units=auto`;
+
+            request(link, (error, response, body) => {
                 // Handle Request Errors
                 if (error) {
-                    util.error(error, "weather", channel)
-                    return
+                    return util.error(error, "weather", channel);
                 }
 
                 // Parse JSON
-                let data = JSON.parse(body)
-                let offset = data.offset
-                let datetime = moment().utcOffset(data.offset).format("D MMMM, h:mma")
-                let localtime = data.currently.time
-                let condition = data.currently.summary
-                let icon = data.currently.icon
-                let chanceofrain = Math.round((data.currently.precipProbability * 100) / 5) * 5
-                let temperature = Math.round(data.currently.temperature * 10) / 10
-                let feelslike = Math.round(data.currently.apparentTemperature * 10) / 10
-                let humidity = Math.round(data.currently.humidity * 100)
-                let windspeed = data.currently.windSpeed
-
-                let canvas = new Canvas(400, 290)
-                let ctx = canvas.getContext("2d")
-
-                let Font = Canvas.Font
-                let Image = Canvas.Image
+                let data = JSON.parse(body);
+                let condition = data.currently.summary;
+                let icon = data.currently.icon;
+                let chanceofrain = Math.round((data.currently.precipProbability * 100) / 5) * 5;
+                let temperature = Math.round(data.currently.temperature);
+                let feelslike = Math.round(data.currently.apparentTemperature * 10) / 10;
+                let humidity = Math.round(data.currently.humidity * 100);
 
                 let generate = () => {
-                    let Roboto = new Font("Roboto", path.join(__dirname, "./fonts/Roboto.ttf"))
-                    let base = new Image()
+                    let background = input => {
+                        if (input === "clear-day" || input === "partly-cloudy-day") {
+                            return "day";
+                        } else if (input === "clear-night" || input === "partly-cloudy-night") {
+                            return "night";
+                        } else if (input === "rain") {
+                            return "rain";
+                        } else if (input === "thunderstorm") {
+                            return "night";
+                        } else if (input === "snow" || input === "sleet" || input === "fog") {
+                            return "snow";
+                        } else if (input === "wind" || input === "tornado") {
+                            return "windy";
+                        } else if (input === "cloudy") {
+                            return "cloudy";
+                        } else {
+                            return "cloudy";
+                        }
+                    };
 
-                    if (icon === "clear-day" || icon === "partly-cloudy-day") {
-                        base.src = path.join(__dirname, "./base/sun.png")
-                    } else if (icon === "clear-night" || icon === "partly-cloudy-night") {
-                        base.src = path.join(__dirname, "./base/moon.png")
-                    } else if (icon === "rain") {
-                        base.src = path.join(__dirname, "./base/rain.png")
-                    } else if (icon === "snow" || icon === "sleet" || icon === "fog" || icon === "wind") {
-                        base.src = path.join(__dirname, "./base/snow.png")
-                    } else if (icon === "cloudy") {
-                        base.src = path.join(__dirname, "./base/cloud.png")
+                    Canvas.registerFont(path.join(__dirname, "fonts", "Roboto-Regular.ttf"), { family: "Roboto" });
+                    Canvas.registerFont(path.join(__dirname, "fonts", "RobotoCondensed-Regular.ttf"), { family: "Roboto Condensed" });
+                    Canvas.registerFont(path.join(__dirname, "fonts", "RobotoMono-Light.ttf"), { family: "Roboto Mono" });
+
+                    let canvas = new Canvas(400, 180);
+                    let ctx = canvas.getContext("2d");
+                    let Image = Canvas.Image;
+                    let base = new Image();
+                    let cond = new Image();
+                    let humid = new Image();
+                    let precip = new Image();
+                    let pointer = new Image();
+
+                    let theme = "light";
+                    let fontColour = "#FFFFFF";
+
+                    if (background(icon) === "snow") {
+                        theme = "dark";
+                        fontColour = "#444444";
                     }
 
-                    let cond = new Image()
-                        cond.src = path.join(__dirname, `./icons/${icon}.png`)
+                    base.src = path.join(__dirname, "base", `${background(icon)}.png`);
+                    cond.src = path.join(__dirname, "icons", theme, `${icon}.png`);
+                    humid.src = path.join(__dirname, "icons", theme, "humidity.png");
+                    precip.src = path.join(__dirname, "icons", theme, "precip.png");
+                    pointer.src = path.join(__dirname, "icons", theme, "pointer.png");
 
                     // Environment Variables
-                    ctx.drawImage(base, 0, 0)
-                    ctx.scale(1, 1)
-                    ctx.patternQuality = "bilinear"
-                    ctx.filter = "bilinear"
-                    ctx.antialias = "subpixel"
-                    ctx.shadowColor = "rgba(0, 0, 0, 0.4)"
-                    ctx.shadowOffsetY = 2
-                    ctx.shadowBlur = 2
+                    ctx.drawImage(base, 0, 0);
+                    ctx.scale(1, 1);
+                    ctx.patternQuality = "bilinear";
+                    ctx.filter = "bilinear";
+                    ctx.antialias = "subpixel";
 
-                    // Time
-                    ctx.font = "12px Roboto"
-                    ctx.fillStyle = "#000000"
-                    ctx.shadowColor = "rgba(255, 255, 255, 0.4)"
-                    ctx.fillText(datetime, 20, 30)
+                    // City Name
+                    ctx.font = "20px Roboto";
+                    ctx.fillStyle = fontColour;
+                    ctx.fillText(city.long_name ? city.long_name : "Unknown", 35, 50);
 
-                    // Place
-                    ctx.font = "18px Roboto"
-                    ctx.fillStyle = "#FFFFFF"
-                    ctx.shadowColor = "rgba(0, 0, 0, 0.4)"
-                    ctx.fillText(location, 20, 56)
+                    // State/Prefecture Name
+                    ctx.font = "16px Roboto";
+                    ctx.fillStyle = theme === "light" ? "rgba(255, 255, 255, 0.8)" : "rgba(0, 0, 0, 0.8)";
+                    ctx.fillText(state.long_name ? state.long_name : "", 35, 70);
 
                     // Temperature
-                    ctx.font = "88px Roboto"
-                    ctx.fillText(`${temperature}°`, 16, 145)
+                    ctx.font = "48px 'Roboto Mono'";
+                    ctx.fillStyle = fontColour;
+                    ctx.fillText(`${temperature}°`, 35, 140);
 
                     // Condition
-                    ctx.font = "14px Roboto"
-                    ctx.textAlign = "center"
-                    ctx.fillText(condition, 328, 148)
+                    ctx.textAlign = "right";
+                    ctx.font = "16px Roboto";
+                    ctx.fillText(condition, 370, 142);
 
-                    // Condition Image
-                    ctx.shadowBlur = 5
-                    ctx.shadowColor = "rgba(0, 0, 0, 0.2)"
-                    ctx.drawImage(cond, 276, 22, 105, 105)
+                    // Images
+                    ctx.drawImage(cond, 325, 31);
+                    ctx.drawImage(humid, 315, 88);
+                    ctx.drawImage(precip, 315, 108);
 
-                    // Details
-                    ctx.font = "14px Roboto"
-                    ctx.shadowColor = "rgba(0, 0, 0, 0)"
-                    ctx.textAlign = "left"
-                    ctx.fillStyle = "#000000"
-                    ctx.fillText("Current details", 20, 194)
-
-                    // Titles
-                    ctx.font = "14px Roboto"
-                    ctx.fillStyle = "#777777"
-                    ctx.fillText("Humidity", 20, 220)
-                    ctx.fillText("Wind Speed", 20, 240)
-                    ctx.fillText("Chance of rain", 20, 260)
-
-                    // Values
-                    ctx.font = "14px Roboto"
-                    ctx.fillStyle = "#000000"
-                    ctx.fillText(`${humidity}%`, 170, 220)
-                    ctx.fillText(`${windspeed} km/h`, 170, 240)
-                    ctx.fillText(`${chanceofrain}%`, 170, 260)
+                    ctx.font = "16px 'Roboto Condensed'";
+                    ctx.fillText(`${humidity}%`, 370, 100);
+                    ctx.fillText(`${chanceofrain}%`, 370, 121);
 
                     // Send
                     channel.sendFile(canvas.toBuffer())
-                        .then(msg => message.delete())
-                        .catch(error => util.error(error, "weather", channel))
+                        .then(() => message.delete())
+                        .catch(error => util.error(error, "weather", channel));
 
                     // Debug
-                    console.log(chalk.magenta.bold("Location:"), chalk.magenta(location), chalk.magenta(`[${geocode}]`))
-                    console.log(chalk.magenta.bold("Base:"), chalk.magenta(base.src))
-                    console.log(chalk.magenta.bold("Icon:"), chalk.magenta(icon))
-                    console.log(chalk.magenta.bold("Temperature:"), chalk.magenta(`${temperature}°`), chalk.magenta(`(${feelslike}°)`))
-                    console.log(chalk.magenta.bold("Rain Chance:"), chalk.magenta(`${chanceofrain}%`))
-                    console.log(chalk.magenta.bold("Humidity"), chalk.magenta(`${humidity}%`))
-                }
+                    console.log(chalk.magenta.bold("Location:"), chalk.magenta(location), chalk.magenta(`[${geocode}]`));
+                    console.log(chalk.magenta.bold("Base:"), chalk.magenta(base.src));
+                    console.log(chalk.magenta.bold("Icon:"), chalk.magenta(icon));
+                    console.log(chalk.magenta.bold("Temperature:"), chalk.magenta(`${temperature}°`), chalk.magenta(`(${feelslike}°)`));
+                    console.log(chalk.magenta.bold("Rain Chance:"), chalk.magenta(`${chanceofrain}%`));
+                    console.log(chalk.magenta.bold("Humidity"), chalk.magenta(`${humidity}%`));
+                };
 
-                generate()
-            })
+                return generate();
+            });
         }
-    })
-}
+
+        return null;
+    });
+};
