@@ -60,7 +60,7 @@ bot.on("message", message => {
     // Basic Formatting Checks
     if (type === "text" && user.bot) return
     if (text.length < 1 && !attachments) return
-    if (attachments) text += message.image ? "<attachment>" : " <attachment>"
+    if (attachments) text += message.image ? "<file>" : " <file>"
 
     // Set user.nickname
     if (type === "dm") {
