@@ -126,7 +126,7 @@ module.exports = (bot, util, config, keychain, dir) => {
             console.log(chalk.green.bold("Shake: Connected"))
 
             if (disconnected) {
-                debug_chan.postMessage("Reconnected")
+                debug_chan.sendMessage("Reconnected")
                 disconnected = false
             }
         } else {
@@ -139,7 +139,7 @@ module.exports = (bot, util, config, keychain, dir) => {
     })
 
     socket.on("disconnect", () => {
-        debug_chan.postMessage("Disconnected")
+        debug_chan.sendMessage("Disconnected")
         console.log(chalk.red.bold("Shake: Disconnected"))
 
         disconnected = true
