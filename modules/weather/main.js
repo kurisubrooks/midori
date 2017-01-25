@@ -67,14 +67,20 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
             let governing = previous.results[0].address_components.find(elem => elem.types.includes("administrative_area_level_1"));
             let country = previous.results[0].address_components.find(elem => elem.types.includes("country"));
 
-            if (locality) {
+            if (locality && governing) {
                 city = locality;
                 state = governing;
-            } else if (governing) {
+            } else if (!locality && governing && country) {
                 city = governing;
                 state = country;
-            } else {
+            } else if (locality && !governing && country) {
+                city = locality;
+                state = country;
+            } else if (!locality && !governing && country) {
                 city = country;
+                state = {};
+            } else {
+                city = {};
                 state = {};
             }
 
