@@ -9,7 +9,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
     let util = extra.util;
 
     if (args.length === 0) {
-        if (extra.config.weather.hasOwnProperty(extra.trigger.id)) {
+        if (extra.trigger.id in extra.config.weather) {
             args = extra.config.weather[extra.trigger.id];
         } else {
             return channel.sendMessage(`Please provide a query`)
