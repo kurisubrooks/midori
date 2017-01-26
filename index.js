@@ -57,29 +57,17 @@ bot.on("message", message => {
     message.attachments.forEach(() => { attachments = true; });
     message.image = attachments && text.length < 1 ? 1 : 0;
 
+    // Set User's Nickname
+    user.nickname = message.member ? message.member.displayName : message.author.username;
+
     // Basic Formatting Checks
     if (type === "text" && user.bot) return;
     if (text.length < 1 && !attachments) return;
     if (attachments) text += message.image ? "<file>" : " <file>";
 
-    // Set user.nickname
-    if (type === "dm") {
-        user.nickname = channel.recipient.username;
-    } else {
-        if (message.member) {
-            if (message.member.nickname) {
-                user.nickname = message.member.nickname;
-            } else {
-                user.nickname = message.author.username;
-            }
-        } else {
-            user.nickname = message.author.username;
-        }
-    }
-
     // Log Chat to Console
     console.log(
-        chalk.yellow.bold(`[${server}${channel.name ? "#" + channel.name : ""}]<${user.nickname}>:`),
+        chalk.yellow.bold(`[${server}${channel.name ? `#${channel.name}` : ""}]<${user.nickname}>:`),
         chalk.yellow(`${text}`)
     );
 
@@ -109,11 +97,12 @@ bot.on("message", message => {
         if (alias.length > 0) command = alias[0];
         let matched = _.filter(config.commands, { command: command });
 
+        // Command Found
         if (matched.length > 0) {
             try {
                 let location = path.join(__dirname, "modules", matched[0].command, "main.js");
 
-                // Check if File Exists before executing
+                // Check if Module Exists before executing
                 fs.access(location, fs.F_OK, (error) => {
                     if (error) {
                         return util.error(error, "index");
