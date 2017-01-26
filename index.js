@@ -24,7 +24,7 @@ bot.on("ready", () => {
 
     // Spawn Subprocesses
     if (firstRun) {
-        _.each(config.subprocesses, (val, command) => {
+        for (let command in config.subprocesses) {
             try {
                 console.log(chalk.blue.bold("Spawning Subprocess:"), chalk.green.bold(command));
                 require(path.join(__dirname, "modules", command, "main.js"))(bot, util, config, keychain, __dirname);
@@ -32,7 +32,7 @@ bot.on("ready", () => {
                 util.error(`Failed to start subprocess "${command}"\n${error}`, "index");
                 throw error;
             }
-        });
+        }
 
         // Prevent Double Trigger
         firstRun = false;
@@ -49,7 +49,7 @@ bot.on("message", message => {
     let server = message.guild ? message.guild.name : "DM";
     let channel = message.channel;
     let attachments = false;
-    let user = type === "dm" ? channel.recipient : message.member ? message.member.user : message.author;
+    let user = message.author;
     let text = message.cleanContent;
     let id = message.id;
 
@@ -93,43 +93,42 @@ bot.on("message", message => {
     if (text.startsWith(config.sign)) {
         let args = text.split(" ");
         let command = args.splice(0, 1)[0].toLowerCase().slice(config.sign.length);
-        let alias = _.map(_.filter(config.commands, { alias: [command] }), "command");
+        let filter = _.filter(config.commands, { alias: [command] });
+        let alias = _.map(filter, "command");
         let matched = _.filter(config.commands, { command: alias.length > 0 ? alias[0] : command });
+        let location = path.join(__dirname, "modules", command, "main.js");
         let found = matched.length > 0;
 
-        // Command Found
-        if (found) {
-            let location = path.join(__dirname, "modules", matched[0].command, "main.js");
+        if (!found) return;
 
-            try {
-                // Check if Module Exists before executing
-                fs.access(location, fs.F_OK, (error) => {
-                    if (error) {
-                        return util.error(error, "index");
+        try {
+            // Check if Module Exists before executing
+            fs.access(location, fs.F_OK, (error) => {
+                if (error) {
+                    return util.error(error, "index");
+                }
+
+                // Execute Module
+                return require(location)(bot, channel, user, args, id, message, {
+                    util: util,
+                    config: config,
+                    keychain: keychain,
+                    command: command,
+                    server: message.guild,
+                    masters: config.admin,
+                    user: user.nickname,
+                    colours: config.colours,
+                    trigger: {
+                        id: user.id,
+                        username: user.username,
+                        nickname: user.nickname,
+                        avatar: user.avatarURL,
+                        bot: user.bot
                     }
-
-                    // Execute Module
-                    return require(location)(bot, channel, user, args, id, message, {
-                        util: util,
-                        config: config,
-                        keychain: keychain,
-                        command: alias.length > 0 ? alias[0] : command,
-                        server: message.guild,
-                        masters: config.admin,
-                        user: user.nickname,
-                        colours: config.colours,
-                        trigger: {
-                            id: user.id,
-                            username: user.username,
-                            nickname: user.nickname,
-                            avatar: user.avatarURL,
-                            bot: user.bot
-                        }
-                    });
                 });
-            } catch(error) {
-                util.error(error, "index");
-            }
+            });
+        } catch(error) {
+            util.error(error, "index");
         }
     }
 });
