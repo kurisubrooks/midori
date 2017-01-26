@@ -95,12 +95,13 @@ bot.on("message", message => {
         let command = args.splice(0, 1)[0].toLowerCase().slice(config.sign.length);
         let alias = _.map(_.filter(config.commands, { alias: [command] }), "command");
         let matched = _.filter(config.commands, { command: alias.length > 0 ? alias[0] : command });
+        let found = matched.length > 0;
 
         // Command Found
-        if (matched.length > 0) {
-            try {
-                let location = path.join(__dirname, "modules", matched[0].command, "main.js");
+        if (found) {
+            let location = path.join(__dirname, "modules", matched[0].command, "main.js");
 
+            try {
                 // Check if Module Exists before executing
                 fs.access(location, fs.F_OK, (error) => {
                     if (error) {
