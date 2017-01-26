@@ -52,7 +52,7 @@
     "array-bracket-spacing": "error",
     "block-spacing": "error",
     "brace-style": ["error", "1tbs", { "allowSingleLine": true }],
-    "camelcase": "error",
+    "camelcase": 0,
     "comma-dangle": "error",
     "comma-spacing": "error",
     "comma-style": "error",
@@ -61,7 +61,7 @@
     "eol-last": "error",
     "func-names": "error",
     "func-style": ["error", "declaration", { "allowArrowFunctions": true }],
-    "id-length": ["error", { "exceptions": ["i", "j", "a", "b"] }],
+    "id-length": ["error", { "exceptions": ["_", "i", "j", "a", "b", "v", "k"] }],
     "indent": ["error", 4, { "SwitchCase": 1 }],
     "key-spacing": "error",
     "keyword-spacing": ["error", {
