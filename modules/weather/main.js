@@ -66,23 +66,26 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
             let locality = previous.results[0].address_components.find(elem => elem.types.includes("locality"));
             let governing = previous.results[0].address_components.find(elem => elem.types.includes("administrative_area_level_1"));
             let country = previous.results[0].address_components.find(elem => elem.types.includes("country"));
+            let continent = previous.results[0].address_components.find(elem => elem.types.includes("continent"));
 
+            /*
             if (locality && governing) {
                 city = locality;
                 state = governing;
-            } else if (!locality && governing && country) {
+            } else if (governing && country) {
                 city = governing;
                 state = country;
-            } else if (locality && !governing && country) {
+            } else if (locality && country) {
                 city = locality;
                 state = country;
-            } else if (!locality && !governing && country) {
-                city = country;
-                state = {};
             } else {
-                city = {};
+                city = country || continent || {};
                 state = {};
             }
+            */
+
+            city = locality || governing || country || continent || {};
+            state = locality && governing ? governing : locality ? country : {};
 
             let geocode = [previous.results[0].geometry.location.lat, previous.results[0].geometry.location.lng];
 
@@ -166,7 +169,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
                     // State/Prefecture Name
                     ctx.font = "16px Roboto";
                     ctx.fillStyle = theme === "light" ? "rgba(255, 255, 255, 0.8)" : "rgba(0, 0, 0, 0.8)";
-                    ctx.fillText(state.long_name ? state.long_name : "", 35, 70);
+                    ctx.fillText(state.long_name ? state.long_name : "", 35, 72.5);
 
                     // Temperature
                     ctx.font = "48px 'Roboto Mono'";
@@ -180,12 +183,12 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
 
                     // Images
                     ctx.drawImage(cond, 325, 31);
-                    ctx.drawImage(humid, 315, 88);
-                    ctx.drawImage(precip, 315, 108);
+                    ctx.drawImage(humid, 358, 88);
+                    ctx.drawImage(precip, 358, 108);
 
                     ctx.font = "16px 'Roboto Condensed'";
-                    ctx.fillText(`${humidity}%`, 370, 100);
-                    ctx.fillText(`${chanceofrain}%`, 370, 121);
+                    ctx.fillText(`${humidity}%`, 353, 100);
+                    ctx.fillText(`${chanceofrain}%`, 353, 121);
 
                     // Send
                     channel.sendFile(canvas.toBuffer())
