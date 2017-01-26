@@ -94,8 +94,7 @@ bot.on("message", message => {
         let args = text.split(" ");
         let command = args.splice(0, 1)[0].toLowerCase().slice(config.sign.length);
         let alias = _.map(_.filter(config.commands, { alias: [command] }), "command");
-        if (alias.length > 0) command = alias[0];
-        let matched = _.filter(config.commands, { command: command });
+        let matched = _.filter(config.commands, { command: alias.length > 0 ? alias[0] : command });
 
         // Command Found
         if (matched.length > 0) {
@@ -113,7 +112,7 @@ bot.on("message", message => {
                         util: util,
                         config: config,
                         keychain: keychain,
-                        command: command,
+                        command: alias.length > 0 ? alias[0] : command,
                         server: message.guild,
                         masters: config.admin,
                         user: user.nickname,
