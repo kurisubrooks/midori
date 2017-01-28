@@ -80,8 +80,8 @@ bot.on("message", message => {
     user.nickname = message.member ? message.member.displayName : message.author.username;
 
     // Basic Formatting Checks
-    if (type === "text" && user.bot) return;
-    if (text.length < 1 && !attachments) return;
+    if (type === "text" && user.bot) return false;
+    if (text.length < 1 && !attachments) return false;
     if (attachments) text += message.image ? "<file>" : " <file>";
 
     // Log Chat to Console
@@ -92,20 +92,17 @@ bot.on("message", message => {
 
     // Check Message against Blacklist
     if (server !== "DM" && new RegExp(blacklist.join("|")).test(message.content)) {
-        message.delete()
-            .then(() => {
-                user.sendMessage(`Your message was removed because it contains a word that has been blacklisted.`, {
-                    embed: {
-                        fields: [
-                            { name: "Offence", value: "Blacklisted Word" },
-                            { name: "Action", value: "Message Removed" },
-                            { name: "Message", value: text }
-                        ]
-                    }
-                });
-            })
+        let embed = {
+            fields: [
+                { name: "Offence", value: "Blacklisted Word" },
+                { name: "Action", value: "Message Removed" },
+                { name: "Message", value: text }
+            ]
+        };
+
+        return message.delete()
+            .then(() => user.sendMessage(`Your message was removed because it contains a word that has been blacklisted.`, { embed }))
             .catch(err => console.error("Unable to delete blacklisted message", err));
-        return;
     }
 
     // Command Handler
@@ -114,7 +111,7 @@ bot.on("message", message => {
         let commandName = args.splice(0, 1)[0].toLowerCase().slice(config.sign.length);
         let command = commands.get(commandName) || commands.get(aliases.get(commandName));
 
-        if (!command) return;
+        if (!command) return false;
 
         try {
             command(bot, channel, user, args, id, message, {
@@ -138,6 +135,8 @@ bot.on("message", message => {
             util.error(error, "index");
         }
     }
+
+    return false;
 });
 
 exports.bot = bot;
