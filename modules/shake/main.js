@@ -2,6 +2,7 @@
 
 const fs = require("fs");
 const qs = require("qs");
+const path = require("path");
 const chalk = require("chalk");
 const request = require("request");
 const Canvas = require("canvas");
