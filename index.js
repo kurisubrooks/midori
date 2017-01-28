@@ -11,25 +11,28 @@ const config = require("./config");
 const keychain = require("./keychain.json");
 const blacklist = require("./blacklist.json");
 
-const commands = new Discord.Collection();
-const aliases = new Discord.Collection();
+let commands = new Discord.Collection();
+let aliases = new Discord.Collection();
+let firstRun = true;
 
-for (const command of config.commands) {
-    let location = path.join(__dirname, "modules", command.command, "main.js");
+// Log Process Start
+console.log(chalk.blue.bold("Process: Started"));
 
+// Setup Commands
+for (let item of config.commands) {
+    let location = path.join(__dirname, "modules", item.command, "main.js");
+
+    // Location doesn't exist, skip loop
     if (!fs.existsSync(location)) continue;
 
-    commands.set(command.command, require(location));
+    // Add Command to Commands Collection
+    commands.set(item.command, require(location));
 
-    if (command.hasOwnProperty("alias")) {
-        for (const alias of command.alias) {
-            aliases.set(alias, command.command);
-        }
+    // Set Command Aliases
+    if (item.hasOwnProperty("alias")) {
+        for (let alias of item.alias) aliases.set(alias, item.command);
     }
 }
-
-let firstRun = true;
-console.log(chalk.blue.bold("Process: Started"));
 
 // Connect to Discord
 bot.login(keychain.discord);
@@ -109,16 +112,9 @@ bot.on("message", message => {
     if (text.startsWith(config.sign)) {
         let args = text.split(" ");
         let commandName = args.splice(0, 1)[0].toLowerCase().slice(config.sign.length);
+        let command = commands.get(commandName) || commands.get(aliases.get(commandName));
 
-        let command;
-
-        if (commands.has(commandName)) {
-            command = commands.get(commandName);
-        } else if (aliases.has(commandName)) {
-            command = commands.get(aliases.get(commandName));
-        } else {
-            return;
-        }
+        if (!command) return;
 
         try {
             command(bot, channel, user, args, id, message, {
