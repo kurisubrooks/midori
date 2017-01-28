@@ -37,9 +37,7 @@ let eew = (bot, util, data, dir) => {
             return util.error(`Request (map) returned ${res.statusCode}`, "shake");
         }
 
-        let path = `${dir}/modules/shake/`;
-
-        Canvas.registerFont(path.join(path, "fonts", "Roboto.ttf"), { family: "Roboto" });
+        Canvas.registerFont(path.join(dir, "modules", "shake", "fonts", "Roboto.ttf"), { family: "Roboto" });
 
         let canvas = new Canvas(400, 280);
         let ctx = canvas.getContext("2d");
@@ -48,7 +46,7 @@ let eew = (bot, util, data, dir) => {
         let map = new Image();
         let base = new Image();
         map.src = new Buffer(body, "binary");
-        base.src = fs.readFileSync(path.join(path, "base", "card.png"));
+        base.src = fs.readFileSync(path.join(dir, "modules", "shake", "base", "card.png"));
 
         // Draw Image
         ctx.drawImage(base, 0, 0);
@@ -114,9 +112,9 @@ module.exports = (bot, util, config, keychain, dir) => {
     kurisu_chan = bot.channels.get("132368736119291904");
 
     socket.on("connect", () => socket.emit("auth", { version: 2.1 }));
-    socket.on("quake.eew", (data) => eew(bot, util, data, dir));
+    socket.on("quake.eew", data => eew(bot, util, data, dir));
 
-    socket.on("auth", (data) => {
+    socket.on("auth", data => {
         if (data.ok) {
             console.log(chalk.green.bold("Shake: Connected"));
 
