@@ -109,7 +109,7 @@ bot.on("message", message => {
     // Command Handler
     if (text.startsWith(config.sign)) {
         let args = text.split(" ");
-        let commandName = args.splice(0, 1)[0].toLowerCase().slice(config.sign.length);
+        let commandName = args[0].toLowerCase().slice(config.sign.length);
 
         let command;
 
