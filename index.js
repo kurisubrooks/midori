@@ -12,6 +12,23 @@ const config = require("./config");
 const keychain = require("./keychain.json");
 const blacklist = require("./blacklist.json");
 
+const commands = new Discord.Collection();
+const aliases = new Discord.Collection();
+
+for (const command of config.commands) {
+    let location = path.join(__dirname, "modules", command.command, "main.js");
+
+    if (!fs.existsSync(location)) continue;
+
+    commands.set(command.command, require(location));
+
+    if (command.hasOwnProperty("alias")) {
+        for (const alias of command.alias) {
+            aliases.set(alias, command.command);
+        }
+    }
+}
+
 let firstRun = true;
 console.log(chalk.blue.bold("Process: Started"));
 
@@ -92,40 +109,35 @@ bot.on("message", message => {
     // Command Handler
     if (text.startsWith(config.sign)) {
         let args = text.split(" ");
-        let command = args.splice(0, 1)[0].toLowerCase().slice(config.sign.length);
-        let filter = _.filter(config.commands, { alias: [command] });
-        let alias = _.map(filter, "command");
-        let matched = _.filter(config.commands, { command: alias.length > 0 ? alias[0] : command });
-        let location = path.join(__dirname, "modules", command, "main.js");
-        let found = matched.length > 0;
+        let commandName = args.splice(0, 1)[0].toLowerCase().slice(config.sign.length);
 
-        if (!found) return;
+        let command;
+
+        if (commands.has(commandName)) {
+            command = commands.get(commandName);
+        } else if (aliases.has(commandName)) {
+            command = commands.get(aliases.get(commandName));
+        } else {
+            return;
+        }
 
         try {
-            // Check if Module Exists before executing
-            fs.access(location, fs.F_OK, (error) => {
-                if (error) {
-                    return util.error(error, "index");
+            command(bot, channel, user, args, id, message, {
+                util: util,
+                config: config,
+                keychain: keychain,
+                command: command,
+                server: message.guild,
+                masters: config.admin,
+                user: user.nickname,
+                colours: config.colours,
+                trigger: {
+                    id: user.id,
+                    username: user.username,
+                    nickname: user.nickname,
+                    avatar: user.avatarURL,
+                    bot: user.bot
                 }
-
-                // Execute Module
-                return require(location)(bot, channel, user, args, id, message, {
-                    util: util,
-                    config: config,
-                    keychain: keychain,
-                    command: command,
-                    server: message.guild,
-                    masters: config.admin,
-                    user: user.nickname,
-                    colours: config.colours,
-                    trigger: {
-                        id: user.id,
-                        username: user.username,
-                        nickname: user.nickname,
-                        avatar: user.avatarURL,
-                        bot: user.bot
-                    }
-                });
             });
         } catch(error) {
             util.error(error, "index");
