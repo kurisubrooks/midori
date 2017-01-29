@@ -125,6 +125,7 @@ bot.on("message", message => {
                 colours: config.colours,
                 trigger: {
                     id: user.id,
+                    type: type,
                     username: user.username,
                     nickname: user.nickname,
                     avatar: user.avatarURL,
