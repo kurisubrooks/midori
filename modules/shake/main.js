@@ -37,7 +37,7 @@ let eew = (bot, util, data, dir) => {
             return util.error(`Request (map) returned ${res.statusCode}`, "shake");
         }
 
-        Canvas.registerFont(path.join(dir, "modules", "shake", "fonts", "Roboto.ttf"), { family: "Roboto" });
+        Canvas.registerFont(path.join(dir, "modules", "shake", "Roboto.ttf"), { family: "Roboto" });
 
         let canvas = new Canvas(400, 280);
         let ctx = canvas.getContext("2d");
@@ -46,7 +46,7 @@ let eew = (bot, util, data, dir) => {
         let map = new Image();
         let base = new Image();
         map.src = new Buffer(body, "binary");
-        base.src = fs.readFileSync(path.join(dir, "modules", "shake", "base", "card.png"));
+        base.src = fs.readFileSync(path.join(dir, "modules", "shake", "base.png"));
 
         // Draw Image
         ctx.drawImage(base, 0, 0);
