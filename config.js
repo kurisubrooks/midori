@@ -15,11 +15,12 @@ module.exports = {
     commands: [
         {
             command: "admin",
-            description: "Administrative Commands"
+            description: "Administrative Commands",
+            admin: true
         },
         {
-            command: "aqi",
-            description: "Air Quality"
+            command: "air",
+            description: "Global Air Pollution Levels"
         },
         {
             command: "define",
@@ -32,9 +33,14 @@ module.exports = {
             alias: ["e"]
         },
         {
+            command: "help",
+            description: "Displays the Help Prompt",
+            alias: ["halp", "たすけて", "助けて"]
+        },
+        {
             command: "radar",
-            description: "Weather Radar",
-            alias: ["r"]
+            description: "Weather Radar for Australia",
+            alias: ["rain", "r"]
         },
         {
             command: "search",
@@ -43,7 +49,8 @@ module.exports = {
         },
         {
             command: "shibe",
-            description: "Random Image of Shiba Inu"
+            description: "Posts an Image of Shiba Inus",
+            alias: ["shib", "doge"]
         },
         {
             command: "translate",
@@ -52,7 +59,7 @@ module.exports = {
         },
         {
             command: "weather",
-            description: "Get the Weather",
+            description: "Grab the Current Weather",
             alias: ["w"]
         }
     ],
