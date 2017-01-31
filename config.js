@@ -61,6 +61,11 @@ module.exports = {
             command: "weather",
             description: "Grab the Current Weather",
             alias: ["w"]
+        },
+        {
+            command: "timezone",
+            description: "Grab the Current Time in a different timezone",
+            alias: ["time"]
         }
     ],
 
