@@ -1,10 +1,13 @@
-"use strict";
+// Nano Core v3
+// by @kurisubrooks
 
+// Requires
 const fs = require("fs");
 const path = require("path");
 const chalk = require("chalk");
 const Discord = require("discord.js");
 
+// Core
 const bot = new Discord.Client({ autoReconnect: true });
 const util = require("./util");
 const config = require("./config");
