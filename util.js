@@ -1,5 +1,3 @@
-"use strict";
-
 const fs = require("fs");
 const chalk = require("chalk");
 const moment = require("moment");
@@ -7,7 +5,7 @@ const index = require("./index");
 const config = require("./config");
 
 // Helper Prototypes
-String.prototype.toUpperLowerCase = function() {
+String.prototype.toUpperLowerCase = function toUpperLowerCase() {
     return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
@@ -26,7 +24,7 @@ module.exports = {
         let embed = {
             "color": config.colours.error,
             "fields": [
-                { "name": "Module:", "value": `${from}.js`, "inline": "1" },
+                { "name": "Module:", "value": from, "inline": "1" },
                 { "name": "Time:", "value": time, "inline": "1" },
                 { "name": "Message:", "value": message }
             ]
@@ -35,7 +33,7 @@ module.exports = {
         console.log(chalk.red.bold(`[${time}, ${from}.js]`), chalk.red(message));
 
         try {
-            channel.sendMessage("", { embed: embed })
+            channel.send("", { embed: embed })
                 .catch(error => {
                     if (error.status === 502) {
                         console.error("Discord", "Bad Gateway");
@@ -51,8 +49,12 @@ module.exports = {
             console.error(err);
         }
 
-        fs.access(file_format, fs.F_OK, () => {
-            fs.appendFileSync(file_format, `${data_format}\n\n`);
-        });
+        try {
+            fs.access(file_format, fs.F_OK, () => {
+                fs.appendFileSync(file_format, `${data_format}\n\n`);
+            });
+        } catch(error) {
+            console.error(chalk.red("Couldn't save error log, does /logs/ exist?"));
+        }
     }
 };
