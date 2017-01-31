@@ -84,6 +84,9 @@ module.exports = {
         "95534503971258368": [
             "700068", "Kolkata", "India"
         ],
+        "268963316200767488": [
+            "Llandilo", "NSW", "Australia"
+        ],
         "133646822060195850": [
             "97225"
         ],
@@ -98,6 +101,9 @@ module.exports = {
         ],
         "150096595076120576": [
             "Livermore", "CA"
+        ],
+        "86890631690977280": [
+            "Hanover", "Lower Saxony"
         ]
     },
 
