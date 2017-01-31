@@ -53,6 +53,11 @@ module.exports = {
             alias: ["shib", "doge"]
         },
         {
+            command: "time",
+            description: "Grab the Time from a given timezone",
+            alias: ["time", "tz"]
+        },
+        {
             command: "translate",
             description: "Translate with Google",
             alias: ["t"]
@@ -61,11 +66,6 @@ module.exports = {
             command: "weather",
             description: "Grab the Current Weather",
             alias: ["w"]
-        },
-        {
-            command: "timezone",
-            description: "Grab the Current Time in a different timezone",
-            alias: ["time"]
         }
     ],
 
