@@ -1,4 +1,4 @@
-// Nano Core v3
+// Nano Core v4
 // by @kurisubrooks
 
 // Requires
@@ -64,6 +64,9 @@ bot.on("ready", () => {
 // Warnings and Errors
 bot.on("warn", warning => util.error(warning, "index"));
 bot.on("error", error => util.error(error, "index"));
+
+// Handle New Users
+bot.on("guildMemberAdd", member => util.handleJoin(member));
 
 // Message Event
 bot.on("message", message => {

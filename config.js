@@ -3,6 +3,7 @@ module.exports = {
     sign: "/",
     userid: "188394341708857346",
     admin: ["132368482120499201"],
+    adminServer: ["132368736119291904"],
 
     colours: {
         default: 0xB699FF,
