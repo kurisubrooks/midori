@@ -89,8 +89,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
 
             let geocode = [previous.results[0].geometry.location.lat, previous.results[0].geometry.location.lng];
 
-            let link = `https://api.forecast.io/forecast/${extra.keychain.weather}/${geocode.join(",")}?units=auto`;
-
+            let link = `http://api.wunderground.com/api/${extra.keychain.weather}/conditions/forecast/q/${geocode.join(",")}.json`; 
             request(link, (error, response, body) => {
                 // Handle Request Errors
                 if (error) {
@@ -99,32 +98,41 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
 
                 // Parse JSON
                 let data = JSON.parse(body);
-                let condition = data.currently.summary;
-                let icon = data.currently.icon;
-                let chanceofrain = Math.round((data.currently.precipProbability * 100) / 5) * 5;
-                let temperature = Math.round(data.currently.temperature);
-                let feelslike = Math.round(data.currently.apparentTemperature * 10) / 10;
-                let humidity = Math.round(data.currently.humidity * 100);
+                let condition = data.forecast.simpleforecast.forecastday[0].conditions;
+                let icon = data.current_observation.icon;
+                let chanceofrain = data.forecast.simpleforecast.forecastday[0].pop;
+                let temperature = Math.round(data.current_observation.temp_c);
+                let feelslike = Math.round(data.current_observation.feelslike_c);
+                let humidity = Math.round(data.current_observation.temp_c);
+                
+                let now = moment.unix(data.current_observation.local_epoch).format("HHMM")
+                let sunrise = `${data.sun_phase.sunrise.hour}${data.sun_phase.sunrise.minute}`;
+                let sunset = `${data.sun_phase.sunset.hour}${data.sun_phase.sunset.minute}`;
+
+                let day = now >= sunrise && now <= sunset ? true : false;
+                
 
                 let generate = () => {
-                    let background = input => {
-                        if (input === "clear-day" || input === "partly-cloudy-day") {
-                            return "day";
-                        } else if (input === "clear-night" || input === "partly-cloudy-night") {
-                            return "night";
-                        } else if (input === "rain") {
-                            return "rain";
-                        } else if (input === "thunderstorm") {
-                            return "night";
-                        } else if (input === "snow" || input === "sleet" || input === "fog") {
-                            return "snow";
-                        } else if (input === "wind" || input === "tornado") {
-                            return "windy";
-                        } else if (input === "cloudy") {
-                            return "cloudy";
-                        } else {
-                            return "cloudy";
-                        }
+                    let backgrounds = {
+                        "chanceflurries":   "snow",
+                        "chancerain":       "rain",
+                        "chancesleat":      "snow",
+                        "chancesnow":       "snow",
+                        "chancetstorms":    "thunderstorm",
+                        "clear":            day ? "day" : "night",
+                        "cloudy":           "cloudy",
+                        "flurries":         "snow",
+                        "fog":              "snow",
+                        "hazy":             "snow",
+                        "mostlycloudy":     "cloudy",
+                        "mostlysunny":      day ? "day" : "night",
+                        "partlycloudy":     day ? "day" : "night",
+                        "partlysunny":      "cloudy",
+                        "rain":             "rain",
+                        "sleet":            "snow",
+                        "snow":             "snow",
+                        "sunny":            day ? "day" : "night",
+                        "tstorms":          "thunderstorm"
                     };
 
                     Canvas.registerFont(path.join(__dirname, "fonts", "Roboto-Regular.ttf"), { family: "Roboto" });
@@ -143,12 +151,12 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
                     let theme = "light";
                     let fontColour = "#FFFFFF";
 
-                    if (background(icon) === "snow") {
+                    if (backgrounds[icon] === "snow") {
                         theme = "dark";
                         fontColour = "#444444";
                     }
 
-                    base.src = path.join(__dirname, "base", `${background(icon)}.png`);
+                    base.src = path.join(__dirname, "base", `${backgrounds[icon]}.png`);
                     cond.src = path.join(__dirname, "icons", theme, `${icon}.png`);
                     humid.src = path.join(__dirname, "icons", theme, "humidity.png");
                     precip.src = path.join(__dirname, "icons", theme, "precip.png");
@@ -187,7 +195,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
                     ctx.drawImage(precip, 358, 108);
 
                     ctx.font = "16px 'Roboto Condensed'";
-                    ctx.fillText(`${humidity}%`, 353, 100);
+                    ctx.fillText(`${humidity}`, 353, 100);
                     ctx.fillText(`${chanceofrain}%`, 353, 121);
 
                     // Send
@@ -201,7 +209,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
                     console.log(chalk.magenta.bold("Icon:"), chalk.magenta(icon));
                     console.log(chalk.magenta.bold("Temperature:"), chalk.magenta(`${temperature}°`), chalk.magenta(`(${feelslike}°)`));
                     console.log(chalk.magenta.bold("Rain Chance:"), chalk.magenta(`${chanceofrain}%`));
-                    console.log(chalk.magenta.bold("Humidity"), chalk.magenta(`${humidity}%`));
+                    console.log(chalk.magenta.bold("Humidity"), chalk.magenta(`${humidity}`));
                 };
 
                 return generate();
