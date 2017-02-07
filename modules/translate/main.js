@@ -80,8 +80,6 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
             .catch(error => util.error(error, "translate", channel));
     } else if (Boolean(Number(query))) {
         return channel.fetchMessage(query)
-    } else if (Boolean(Number(args[0]))) {
-        return channel.fetchMessage(args[0])
             .then(msg => translate(msg.content))
             .catch(error => util.error(error, "translate", channel));
     } else {
