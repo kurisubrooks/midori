@@ -89,7 +89,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
 
             let geocode = [previous.results[0].geometry.location.lat, previous.results[0].geometry.location.lng];
 
-            let link = `https://api.forecast.io/forecast/${extra.keychain.weather}/${geocode.join(",")}?units=auto`;
+            let link = `https://api.forecast.io/forecast/${extra.keychain.weather}/${geocode.join(",")}?units=si`;
 
             request(link, (error, response, body) => {
                 // Handle Request Errors
