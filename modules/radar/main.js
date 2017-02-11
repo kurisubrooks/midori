@@ -4,7 +4,7 @@ const qs = require("qs");
 
 module.exports = (bot, channel, user, args, id, message, extra) => {
     let place = args[0] ? args[0] : "sydney";
-    let type = args[1] ? args[1] : "static";
+    let type = args[1] ? args[1] : "animated";
     let ext = type === "animated" ? "gif" : "png";
     let url = `https://api.kurisubrooks.com/api/radar?${qs.stringify({ id: place, type })}`;
 
