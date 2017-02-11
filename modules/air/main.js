@@ -12,7 +12,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
         if (extra.config.aqi.hasOwnProperty(extra.trigger.id)) {
             args = extra.config.aqi[extra.trigger.id];
         } else {
-            return channel.sendMessage(`Sorry, you don't have permission to use this command.`);
+            return channel.sendMessage(`Please provide a place to get the Location ID from`);
         }
     }
 

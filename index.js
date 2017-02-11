@@ -65,7 +65,7 @@ bot.on("ready", () => {
 bot.on("warn", warning => util.error(warning, "index"));
 bot.on("error", error => util.error(error, "index"));
 
-// Handle New Users
+// Handle Member Join
 bot.on("guildMemberAdd", member => util.handleJoin(member));
 
 // Message Event

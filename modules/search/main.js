@@ -17,6 +17,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
         cx: "006735756282586657842:s7i_4ej9amu",
         q: args.join(" ")
     });
+
     let fetch = {
         headers: { "User-Agent": "Mozilla/5.0" },
         url: `https://www.googleapis.com/customsearch/v1?${options}`
@@ -25,7 +26,9 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
     request.get(fetch, (error, res, body) => {
         if (error) {
             return util.error(error, "translate", channel);
-        } else if (res.statusCode === 200) {
+        }
+
+        if (res.statusCode === 200) {
             let data = typeof body === "object" ? body : JSON.parse(body);
 
             if (data.searchInformation.totalResults !== "0") {
@@ -45,26 +48,25 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
                     footer: { text: result.link }
                 };
 
-                if (result.pagemap && result.pagemap.cse_thumbnail);
-                embed.thumbnail.url = result.pagemap.cse_thumbnail[0].src;
+                if (result.pagemap && result.pagemap.cse_thumbnail) embed.thumbnail.url = result.pagemap.cse_thumbnail[0].src;
 
                 return channel.sendMessage("", { embed })
                     .then(() => message.delete())
                     .catch(error => util.error(error, "search", channel));
-            } else {
-                return channel.sendMessage("No Results");
             }
+
+            return channel.sendMessage("No Results");
         } else {
             if (res.statusCode === 403) {
-                util.error("Exceeded Maximum Daily API Call Limit", "search", channel);
-            } else if (res.statusCode === 500) {
-                util.error("Unknown Error Occurred", "search", channel);
-            } else {
-                util.error(`Unknown Response Code: ${res.statusCode}`, "search", channel);
+                return util.error("Exceeded Maximum Daily API Call Limit", "search", channel);
             }
-        }
 
-        return null;
+            if (res.statusCode === 500) {
+                return util.error("Unknown Error Occurred", "search", channel);
+            }
+
+            return util.error(`Unknown Response Code: ${res.statusCode}`, "search", channel);
+        }
     });
 
     return null;

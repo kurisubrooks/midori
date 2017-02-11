@@ -23,7 +23,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
                         "value": location.replace("Time in ", "").replace(" now", "")
                     },
                     {
-                        "name": "Time, Date",
+                        "name": "Time",
                         "value": moment(time, "HH:mm:ss").format("h:mm a"),
                         "inline": 1
                     },
