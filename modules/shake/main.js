@@ -109,7 +109,7 @@ module.exports = (bot, util, config, keychain, dir) => {
     // @kurisu#owlery
     debug_chan = bot.channels.get("212917108445544449");
     // @kurisu#general
-    kurisu_chan = bot.channels.get("132368736119291904");
+    kurisu_chan = bot.channels.get("276249021579001857");
 
     socket.on("connect", () => socket.emit("auth", { version: 2.1 }));
     socket.on("quake.eew", data => eew(bot, util, data, dir));
