@@ -15,6 +15,10 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
             const [, date] = text.match(/<div id="dd" class="w90 tr" onclick="location='\/calendar'" title=".+">(.+)<\/div><div id="daydiv/);
             const [, time] = text.match(/<div id="twd">(\d+:\d+:\d+)/);
 
+            const convertedTime = moment(time, "HH:mm:ss").format("h:mm a");
+
+            console.log(`Time: ${time}\nConverted time: ${convertedTime}`);
+
             let embed = {
                 "color": config.colours.default,
                 "fields": [
@@ -24,7 +28,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
                     },
                     {
                         "name": "Time",
-                        "value": moment(time, "HH:mm:ss").format("h:mm a"),
+                        "value": convertedTime,
                         "inline": 1
                     },
                     {
