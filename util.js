@@ -1,11 +1,12 @@
-const path = require("path");
-const chalk = require("chalk");
-const moment = require("moment");
-const index = require("./index");
-const config = require("./config");
-const keychain = require("./keychain.json");
+import path from "path";
+import chalk from "chalk";
+import moment from "moment";
+import index from "./index";
+import config from "./config";
+import keychain from "./keychain.json";
 
-let firstRun = true;
+// Log Process Start
+console.log(chalk.blue.bold("Process: Started"));
 
 // Helper Prototypes
 String.prototype.toUpperLowerCase = function toUpperLowerCase() {
@@ -24,19 +25,14 @@ module.exports = {
         console.log(chalk.blue.bold("Discord: Ready"));
 
         // Spawn Subprocesses
-        if (firstRun) {
-            for (const command in config.subprocesses) {
-                try {
-                    console.log(chalk.blue.bold("Spawning Subprocess:"), chalk.green.bold(command));
-                    require(path.join(__dirname, "modules", command, "main.js"))(bot, util, config, keychain, __dirname);
-                } catch(error) {
-                    util.error(`Failed to start subprocess "${command}"\n${error}`, "index");
-                    throw error;
-                }
+        for (const command in config.subprocesses) {
+            try {
+                console.log(chalk.blue.bold("Spawning Subprocess:"), chalk.green.bold(command));
+                require(path.join(__dirname, "modules", command, "main.js"))(bot, util, config, keychain, __dirname);
+            } catch(error) {
+                util.error(`Failed to start subprocess "${command}"\n${error}`, "index");
+                throw error;
             }
-
-            // Prevent Double Trigger
-            firstRun = false;
         }
     },
     error: (message, from, channel) => {
