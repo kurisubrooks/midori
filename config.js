@@ -23,11 +23,11 @@ module.exports = {
             command: "air",
             description: "Global Air Pollution Levels"
         },
-        {
+        /* {
             command: "define",
             description: "Basic Dictionary",
             alias: ["d"]
-        },
+        },*/
         {
             command: "embed",
             description: "Discord Embed API Preview",
