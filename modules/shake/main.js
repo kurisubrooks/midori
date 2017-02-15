@@ -25,7 +25,7 @@ const getMap = data => {
     return `https://maps.googleapis.com/maps/api/staticmap?${options}`;
 };
 
-const eew = async (bot, util, data, dir) => {
+const eew = (bot, util, data, dir) => {
     console.log(chalk.magenta.bold("Shake:"), chalk.magenta.bold("Running EEW Parser"));
 
     return request.get({ url: getMap(data), encoding: "binary" }, (error, res, body) => {
