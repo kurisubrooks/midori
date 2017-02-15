@@ -1,4 +1,4 @@
-// Nano Core v4
+// Nano Core v4.2
 // by @kurisubrooks
 
 // Requires
@@ -37,7 +37,7 @@ for (const item of config.commands) {
     }
 }
 
-// Connect to Discord
+// Handle Discord
 bot.login(keychain.discord);
 bot.on("ready", () => util.handleReady(bot, util));
 bot.on("warn", warning => util.error(warning, "index"));
