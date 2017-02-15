@@ -5,25 +5,25 @@
 const fs = require("fs");
 const path = require("path");
 const chalk = require("chalk");
-const Discord = require("discord.js");
 
-// Core
-const bot = new Discord.Client({ autoReconnect: true });
+// Discord
+const { Client, Collection } = require("discord.js");
+const bot = new Client({ autoReconnect: true });
+const commands = new Collection();
+const aliases = new Collection();
+
+// Imports
 const util = require("./util");
 const config = require("./config");
 const keychain = require("./keychain.json");
 const blacklist = require("./blacklist.json");
 
-let commands = new Discord.Collection();
-let aliases = new Discord.Collection();
-let firstRun = true;
-
 // Log Process Start
 console.log(chalk.blue.bold("Process: Started"));
 
 // Setup Commands
-for (let item of config.commands) {
-    let location = path.join(__dirname, "modules", item.command, "main.js");
+for (const item of config.commands) {
+    const location = path.join(__dirname, "modules", item.command, "main.js");
 
     // Location doesn't exist, skip loop
     if (!fs.existsSync(location)) continue;
@@ -33,56 +33,28 @@ for (let item of config.commands) {
 
     // Set Command Aliases
     if (item.hasOwnProperty("alias")) {
-        for (let alias of item.alias) aliases.set(alias, item.command);
+        for (const alias of item.alias) aliases.set(alias, item.command);
     }
 }
 
 // Connect to Discord
 bot.login(keychain.discord);
-
-// Spawn Subprocesses
-bot.on("ready", () => {
-    console.log(chalk.blue.bold("Discord: Ready"));
-
-    // Spawn Subprocesses
-    if (firstRun) {
-        for (let command in config.subprocesses) {
-            try {
-                console.log(chalk.blue.bold("Spawning Subprocess:"), chalk.green.bold(command));
-                require(path.join(__dirname, "modules", command, "main.js"))(bot, util, config, keychain, __dirname);
-            } catch(error) {
-                util.error(`Failed to start subprocess "${command}"\n${error}`, "index");
-                throw error;
-            }
-        }
-
-        // Prevent Double Trigger
-        firstRun = false;
-    }
-});
-
-// Warnings and Errors
+bot.on("ready", () => util.handleReady(bot, util));
 bot.on("warn", warning => util.error(warning, "index"));
 bot.on("error", error => util.error(error, "index"));
-
-// Handle Member Join
 bot.on("guildMemberAdd", member => util.handleJoin(member));
-
-// Message Event
 bot.on("message", message => {
-    let type = message.channel.type;
-    let server = message.guild ? message.guild.name : "DM";
-    let channel = message.channel;
-    let attachments = false;
-    let user = message.author;
+    const type = message.channel.type;
+    const server = message.guild ? message.guild.name : "DM";
+    const channel = message.channel;
+    const user = message.author;
+    const id = message.id;
     let text = message.cleanContent;
-    let id = message.id;
+    let attachments = false;
 
     // Checks for attached file/image
     message.attachments.forEach(() => { attachments = true; });
     message.image = attachments && text.length < 1 ? 1 : 0;
-
-    // Set User's Nickname
     user.nickname = message.member ? message.member.displayName : message.author.username;
 
     // Basic Formatting Checks
@@ -113,9 +85,9 @@ bot.on("message", message => {
 
     // Command Handler
     if (text.startsWith(config.sign)) {
-        let args = text.split(" ");
-        let commandName = args.splice(0, 1)[0].toLowerCase().slice(config.sign.length);
-        let command = commands.get(commandName) || commands.get(aliases.get(commandName));
+        const args = text.split(" ");
+        const commandName = args.splice(0, 1)[0].toLowerCase().slice(config.sign.length);
+        const command = commands.get(commandName) || commands.get(aliases.get(commandName));
 
         if (!command) return false;
 
