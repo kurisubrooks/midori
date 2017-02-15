@@ -18,7 +18,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
     }
 
     let location = encodeURIComponent(args.join("+"));
-    let url = `https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=${extra.keychain.google_geocode}`;
+    let url = `https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=${extra.keychain.google.geocode}`;
 
     request(url, (error, response, body) => {
         // Handle Request Errors
@@ -89,7 +89,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
 
             let geocode = [previous.results[0].geometry.location.lat, previous.results[0].geometry.location.lng];
 
-            let link = `https://api.forecast.io/forecast/${extra.keychain.weather}/${geocode.join(",")}?units=si`;
+            let link = `https://api.forecast.io/forecast/${extra.keychain.darksky}/${geocode.join(",")}?units=si`;
 
             request(link, (error, response, body) => {
                 // Handle Request Errors

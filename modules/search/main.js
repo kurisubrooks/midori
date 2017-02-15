@@ -4,15 +4,14 @@ const qs = require("qs");
 const request = require("request");
 
 module.exports = (bot, channel, user, args, id, message, extra) => {
+    let { util, keychain } = extra;
+
     if (args.length < 1) {
         return channel.sendMessage("Please provide a query");
     }
 
-    let util = extra.util;
-    let keys = extra.keychain;
-
     let options = qs.stringify({
-        key: keys.google_search,
+        key: keychain.google.search,
         num: "1",
         cx: "006735756282586657842:s7i_4ej9amu",
         q: args.join(" ")
@@ -23,7 +22,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
         url: `https://www.googleapis.com/customsearch/v1?${options}`
     };
 
-    request.get(fetch, (error, res, body) => {
+    return request.get(fetch, (error, res, body) => {
         if (error) {
             return util.error(error, "translate", channel);
         }
@@ -68,6 +67,4 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
             return util.error(`Unknown Response Code: ${res.statusCode}`, "search", channel);
         }
     });
-
-    return null;
 };
