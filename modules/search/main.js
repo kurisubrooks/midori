@@ -14,7 +14,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
         key: keychain.google.search,
         num: "1",
         cx: "006735756282586657842:s7i_4ej9amu",
-        q: args.join(" ")
+        q: args.join(" ") // eslint-disable-line id-length
     });
 
     let fetch = {
