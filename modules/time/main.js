@@ -1,5 +1,6 @@
-const request = require("superagent");
+const request = require("request");
 const moment = require("moment");
+const cheerio = require("cheerio");
 
 module.exports = (bot, channel, user, args, id, message, extra) => {
     const { util, config } = extra;
@@ -8,40 +9,47 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
         return channel.send("Please specify a location or timezone");
     }
 
-    return request
-        .get(`http://time.is/${args.join(" ").replace(/^in/, "")}`)
-        .then(({ text }) => {
-            const [, location] = text.match(/<div id="msgdiv"><h1>(.+)<\/h1>/);
-            const [, date] = text.match(/<div id="dd" class="w90 tr" onclick="location='\/calendar'" title=".+">(.+)<\/div><div id="daydiv/);
-            const [, time] = text.match(/<div id="twd">(\d+:\d+:\d+)/);
+    let fetch = {
+        headers: { "User-Agent": "Mozilla/5.0" },
+        url: `http://time.is/${args.join(" ").replace(/^in/, "")}`
+    };
 
-            const convertedTime = moment(time, "HH:mm:ss").format("h:mm a");
+    return request.get(fetch, (error, res, body) => {
+        if (error) {
+            return util.error(error, "time", channel);
+        }
 
-            console.log(`Time: ${time}\nConverted time: ${convertedTime}`);
+        const $ = cheerio.load(body);
+        const place = $("#msgdiv > h1").text();
+        const date = $("#dd").text();
+        const time = $("#twd").text();
 
-            let embed = {
-                "color": config.colours.default,
-                "fields": [
-                    {
-                        "name": "Location",
-                        "value": location.replace("Time in ", "").replace(" now", "")
-                    },
-                    {
-                        "name": "Time",
-                        "value": convertedTime,
-                        "inline": 1
-                    },
-                    {
-                        "name": "Date",
-                        "value": moment(date, "dddd, MMMM D, YYYY").format("ddd, MMM Do"),
-                        "inline": 1
-                    }
-                ]
-            };
+        if (!place) {
+            return util.error("No Results", "time", channel);
+        }
 
-            channel.send("", { embed })
-                .then(() => message.delete())
-                .catch(error => util.error(error, "time", channel));
-        })
-        .catch(error => util.error(error.message, "time", channel));
+        let embed = {
+            "color": config.colours.default,
+            "fields": [
+                {
+                    "name": "Location",
+                    "value": place.replace("Time in ", "").replace(" now", "")
+                },
+                {
+                    "name": "Time",
+                    "value": moment(`${time}`, "HH:mm:ssA").format("h:mm a"),
+                    "inline": 1
+                },
+                {
+                    "name": "Date",
+                    "value": date,
+                    "inline": 1
+                }
+            ]
+        };
+
+        return channel.send("", { embed })
+            .then(() => message.delete())
+            .catch(error => util.error(error, "time", channel));
+    });
 };
