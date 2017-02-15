@@ -1,26 +1,24 @@
 module.exports = (bot, channel, user, args, id, message, extra) => {
     const { util } = extra;
+    const command = args[0];
 
     if (extra.masters.indexOf(extra.trigger.id) >= 0) {
         // Stop or Restart Bot
-        if (args[0] === "stop" || args[0] === "restart") {
+        if (command === "stop" || command === "restart") {
             util.error(`Restart Triggered by ${extra.trigger.username}`, "admin", channel);
-            setTimeout(() => process.exit(0), 650);
-            return null;
+            return setTimeout(() => process.exit(0), 650);
         }
 
         // Trigger util.error
-        if (args[0] === "error") {
+        if (command === "error") {
             return util.error("Error Triggered by Admin", "admin", channel);
         }
 
         // Return Ping
-        if (args[0] === "ping") {
+        if (command === "ping") {
             return channel.send("Pong!");
         }
-    } else {
-        channel.send("Insufficient Permissions");
     }
 
-    return null;
+    return channel.send("Insufficient Permissions");
 };
