@@ -7,7 +7,7 @@
   "license": "SEE LICENSE IN LICENSE.md",
   "repository": "kurisubrooks/midori",
   "scripts": {
-    "start": "node bin/",
+    "start": "node --harmony bin/",
     "build": "./node_modules/.bin/gulp build",
     "lint": "./node_modules/.bin/gulp lint"
   },
