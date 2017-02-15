@@ -54,7 +54,7 @@ module.exports = {
 
         console.log(chalk.red.bold(`[${time}, ${from}.js]`), chalk.red(message));
 
-        return channel.send(``, { embed: embed })
+        return channel.send(``, { embed })
             .catch(error => console.error(error));
     }
 };
