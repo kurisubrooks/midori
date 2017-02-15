@@ -1,25 +1,22 @@
-// Nano Core v4.2
+// Nano Core v4.3
 // by @kurisubrooks
 
 // Requires
-const fs = require("fs");
-const path = require("path");
-const chalk = require("chalk");
+import fs from "fs";
+import path from "path";
+import chalk from "chalk";
 
 // Discord
-const { Client, Collection } = require("discord.js");
-const bot = new Client({ autoReconnect: true });
+import { Client, Collection } from "discord.js";
 const commands = new Collection();
 const aliases = new Collection();
+const bot = new Client();
 
 // Imports
-const util = require("./util");
-const config = require("./config");
-const keychain = require("./keychain.json");
-const blacklist = require("./blacklist.json");
-
-// Log Process Start
-console.log(chalk.blue.bold("Process: Started"));
+import util from "./util";
+import config from "./config";
+import keychain from "./keychain.json";
+import blacklist from "./blacklist.json";
 
 // Setup Commands
 for (const item of config.commands) {
@@ -39,7 +36,7 @@ for (const item of config.commands) {
 
 // Handle Discord
 bot.login(keychain.discord);
-bot.on("ready", () => util.handleReady(bot, util));
+bot.once("ready", () => util.handleReady(bot, util));
 bot.on("warn", warning => util.error(warning, "index"));
 bot.on("error", error => util.error(error, "index"));
 bot.on("guildMemberAdd", member => util.handleJoin(member));
