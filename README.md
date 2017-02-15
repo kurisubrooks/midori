@@ -17,7 +17,7 @@ sudo apt install libcairo2-dev libjpeg8-dev libpango1.0-dev libgif-dev build-ess
 ### Installation
 ```bash
 git clone https://github.com/kurisubrooks/midori.git
-cd ~/.../midori/
+cd midori/
 npm install
 ```
 
@@ -40,7 +40,6 @@ Create a file called `keychain.json` in the main directory, with the following c
 To start Midori, you can start her with
 
 ```bash
-cd ~/.../midori/
 npm run build
 npm start
 ```
@@ -48,7 +47,6 @@ npm start
 If you wish to run Midori under Production, you can start her with pm2 by using
 
 ```bash
-cd ~/.../midori/
 npm run build
 pm2 start bin/index.js --name "midori"
 ```
