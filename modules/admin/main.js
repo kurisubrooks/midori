@@ -2,7 +2,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
     const { util } = extra;
     const command = args[0];
 
-    if (extra.masters.indexOf(extra.trigger.id) >= 0) {
+    if (extra.masters.includes(extra.trigger.id)) {
         // Stop or Restart Bot
         if (command === "stop" || command === "restart") {
             util.error(`Restart Triggered by ${extra.trigger.username}`, "admin", channel);

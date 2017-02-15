@@ -1,5 +1,3 @@
-"use strict";
-
 module.exports = (bot, channel, user, args, id, message) => {
     let embed;
     let before;

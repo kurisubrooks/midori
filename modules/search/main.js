@@ -1,23 +1,20 @@
-"use strict";
-
-const qs = require("qs");
-const request = require("request");
+import qs from "qs";
+import request from "request";
 
 module.exports = (bot, channel, user, args, id, message, extra) => {
-    let { util, keychain } = extra;
-
     if (args.length < 1) {
         return channel.sendMessage("Please provide a query");
     }
 
-    let options = qs.stringify({
+    const { util, keychain } = extra;
+    const options = qs.stringify({
         key: keychain.google.search,
         num: "1",
         cx: "006735756282586657842:s7i_4ej9amu",
         q: args.join(" ") // eslint-disable-line id-length
     });
 
-    let fetch = {
+    const fetch = {
         headers: { "User-Agent": "Mozilla/5.0" },
         url: `https://www.googleapis.com/customsearch/v1?${options}`
     };
@@ -28,13 +25,13 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
         }
 
         if (res.statusCode === 200) {
-            let data = typeof body === "object" ? body : JSON.parse(body);
+            const data = typeof body === "object" ? body : JSON.parse(body);
 
             if (data.searchInformation.totalResults !== "0") {
-                let result = data.items[0];
+                const result = data.items[0];
                 result.link = decodeURIComponent(result.link);
 
-                let embed = {
+                const embed = {
                     color: extra.colours.default,
                     author: {
                         name: extra.trigger.nickname,

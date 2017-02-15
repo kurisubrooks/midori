@@ -1,6 +1,4 @@
-"use strict";
-
-const request = require("request");
+import request from "request";
 
 module.exports = (bot, channel, user, args, id, message, extra) => {
     request(`http://shibe.online/api/shibes?count=1&httpsurls=true`, (error, response, body) => {

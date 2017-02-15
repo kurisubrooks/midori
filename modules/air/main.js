@@ -1,16 +1,14 @@
-"use strict";
-
-const path = require("path");
-const chalk = require("chalk");
-const Canvas = require("canvas");
-const request = require("request");
+import path from "path";
+import chalk from "chalk";
+import Canvas from "canvas";
+import request from "request";
 
 module.exports = (bot, channel, user, args, id, message, extra) => {
-    let util = extra.util;
+    const { util, config, trigger } = extra;
 
     if (args.length === 0) {
-        if (extra.config.aqi.hasOwnProperty(extra.trigger.id)) {
-            args = extra.config.aqi[extra.trigger.id];
+        if (config.aqi.hasOwnProperty(trigger.id)) {
+            args = config.aqi[trigger.id];
         } else {
             return channel.sendMessage(`Please provide a place to get the Location ID from`);
         }
@@ -18,7 +16,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
 
     // AQI ID
     if (Number(args[0])) {
-        request(`https://api.kurisubrooks.com/api/aqi?id=${args[0]}`, (error, response, body) => {
+        return request(`https://api.kurisubrooks.com/api/aqi?id=${args[0]}`, (error, response, body) => {
             try {
                 body = JSON.parse(body);
             } catch(err) {
@@ -32,63 +30,54 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
                 return util.error(body.error, "aqi", channel);
             } else if (response.statusCode !== 200) {
                 if (response.statusCode === 504) {
-                    util.error("Sorry, the API took too long to respond. Try again?", "aqi", channel);
+                    return util.error("Sorry, the API took too long to respond. Try again later.", "aqi", channel);
                 } else {
-                    util.error(response.statusCode, "aqi", channel);
+                    return util.error(response.statusCode, "aqi", channel);
                 }
-
-                return null;
             }
 
             console.log(chalk.magenta.bold("Location:"), chalk.magenta(body.location.place));
             console.log(chalk.magenta.bold("Quality:"), chalk.magenta(body.aqi.level));
             console.log(chalk.magenta.bold("Index:"), chalk.magenta(body.aqi.index));
 
-            let canvas = new Canvas(400, 100);
-            let ctx = canvas.getContext("2d");
+            Canvas.registerFont(path.join(__dirname, "Roboto.ttf"), { family: "Roboto" });
 
-            let Image = Canvas.Image;
+            const canvas = new Canvas(400, 100);
+            const ctx = canvas.getContext("2d");
+            const { Image } = Canvas;
+            const base = new Image();
 
-            let generate = () => {
-                Canvas.registerFont(path.join(__dirname, "Roboto.ttf"), { family: "Roboto" });
+            base.src = path.join(__dirname, "base.png");
 
-                let base = new Image();
-                base.src = path.join(__dirname, "base.png");
+            // Environment Variables
+            ctx.drawImage(base, 0, 0);
+            ctx.scale(1, 1);
+            ctx.patternQuality = "bilinear";
+            ctx.filter = "bilinear";
+            ctx.antialias = "subpixel";
+            ctx.fillStyle = "#000000";
 
-                // Environment Variables
-                ctx.drawImage(base, 0, 0);
-                ctx.scale(1, 1);
-                ctx.patternQuality = "bilinear";
-                ctx.filter = "bilinear";
-                ctx.antialias = "subpixel";
-                ctx.fillStyle = "#000000";
+            // Place
+            ctx.font = "20px Roboto";
+            ctx.fillText(body.location.place, 25, 41);
 
-                // Place
-                ctx.font = "20px Roboto";
-                ctx.fillText(body.location.place, 25, 41);
+            // Condition
+            ctx.font = "18px Roboto";
+            ctx.fillStyle = body.aqi.color;
+            ctx.fillText(body.aqi.level, 25, 68);
 
-                // Condition
-                ctx.font = "18px Roboto";
-                ctx.fillStyle = body.aqi.color;
-                ctx.fillText(body.aqi.level, 25, 68);
+            // Value
+            ctx.font = "60px Roboto";
+            ctx.fillStyle = body.aqi.color;
+            ctx.textAlign = "right";
+            ctx.fillText(body.aqi.value, 370, 67);
 
-                // Value
-                ctx.font = "60px Roboto";
-                ctx.fillStyle = body.aqi.color;
-                ctx.textAlign = "right";
-                ctx.fillText(body.aqi.value, 370, 67);
-
-                // Send
-                channel.sendFile(canvas.toBuffer())
-                    .then(() => message.delete())
-                    .catch(error => util.error(error, "aqi", channel));
-            };
-
-            return generate();
+            // Send
+            return channel.sendFile(canvas.toBuffer())
+                .then(() => message.delete())
+                .catch(error => util.error(error, "aqi", channel));
         });
     } else {
-        channel.sendMessage(`Sorry, that's not a valid ID.`);
+        return channel.sendMessage(`Sorry, that's not a valid ID.`);
     }
-
-    return null;
 };

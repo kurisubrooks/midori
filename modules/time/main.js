@@ -1,6 +1,6 @@
-const request = require("request");
-const moment = require("moment");
-const cheerio = require("cheerio");
+import request from "request";
+import moment from "moment";
+import cheerio from "cheerio";
 
 module.exports = (bot, channel, user, args, id, message, extra) => {
     const { util, config } = extra;
@@ -9,7 +9,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
         return channel.send("Please specify a location or timezone");
     }
 
-    let fetch = {
+    const fetch = {
         headers: { "User-Agent": "Mozilla/5.0" },
         url: `http://time.is/${args.join(" ").replace(/^in/, "")}`
     };
@@ -28,7 +28,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
             return util.error("No Results", "time", channel);
         }
 
-        let embed = {
+        const embed = {
             "color": config.colours.default,
             "fields": [
                 {

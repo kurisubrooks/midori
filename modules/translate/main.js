@@ -1,42 +1,40 @@
-const qs = require("qs");
-const chalk = require("chalk");
-const request = require("request");
+import qs from "qs";
+import chalk from "chalk";
+import request from "request";
 
 module.exports = (bot, channel, user, args, id, message, extra) => {
     if (args.length < 1) {
         return channel.sendMessage("Please provide a query");
     }
 
-    let util = extra.util;
-    let langs = args[0].split(",");
-    langs[0] = langs[0].toLowerCase();
-    let to = langs[0];
-    let from = langs.length > 1 ? langs[1] : null;
-    let query = to === langs[0] ? args.slice(1).join(" ") : args.join(" ");
+    const { util } = extra;
+    const langs = args[0].split(",");
+    const to = langs[0].toLowerCase();
+    const from = langs.length > 1 ? langs[1] : null;
+    const query = to === langs[0].toLowerCase() ? args.slice(1).join(" ") : args.join(" ");
 
-    let translate = (query) => {
-        let params = {
+    const translate = query => {
+        const params = {
             to: to,
+            from: from ? from : "",
             query: query
         };
 
-        if (from) params.from = from;
-
-        let fetch = {
+        const fetch = {
             headers: { "User-Agent": "Mozilla/5.0" },
             url: `https://api.kurisubrooks.com/api/translate?${qs.stringify(params)}`
         };
 
-        request.get(fetch, (error, res, body) => {
+        return request.get(fetch, (error, res, body) => {
             if (error) {
                 return util.error(error, "translate", channel);
             }
 
-            let response = JSON.parse(body);
-            let to = response.to;
-            let from = response.from;
-            let query = response.query;
-            let result = response.result;
+            const response = JSON.parse(body);
+            const to = response.to;
+            const from = response.from;
+            const query = response.query;
+            const result = response.result;
 
             if (response.ok) {
                 // Debug
@@ -45,7 +43,7 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
                 console.log(chalk.magenta.bold("Query:"), chalk.magenta(query));
                 console.log(chalk.magenta.bold("Translation:"), chalk.magenta(result));
 
-                let embed = {
+                const embed = {
                     color: extra.colours.default,
                     author: {
                         name: extra.trigger.nickname,

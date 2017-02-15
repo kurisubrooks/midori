@@ -1,8 +1,7 @@
-"use strict";
+/*
+import request from "superagent";
 
-const request = require("superagent");
-
-let levels = {
+const levels = {
     "Not Applicable": { url: "http://i.imgur.com/LzUSutH.png" },
     "Advice": { url: "http://i.imgur.com/0bBmzZk.png" },
     "Watch and Act": { url: "http://i.imgur.com/L37N9sN.png" },
@@ -10,8 +9,8 @@ let levels = {
 };
 
 module.exports = (bot, util, config, keychain, dir) => {
-    let channel = bot.channels.get("276249021579001857");
-    let run = () => {
+    const channel = bot.channels.get("276249021579001857");
+    const run = () => {
         request.get("https://api.kurisubrooks.com/api/fire", (error, res, body) => {
             if (error) {
                 return util.error(error, "fires");
@@ -19,8 +18,8 @@ module.exports = (bot, util, config, keychain, dir) => {
                 return util.error(`Request returned ${res.statusCode}`, "fires");
             }
 
-            let data = typeof body === "object" ? body : JSON.parse(body);
-            let embed = {
+            const data = typeof body === "object" ? body : JSON.parse(body);
+            const embed = {
                 "color": config.colours.error,
                 "author": {
                     "name": "Advice",
@@ -51,3 +50,4 @@ module.exports = (bot, util, config, keychain, dir) => {
 
     setInterval(() => run(), 1 * 60 * 1000);
 };
+*/

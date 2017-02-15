@@ -1,11 +1,9 @@
-"use strict";
-
-const fs = require("fs");
-const qs = require("qs");
-const path = require("path");
-const chalk = require("chalk");
-const request = require("request");
-const Canvas = require("canvas");
+import fs from "fs";
+import qs from "qs";
+import path from "path";
+import chalk from "chalk";
+import request from "request";
+import Canvas from "canvas";
 
 let debug_chan;
 let kurisu_chan;
@@ -13,8 +11,8 @@ let previous_quake = { };
 let previous_message;
 let disconnected = false;
 
-let getMap = data => {
-    let options = qs.stringify({
+const getMap = data => {
+    const options = qs.stringify({
         zoom: 6,
         size: "386x159",
         format: "png",
@@ -27,10 +25,10 @@ let getMap = data => {
     return `https://maps.googleapis.com/maps/api/staticmap?${options}`;
 };
 
-let eew = (bot, util, data, dir) => {
+const eew = async (bot, util, data, dir) => {
     console.log(chalk.magenta.bold("Shake:"), chalk.magenta.bold("Running EEW Parser"));
 
-    request.get({ url: getMap(data), encoding: "binary" }, (error, res, body) => {
+    return request.get({ url: getMap(data), encoding: "binary" }, (error, res, body) => {
         if (error) {
             return util.error(error, "shake");
         } else if (res.statusCode !== 200) {
@@ -39,12 +37,13 @@ let eew = (bot, util, data, dir) => {
 
         Canvas.registerFont(path.join(dir, "modules", "shake", "Roboto.ttf"), { family: "Roboto" });
 
-        let canvas = new Canvas(400, 280);
-        let ctx = canvas.getContext("2d");
+        const canvas = new Canvas(400, 280);
+        const ctx = canvas.getContext("2d");
 
-        let Image = Canvas.Image;
-        let map = new Image();
-        let base = new Image();
+        const { Image } = Canvas;
+        const map = new Image();
+        const base = new Image();
+
         map.src = new Buffer(body, "binary");
         base.src = fs.readFileSync(path.join(dir, "modules", "shake", "base.png"));
 
@@ -76,7 +75,7 @@ let eew = (bot, util, data, dir) => {
             previous_quake[data.id] = data;
 
             // kurisu
-            kurisu_chan.sendFile(canvas.toBuffer())
+            return kurisu_chan.sendFile(canvas.toBuffer())
                 .then(msg => {
                     previous_message = msg;
                     console.log(chalk.magenta.bold("Debug:"), chalk.magenta(`Posted Image to @kurisu#general`));
@@ -94,7 +93,7 @@ let eew = (bot, util, data, dir) => {
                 .catch(error => util.error(error, "shake"));
 
             // kurisu
-            kurisu_chan.sendFile(canvas.toBuffer())
+            return kurisu_chan.sendFile(canvas.toBuffer())
                 .then(() => console.log(chalk.magenta.bold("Debug:"), chalk.magenta(`Posted Image to @kurisu#general`)))
                 .catch(error => util.error(error, "shake"));
         }
@@ -108,7 +107,7 @@ module.exports = (bot, util, config, keychain, dir) => {
 
     // @kurisu#owlery
     debug_chan = bot.channels.get("212917108445544449");
-    // @kurisu#general
+    // @kurisu#updates
     kurisu_chan = bot.channels.get("276249021579001857");
 
     socket.on("connect", () => socket.emit("auth", { version: 2.1 }));
