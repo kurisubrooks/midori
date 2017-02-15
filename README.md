@@ -57,7 +57,7 @@ pm2 start bin/index.js --name "midori"
 Thanks for taking interest in Midori!
 I've included some build commands through the Gulp build tool, some of which you might find useful.
 
-**Linting**
+**Linting**  
 Run this command to find errors in your syntax.  
 (You'll need to do this if you plan on submitting any Pull Requests!)
 
@@ -65,14 +65,14 @@ Run this command to find errors in your syntax.
 npm run lint
 ```
 
-**Build**
+**Build**  
 Run this command to compile Midori in `/bin`
 
 ```bash
 npm run build
 ```
 
-**Run**
+**Run**  
 Run this command to start Midori.  
 You'll need to do this from the root directory
 
