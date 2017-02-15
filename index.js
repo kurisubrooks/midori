@@ -120,7 +120,7 @@ bot.on("message", message => {
         if (!command) return false;
 
         try {
-            command(bot, channel, user, args, id, message, {
+            return command(bot, channel, user, args, id, message, {
                 util: util,
                 config: config,
                 keychain: keychain,
@@ -139,7 +139,7 @@ bot.on("message", message => {
                 }
             });
         } catch(error) {
-            util.error(error, "index");
+            return util.error(error, "index");
         }
     }
 

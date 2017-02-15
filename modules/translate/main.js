@@ -1,5 +1,3 @@
-"use strict";
-
 const qs = require("qs");
 const chalk = require("chalk");
 const request = require("request");
@@ -75,14 +73,17 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
     };
 
     if (query === "^") {
+        // Translate Last Message
         return channel.fetchMessages({ before: id, limit: 1 })
             .then(msg => translate(msg.first().content))
             .catch(error => util.error(error, "translate", channel));
-    } else if (Boolean(Number(query))) {
+    } else if (Number(query)) {
+        // Translate Message by ID
         return channel.fetchMessage(query)
             .then(msg => translate(msg.content))
             .catch(error => util.error(error, "translate", channel));
     } else {
+        // Translate Query
         return translate(query);
     }
 };
