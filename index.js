@@ -93,17 +93,13 @@ bot.on("message", message => {
 
         try {
             return command(bot, channel, user, args, id, message, {
-                util: util,
-                config: config,
-                keychain: keychain,
-                command: command,
+                util, config, keychain, command,
                 server: message.guild,
                 masters: config.admin,
                 user: user.nickname,
                 colours: config.colours,
                 trigger: {
                     id: user.id,
-                    type: type,
                     username: user.username,
                     nickname: user.nickname,
                     avatar: user.avatarURL,
