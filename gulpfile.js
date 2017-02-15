@@ -18,16 +18,12 @@ gulp.task("lint", () =>
 // Build
 gulp.task("build", () => {
     del.sync(["bin/"]);
-    return gulp.series(() => {
-        return gulp.src("./*.js")
-            .pipe(babel({ presets: [es_version] }))
-            .pipe(gulp.dest("bin/"));
-    }, () => {
-        return gulp.src("./modules/**/*.js")
-            .pipe(babel({ presets: [es_version] }))
-            .pipe(gulp.dest("bin/modules/"));
-    }, () => {
-        return gulp.src("./*.json")
-            .pipe(gulp.dest("bin/"));
-    });
+    gulp.src("./*.js")
+        .pipe(babel({ presets: [es_version] }))
+        .pipe(gulp.dest("bin/"));
+    gulp.src("./modules/**/*.js")
+        .pipe(babel({ presets: [es_version] }))
+        .pipe(gulp.dest("bin/modules/"));
+    return gulp.src("./*.json")
+        .pipe(gulp.dest("bin/"));
 });
