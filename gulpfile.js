@@ -9,7 +9,7 @@ const es_version = "es2017-node7";
 
 // Lint
 gulp.task("lint", () =>
-    gulp.src(["./*.js", "./modules/**/*.js"])
+    gulp.src(["./*.js", "./core/**/*.js", "./modules/**/*.js", "./commands/**/*.js", "./subprocesses/**/*.js"])
         .pipe(eslint())
         .pipe(eslint.format())
 );
@@ -20,9 +20,18 @@ gulp.task("build", () => {
     gulp.src("./*.js")
         .pipe(babel({ presets: [es_version] }))
         .pipe(gulp.dest("bin/"));
+    gulp.src("./core/**/*.js")
+        .pipe(babel({ presets: [es_version] }))
+        .pipe(gulp.dest("bin/core/"));
     gulp.src("./modules/**/*.js")
         .pipe(babel({ presets: [es_version] }))
         .pipe(gulp.dest("bin/modules/"));
+    gulp.src("./commands/**/*.js")
+        .pipe(babel({ presets: [es_version] }))
+        .pipe(gulp.dest("bin/commands/"));
+    gulp.src("./subprocesses/**/*.js")
+        .pipe(babel({ presets: [es_version] }))
+        .pipe(gulp.dest("bin/subprocesses/"));
     return gulp.src(["./**/*.*", "!./node_modules/**/*", "!./.git/*", "!./**/*.js"])
         .pipe(gulp.dest("bin/"));
 });
