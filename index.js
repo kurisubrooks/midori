@@ -37,8 +37,8 @@ for (const item of config.commands) {
 // Handle Discord
 bot.login(keychain.discord);
 bot.once("ready", () => util.handleReady(bot, util));
-bot.on("warn", warning => util.error(warning, "index"));
-bot.on("error", error => util.error(error, "index"));
+bot.on("warn", warning => util.error(warning, "core"));
+bot.on("error", error => util.error(error, "core"));
 bot.on("guildMemberAdd", member => util.handleJoin(member));
 bot.on("message", message => {
     const type = message.channel.type;
@@ -59,25 +59,9 @@ bot.on("message", message => {
     if (text.length < 1 && !attachments) return false;
     if (attachments) text += message.image ? "<file>" : " <file>";
 
-    // Log Chat to Console
-    console.log(
-        chalk.yellow.bold(`[${server}${channel.name ? `#${channel.name}` : ""}]<${user.nickname}>:`),
-        chalk.yellow(`${text}`)
-    );
-
     // Check Message against Blacklist
     if (server !== "DM" && new RegExp(blacklist.join("|")).test(message.content)) {
-        let embed = {
-            fields: [
-                { name: "Offence", value: "Blacklisted Word" },
-                { name: "Action", value: "Message Removed" },
-                { name: "Message", value: text }
-            ]
-        };
-
-        return message.delete()
-            .then(() => user.sendMessage(`Your message was removed because it contains a word that has been blacklisted.`, { embed }))
-            .catch(err => console.error("Unable to delete blacklisted message", err));
+        return util.handleBlacklist(message);
     }
 
     // Command Handler
@@ -85,6 +69,9 @@ bot.on("message", message => {
         const args = text.split(" ");
         const commandName = args.splice(0, 1)[0].toLowerCase().slice(config.sign.length);
         const command = commands.get(commandName) || commands.get(aliases.get(commandName));
+
+        // Log User Command
+        console.log(chalk.yellow.bold(`[${server}${channel.name ? `#${channel.name}` : ""}]<${user.nickname}#${user.discriminator}>:`), chalk.yellow(`${text}`));
 
         if (!command) return false;
 
@@ -104,7 +91,7 @@ bot.on("message", message => {
                 }
             });
         } catch(error) {
-            return util.error(error, "index");
+            return util.error(error, "command");
         }
     }
 

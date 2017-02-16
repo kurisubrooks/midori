@@ -14,7 +14,7 @@ String.prototype.toUpperLowerCase = function toUpperLowerCase() {
 };
 
 // Module Functions
-module.exports = {
+const util = module.exports = {
     handleJoin: member => {
         if (config.adminServer.includes(member.guild.id)) {
             member.addRole(member.guild.roles.find("name", "Muggle"));
@@ -33,6 +33,23 @@ module.exports = {
                 util.error(`Failed to start subprocess "${command}"\n${error}`, "index");
                 throw error;
             }
+        }
+    },
+    handleBlacklist: async (message) => {
+        let embed = {
+            fields: [
+                { name: "Offence", value: "Blacklisted Word" },
+                { name: "Action", value: "Message Removed" },
+                { name: "Message", value: message.content }
+            ]
+        };
+
+        try {
+            console.log(`Deleting ${message.id} from ${message.guild ? message.guild.name : "DM"}`);
+            await message.delete();
+            return message.author.sendMessage(`Your message was removed because it contains a word that has been blacklisted.`, { embed });
+        } catch(error) {
+            return util.error(`Unable to delete message ${message.id} from ${message.guild ? message.guild.name : "DM"}`, "blacklist");
         }
     },
     error: (message, from, channel) => {
