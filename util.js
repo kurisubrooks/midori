@@ -4,6 +4,7 @@ import moment from "moment";
 import index from "./index";
 import config from "./config";
 import keychain from "./keychain.json";
+import { RichEmbed } from "discord.js";
 
 // Log Process Start
 console.log(chalk.blue.bold("Process: Started"));
@@ -36,21 +37,15 @@ module.exports = {
         }
     },
     error: (message, from, channel) => {
-        if (!channel) channel = index.bot.channels.get("212917108445544449");
+        channel = channel || index.client.channels.get("212917108445544449");
+        const time = () => moment().format("HH:mm:ss");
+        const embed = new RichEmbed()
+            .setColor(config.colours.error)
+            .addField("Module:", from, true)
+            .addField("Time:", time(), true)
+            .addField("Message:", message);
 
-        const time = moment().format("h:mm:ssa");
-        const embed = {
-            "color": config.colours.error,
-            "fields": [
-                { "name": "Module:", "value": from, "inline": true },
-                { "name": "Time:", "value": time, "inline": true },
-                { "name": "Message:", "value": message }
-            ]
-        };
-
-        console.log(chalk.red.bold(`[${time}, ${from}.js]`), chalk.red(message));
-
-        return channel.send(``, { embed })
-            .catch(error => console.error(error));
+        console.log(chalk.red.bold(`[${time()} ${from}]`), chalk.red(message));
+        return channel.sendEmbed(embed);
     }
 };
