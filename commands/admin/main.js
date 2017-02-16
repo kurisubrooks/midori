@@ -16,13 +16,13 @@ module.exports = class AdminCommand extends Command {
         if (this.hasAdmin(user)) {
             // Stop or Restart Bot
             if (command === "stop" || command === "restart") {
-                await this.error(`Restart Triggered by ${user.nickname}`);
+                await this.error(`Restart Triggered by ${user.nickname}`, channel);
                 return process.exit(0);
             }
 
             // Trigger this.error
             if (command === "error") {
-                return this.error("Error Triggered by Admin");
+                return this.error("Error Triggered by Admin", channel);
             }
 
             // Return Ping
