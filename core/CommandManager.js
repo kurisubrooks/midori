@@ -8,17 +8,17 @@ import chalk from "chalk";
 import moment from "moment";
 import { Collection, RichEmbed } from "discord.js";
 
-const time = () => moment().format("hh:mm:ss A");
+const time = () => moment().format("HH:mm:ss");
 
 module.exports = class CommandManager {
     constructor(client) {
         this.client = client;
         this.commands = new Collection();
-        this.alises = new Collection();
+        this.aliases = new Collection();
     }
 
     loadCommands(dir) {
-        const commands = fs.readdirSync(path.join(__dirname, dir));
+        const commands = fs.readdirSync(path.join(__dirname, "../", dir));
 
         for (const item of commands) {
             const location = path.join(__dirname, "../", dir, item, "main.js");
@@ -50,13 +50,14 @@ module.exports = class CommandManager {
         const channel = message.channel;
         const server = message.guild ? message.guild.name : "DM";
         const user = message.author;
-        const attachments = message.attachments.length > 0;
-        const text = message.cleanContent += attachments && text.length < 1 ? "<file>" : " <file>";
+        const attachments = message.attachments.size > 0;
+        let text = message.cleanContent;
 
         user.nickname = message.member ? message.member.displayName : message.author.username;
 
         if (type === "text" && user.bot) return false;
         if (text.length < 1 && !attachments) return false;
+        if (attachments) text += attachments && text.length < 1 ? "<file>" : " <file>";
         if (server !== "DM" && new RegExp(blacklist.join("|")).test(message.content)) {
             return this.handleBlacklist(message);
         }
@@ -100,7 +101,7 @@ module.exports = class CommandManager {
         };
 
         return console.log(
-            chalk.magenta.bold(`[${time()} ${this.name}]`),
+            styles[style].bold(`[${time()} ${this.name}]`),
             styles[style || "default"](`${message}`)
         );
     }
