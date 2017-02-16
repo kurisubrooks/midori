@@ -51,7 +51,7 @@ bot.on("message", message => {
 
     // Checks for attached file/image
     message.attachments.forEach(() => { attachments = true; });
-    message.image = attachments && text.length < 1 ? 1 : 0;
+    message.image = attachments && text.length < 1;
     user.nickname = message.member ? message.member.displayName : message.author.username;
 
     // Basic Formatting Checks
