@@ -5,7 +5,13 @@ import chalk from "chalk";
 import moment from "moment";
 import { RichEmbed } from "discord.js";
 
-const time = () => moment().format("hh:mm:ss A");
+const time = () => moment().format("HH:mm:ss");
+
+process.on("unhandledRejection", reason => {
+    console.log(
+        chalk.red.bold(`[${time()} Unhandled Rejection]`), chalk.red(reason)
+    );
+});
 
 module.exports = class Command {
     constructor(client, data) {
@@ -36,12 +42,13 @@ module.exports = class Command {
         };
 
         return console.log(
-            chalk.magenta.bold(`[${time()} ${this.name}]`),
-            styles[style || "default"](`${message}`)
+            styles[style].bold(`[${time()} ${this.name}]`),
+            styles[style || "default"](message)
         );
     }
 
-    error(message) {
+    error(message, channel) {
+        channel = channel || this.client.channels.get("212917108445544449");
         const embed = new RichEmbed()
             .setColor(config.colours.error)
             .addField("Module:", this.name, true)
@@ -49,10 +56,10 @@ module.exports = class Command {
             .addField("Message:", message);
 
         this.log(message, "error");
-        return this.channel.sendEmbed(embed);
+        return channel.sendEmbed(embed);
     }
 
     hasAdmin(user) {
-        return config.masters.includes(user.id);
+        return config.admin.includes(user.id);
     }
 };
