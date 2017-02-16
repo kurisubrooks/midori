@@ -71,7 +71,7 @@ bot.on("message", message => {
         const command = commands.get(commandName) || commands.get(aliases.get(commandName));
 
         // Log User Command
-        console.log(chalk.yellow.bold(`[${server}${channel.name ? `#${channel.name}` : ""}]<${user.nickname}#${user.discriminator}>:`), chalk.yellow(`${text}`));
+        console.log(chalk.yellow.bold(`[${server}${channel.name ? `#${channel.name}` : ""}]<${user.username}#${user.discriminator}>:`), chalk.yellow(`${text}`));
 
         if (!command) return false;
 
