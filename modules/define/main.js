@@ -22,16 +22,22 @@ module.exports = (bot, channel, user, args, id, message, extra) => {
                 name: trigger.nickname,
                 icon_url: trigger.avatar
             },
-            title: args.join(" "),
-            fields: []
+            title: `Define: '${args.join(" ")}'`,
+            description: ""
         };
 
         const data = typeof body === "string" ? JSON.parse(body) : body;
-        const definitions = Object.entries(data.tuc.filter(tuc => tuc.meanings)[0].meanings.slice(0, 5));
 
-        for (const item of definitions) {
-            console.log(item);
-            embed.fields.push({ name: item.text.replace(/<\/?i>/g, "_") });
+        if (!data.tuc || data.tuc[0].meanings.length === 0) {
+            return util.error("No Results Returned", "define", channel);
+        }
+
+        if (data.result !== "ok") {
+            return util.error("API Error", "define", channel);
+        }
+
+        for (let index = 0; index < 5; index++) {
+            embed.description += `**${index + 1}.**\u3000${data.tuc[0].meanings[index].text.replace(/<\/?i>/g, "_")}\n`;
         }
 
         return channel.sendMessage("", { embed })
