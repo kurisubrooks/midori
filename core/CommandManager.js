@@ -1,12 +1,14 @@
 import util from "../util";
 import config from "../config";
-import keychain from "../keychain.json";
 import blacklist from "../blacklist.json";
 
 import fs from "fs";
 import path from "path";
 import chalk from "chalk";
-import { Collection } from "discord.js";
+import moment from "moment";
+import { Collection, RichEmbed } from "discord.js";
+
+const time = () => moment().format("hh:mm:ss A");
 
 module.exports = class CommandManager {
     constructor(client) {
@@ -16,10 +18,10 @@ module.exports = class CommandManager {
     }
 
     loadCommands(dir) {
-        const commands = fs.readdirSync(path.join(__dirname, path.normalize(dir)));
+        const commands = fs.readdirSync(path.join(__dirname, dir));
 
         for (const item of commands) {
-            const location = path.join(__dirname, "modules", item.command, "main.js");
+            const location = path.join(__dirname, "../", dir, item, "main.js");
 
             // Location doesn't exist, skip loop
             if (!fs.existsSync(location)) continue;
@@ -37,20 +39,7 @@ module.exports = class CommandManager {
 
     runCommand(command, message, channel, user, args) {
         try {
-            return command.run(this.client, channel, user, args, message.id, message, {
-                util, config, keychain, command,
-                server: message.guild,
-                masters: config.admin,
-                user: user.nickname,
-                colours: config.colours,
-                trigger: {
-                    id: user.id,
-                    username: user.username,
-                    nickname: user.nickname,
-                    avatar: user.avatarURL,
-                    bot: user.bot
-                }
-            });
+            return command.run(message, channel, user, args);
         } catch(error) {
             return util.error(error, "command");
         }
@@ -86,20 +75,44 @@ module.exports = class CommandManager {
     }
 
     async handleBlacklist(message) {
-        let embed = {
-            fields: [
-                { name: "Offence", value: "Blacklisted Word" },
-                { name: "Action", value: "Message Removed" },
-                { name: "Message", value: message.content }
-            ]
-        };
+        const guild = message.guild ? message.guild.name : "DM";
+        const embed = new RichEmbed()
+            .setDescription("Your message was removed because it contains a word that has been blacklisted.")
+            .addField("Offence", "Blacklisted Word")
+            .addField("Action", "Message Removed")
+            .addField("Message", message.content);
 
         try {
-            console.log(`Deleting ${message.id} from ${message.guild ? message.guild.name : "DM"}`);
+            this.log(`Deleting ${message.id} from ${guild}`);
             await message.delete();
-            return message.author.sendMessage(`Your message was removed because it contains a word that has been blacklisted.`, { embed });
+            return message.author.sendEmbed(embed);
         } catch(error) {
-            return util.error(`Unable to delete message ${message.id} from ${message.guild ? message.guild.name : "DM"}`, "blacklist");
+            return this.error(`Unable to delete message ${message.id} from ${guild}`, "blacklist");
         }
+    }
+
+    log(message, style) {
+        let styles = {
+            default: chalk.white,
+            success: chalk.green,
+            warn: chalk.yellow,
+            error: chalk.red
+        };
+
+        return console.log(
+            chalk.magenta.bold(`[${time()} ${this.name}]`),
+            styles[style || "default"](`${message}`)
+        );
+    }
+
+    error(message) {
+        const embed = new RichEmbed()
+            .setColor(config.colours.error)
+            .addField("Module:", this.name, true)
+            .addField("Time:", time(), true)
+            .addField("Message:", message);
+
+        this.log(message, "error");
+        return this.channel.sendEmbed(embed);
     }
 };
