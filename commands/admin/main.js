@@ -1,4 +1,4 @@
-import Command from "../core/Command";
+import Command from "../../core/Command";
 
 module.exports = class AdminCommand extends Command {
     constructor(client) {
