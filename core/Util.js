@@ -45,7 +45,7 @@ export const log = async (name, message, style) => {
     } else {
         return console.log(
             styles[style].bold(`[${time()} ${name}]`),
-            styles[style](message)
+            styles[style](message.replace(/\r?\n|\r/g, " "))
         );
     }
 };
