@@ -29,7 +29,7 @@ export default class WeatherCommand extends Command {
         });
 
         // Handle Errors
-        if (geolocation.status !== "OK") return this.handleNotOK(geolocation);
+        if (geolocation.status !== "OK") return this.handleNotOK(channel, geolocation);
         if (geolocation.results.length > 1) {
             let places = [];
 
@@ -147,17 +147,17 @@ export default class WeatherCommand extends Command {
         }
     }
 
-    handleNotOK(geolocation) {
+    handleNotOK(channel, geolocation) {
         if (geolocation.status === "ZERO_RESULTS") {
-            return this.error("Query returned no results");
+            return this.error("Query returned no results", channel);
         } else if (geolocation.status === "REQUEST_DENIED") {
-            return this.error("Geocode API Request was denied");
+            return this.error("Geocode API Request was denied", channel);
         } else if (geolocation.status === "INVALID_REQUEST") {
-            return this.error("Invalid Request");
+            return this.error("Invalid Request", channel);
         } else if (geolocation.status === "OVER_QUERY_LIMIT") {
-            return this.error("Query Limit Exceeed, try again tomorrow.");
+            return this.error("Query Limit Exceeed, try again tomorrow.", channel);
         } else {
-            return this.error("Unknown API Error");
+            return this.error("Unknown API Error", channel);
         }
     }
 }
