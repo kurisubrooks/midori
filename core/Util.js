@@ -8,7 +8,7 @@ import { RichEmbed } from "discord.js";
 const time = () => moment().format("HH:mm:ss");
 
 // Global Error Function
-export const error = async (name, message, channel) => {
+export const error = (name, message, channel) => {
     const embed = new RichEmbed()
         .setColor(config.colours.error)
         .addField("Module:", name, true)
@@ -22,7 +22,7 @@ export const error = async (name, message, channel) => {
 };
 
 // Global Logging Function
-export const log = async (name, message, style) => {
+export const log = (name, message, style) => {
     let styles = {
         default: chalk.white,
         success: chalk.green,
@@ -71,11 +71,16 @@ export const handleReady = async client => {
 };
 
 // Handle User Join
-export const handleJoin = async member => {
+export const handleJoin = member => {
     if (config.adminServer.includes(member.guild.id)) {
         member.addRole(member.guild.roles.find("name", "Muggle"));
         member.send("", { embed: { "description": "Welcome to Kurisu's Server!\nTo get started, I kindly ask you take the following quizzes,\nand post the results in #general, so you can be sorted in to your appropriate roles!\n \nhttps://my.pottermore.com/user-profile/my-house/ilvermorny \nhttps://my.pottermore.com/user-profile/my-house/hogwarts\n\nWe don't have a set series of rules as we're a relatively small server,\nbut I do kindly ask that you don't spam, be mature and don't troll.\n\nSincerely, Kurisu." } });
     }
+};
+
+// String First Letter Upper Case
+export const toUpper = string => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
 // Log Start

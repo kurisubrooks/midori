@@ -1,6 +1,6 @@
 import config from "../config";
 import keychain from "../keychain.json";
-import { error, log } from "./Util";
+import { error, log, toUpper } from "./Util";
 
 export default class Command {
     constructor(client, data) {
@@ -24,11 +24,11 @@ export default class Command {
     }
 
     log(message, style) {
-        return log(this.name, message, style);
+        return log(toUpper(this.name), message, style);
     }
 
     error(message, channel) {
-        return error(this.name, message, channel);
+        return error(toUpper(this.name), message, channel);
     }
 
     hasAdmin(user) {
