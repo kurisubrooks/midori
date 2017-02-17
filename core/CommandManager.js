@@ -13,6 +13,9 @@ const time = () => moment().format("HH:mm:ss");
 process.on("unhandledRejection", reason =>
     console.log(chalk.red.bold(`[${time()} Unhandled Rejection]`), chalk.red(reason)));
 
+process.on("unhandledError", reason =>
+    console.log(chalk.red.bold(`[${time()} Unhandled Error]`), chalk.red(reason)));
+
 module.exports = class CommandManager {
     constructor(client) {
         this.client = client;
@@ -31,7 +34,7 @@ module.exports = class CommandManager {
 
             // Add Command to Commands Collection
             const Command = require(location);
-            this.commands.set(item.command, new Command(this.client));
+            this.commands.set(item, new Command(this.client));
 
             // Set Command Aliases
             if (item.hasOwnProperty("alias")) {
@@ -42,6 +45,7 @@ module.exports = class CommandManager {
 
     runCommand(command, message, channel, user, args) {
         try {
+            this.log("Command Parser", `Matched ${command.name}, Running...`, "warn");
             return command.run(message, channel, user, args);
         } catch(error) {
             return util.error(error, "command");
@@ -95,7 +99,7 @@ module.exports = class CommandManager {
         }
     }
 
-    log(message, style) {
+    log(prefix, message, style) {
         let styles = {
             default: chalk.white,
             success: chalk.green,
@@ -104,7 +108,7 @@ module.exports = class CommandManager {
         };
 
         return console.log(
-            styles[style].bold(`[${time()} ${this.name}]`),
+            styles[style].bold(`[${time()} ${prefix}]`),
             styles[style || "default"](`${message}`)
         );
     }
