@@ -30,7 +30,6 @@ export default class WeatherCommand extends Command {
 
         // Handle Errors
         if (geolocation.status !== "OK") return this.handleNotOK(geolocation);
-        if (geolocation.results.length === 0) return message.reply("Your query returned no results.");
         if (geolocation.results.length > 1) {
             let places = [];
 
@@ -150,15 +149,15 @@ export default class WeatherCommand extends Command {
 
     handleNotOK(geolocation) {
         if (geolocation.status === "ZERO_RESULTS") {
-            return this.error("Weather", "Request returned no results");
+            return this.error("Query returned no results");
         } else if (geolocation.status === "REQUEST_DENIED") {
-            return this.error("Weather", "Geocode API Request was denied");
+            return this.error("Geocode API Request was denied");
         } else if (geolocation.status === "INVALID_REQUEST") {
-            return this.error("Weather", "Invalid Request");
+            return this.error("Invalid Request");
         } else if (geolocation.status === "OVER_QUERY_LIMIT") {
-            return this.error("Weather", "Query Limit Exceeed, try again tomorrow.");
+            return this.error("Query Limit Exceeed, try again tomorrow.");
         } else {
-            return this.error("Weather", "Unknown API Error");
+            return this.error("Unknown API Error");
         }
     }
 }
