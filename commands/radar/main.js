@@ -19,4 +19,4 @@ export default class RadarCommand extends Command {
         await channel.sendFile(url, `radar.${ext}`);
         return message.delete();
     }
-};
+}

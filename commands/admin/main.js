@@ -33,4 +33,4 @@ export default class AdminCommand extends Command {
 
         return channel.send("Insufficient Permissions");
     }
-};
+}

@@ -52,4 +52,4 @@ export default class DefineCommand extends Command {
         await channel.sendEmbed(embed);
         return message.delete();
     }
-};
+}

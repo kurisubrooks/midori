@@ -26,4 +26,4 @@ export default class EmbedCommand extends Command {
         await channel.sendMessage(`\`\`\`json\n${JSON.stringify(before, null, 4)}\n\`\`\``, { embed });
         return message.delete();
     }
-};
+}

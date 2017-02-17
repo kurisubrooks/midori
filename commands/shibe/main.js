@@ -20,4 +20,4 @@ export default class ShibeCommand extends Command {
         await channel.sendFile(response[0]);
         return message.delete();
     }
-};
+}
