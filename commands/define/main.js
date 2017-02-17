@@ -27,19 +27,25 @@ module.exports = class DefineCommand extends Command {
         let description = "";
         const embed = new RichEmbed()
             .setColor(this.config.colours.default)
-            .setAuthor(user.nickname, user.avatar)
+            .setAuthor(user.nickname, user.avatarURL)
             .setTitle(`Define: '${args.join(" ")}'`);
 
         if (response.result !== "ok") {
             return this.error("API Error", channel);
         }
 
-        if (!response.tuc || response.tuc[0].meanings.length === 0) {
+        if (!response.tuc) {
+            return this.error("No Results Returned", channel);
+        }
+
+        const definitions = response.tuc.find(obj => obj.meanings);
+
+        if (definitions.meanings.length === 0) {
             return this.error("No Results Returned", channel);
         }
 
         for (let index = 0; index < 5; index++) {
-            description += `**${index + 1}.**\u3000${markdown(response.tuc[0].meanings[index].text)}\n`;
+            description += `**${index + 1}.**\u3000${markdown(definitions.meanings[index].text)}\n`;
         }
 
         embed.setDescription(description);
