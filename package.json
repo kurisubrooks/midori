@@ -1,7 +1,7 @@
 {
   "name": "midori",
-  "version": "0.4.3",
-  "description": "advanced modular bot framework",
+  "version": "0.5.0",
+  "description": "advanced modular discord.js bot/framework",
   "main": "index.js",
   "author": "kurisubrooks",
   "license": "SEE LICENSE IN LICENSE.md",
