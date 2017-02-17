@@ -1,17 +1,10 @@
-import util from "../util";
 import config from "../config";
 import keychain from "../keychain.json";
+import { error, log } from "./Util";
 
-import chalk from "chalk";
-import moment from "moment";
-import { RichEmbed } from "discord.js";
-
-const time = () => moment().format("HH:mm:ss");
-
-module.exports = class Command {
+export default class Command {
     constructor(client, data) {
         this.client = client;
-        this.util = util;
         this.config = config;
         this.keychain = keychain;
 
@@ -20,6 +13,7 @@ module.exports = class Command {
         this.aliases = data.aliases || [];
         this.usage = data.usage || "";
         this.guildOnly = data.guildOnly || false;
+        this.adminOnly = data.adminOnly || false;
 
         if (!this.name) throw new Error("Command Name is required");
         if (!this.description) throw new Error("Command Description is required");
@@ -30,32 +24,14 @@ module.exports = class Command {
     }
 
     log(message, style) {
-        let styles = {
-            default: chalk.white,
-            success: chalk.green,
-            warn: chalk.yellow,
-            error: chalk.red
-        };
-
-        return console.log(
-            styles[style].bold(`[${time()} ${this.name}]`),
-            styles[style || "default"](message)
-        );
+        return log(this.name, message, style);
     }
 
     error(message, channel) {
-        channel = channel || this.client.channels.get("212917108445544449");
-        const embed = new RichEmbed()
-            .setColor(config.colours.error)
-            .addField("Module:", this.name, true)
-            .addField("Time:", time(), true)
-            .addField("Message:", message);
-
-        this.log(message, "error");
-        return channel.sendEmbed(embed);
+        return error(this.name, message, channel);
     }
 
     hasAdmin(user) {
         return config.admin.includes(user.id);
     }
-};
+}

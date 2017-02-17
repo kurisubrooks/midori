@@ -3,7 +3,7 @@
 
 // Core
 import { Client } from "discord.js";
-import util from "./util";
+import { error, handleReady, handleJoin } from "./core/Util";
 import keychain from "./keychain.json";
 import CommandManager from "./core/CommandManager";
 
@@ -14,10 +14,10 @@ Manager.loadCommands("./commands/");
 
 // Handle Discord
 client.login(keychain.discord);
-client.once("ready", () => util.handleReady(client, util));
-client.on("warn", warning => util.error(warning, "core"));
-client.on("error", error => util.error(error, "core"));
-client.on("guildMemberAdd", member => util.handleJoin(member));
+client.once("ready", () => handleReady(client));
+client.on("warn", warning => error(warning, null, "Core"));
+client.on("error", error => error(error, null, "Core"));
+client.on("guildMemberAdd", member => handleJoin(member));
 client.on("message", message => Manager.handleMessage(message));
 
-exports.bot = client;
+export default client;

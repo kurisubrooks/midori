@@ -1,22 +1,17 @@
-import util from "../util";
-import config from "../config";
-import blacklist from "../blacklist.json";
-
 import fs from "fs";
 import path from "path";
-import chalk from "chalk";
-import moment from "moment";
+import config from "../config";
+import blacklist from "../blacklist.json";
+import { error, log } from "./Util";
 import { Collection, RichEmbed } from "discord.js";
 
-const time = () => moment().format("HH:mm:ss");
+process.on("unhandledRejection", (reason, promise) =>
+    log("Unhandled Rejection", [reason, require("util").inspect(promise)], "error"));
 
-process.on("unhandledRejection", reason =>
-    console.log(chalk.red.bold(`[${time()} Unhandled Rejection]`), chalk.red(reason)));
+process.on("uncaughtException", error =>
+    log("Uncaught Exception", error, "error"));
 
-process.on("unhandledError", reason =>
-    console.log(chalk.red.bold(`[${time()} Unhandled Error]`), chalk.red(reason)));
-
-module.exports = class CommandManager {
+export default class CommandManager {
     constructor(client) {
         this.client = client;
         this.commands = new Collection();
@@ -33,8 +28,8 @@ module.exports = class CommandManager {
             if (!fs.existsSync(location)) continue;
 
             // Add Command to Commands Collection
-            const Command = require(location);
-            this.commands.set(item, new Command(this.client).default);
+            const Command = require(location).default;
+            this.commands.set(item, new Command(this.client));
 
             // Set Command Aliases
             if (item.hasOwnProperty("alias")) {
@@ -45,10 +40,10 @@ module.exports = class CommandManager {
 
     runCommand(command, message, channel, user, args) {
         try {
-            this.log("Command Parser", `Matched ${command.name}, Running...`, "warn");
+            log("Command Parser", `Matched ${command.name}, Running...`, "warn");
             return command.run(message, channel, user, args);
         } catch(error) {
-            return util.error(error, "command");
+            return error("Command", error);
         }
     }
 
@@ -74,7 +69,7 @@ module.exports = class CommandManager {
             const commandName = args.splice(0, 1)[0].toLowerCase().slice(config.sign.length);
             const command = this.commands.get(commandName) || this.commands.get(this.aliases.get(commandName));
 
-            console.log(chalk.yellow.bold(`[${server}${channel.name ? `#${channel.name}` : ""}]<${user.username}#${user.discriminator}>:`), chalk.yellow(`${text}`));
+            log("Log", `<${user.username}#${user.discriminator}>: ${text}`, "warn");
 
             if (command) return this.runCommand(command, message, channel, user, args);
         }
@@ -91,37 +86,11 @@ module.exports = class CommandManager {
             .addField("Message", message.content);
 
         try {
-            this.log(`Deleting ${message.id} from ${guild}`);
+            log("Blacklist", `Deleting ${message.id} from ${guild}`, "info");
             await message.delete();
             return message.author.sendEmbed(embed);
-        } catch(error) {
-            return this.error(`Unable to delete message ${message.id} from ${guild}`, "blacklist");
+        } catch(err) {
+            return error("Blacklist", `Unable to delete message ${message.id} from ${guild}`);
         }
     }
-
-    log(prefix, message, style) {
-        let styles = {
-            default: chalk.white,
-            success: chalk.green,
-            warn: chalk.yellow,
-            error: chalk.red
-        };
-
-        return console.log(
-            styles[style].bold(`[${time()} ${prefix}]`),
-            styles[style || "default"](`${message}`)
-        );
-    }
-
-    error(message, referrer) {
-        const channel = this.client.channels.get("212917108445544449");
-        const embed = new RichEmbed()
-            .setColor(config.colours.error)
-            .addField("Module:", referrer, true)
-            .addField("Time:", time(), true)
-            .addField("Message:", message);
-
-        this.log(message, "error");
-        return channel.sendEmbed(embed);
-    }
-};
+}

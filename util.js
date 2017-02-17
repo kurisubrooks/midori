@@ -7,7 +7,7 @@ import keychain from "./keychain.json";
 import { RichEmbed } from "discord.js";
 
 // Log Process Start
-console.log(chalk.blue.bold("Process: Started"));
+// console.log(chalk.blue.bold("Process: Started"));
 
 // Helper Prototypes
 String.prototype.toUpperLowerCase = function toUpperLowerCase() {
@@ -17,12 +17,14 @@ String.prototype.toUpperLowerCase = function toUpperLowerCase() {
 // Module Functions
 module.exports = {
     handleJoin: member => {
+        console.log("outdated util.handleJoin called");
         if (config.adminServer.includes(member.guild.id)) {
             member.addRole(member.guild.roles.find("name", "Muggle"));
             member.send("", { embed: { "description": "Welcome to Kurisu's Server!\nTo get started, I kindly ask you take the following quizzes,\nand post the results in #general, so you can be sorted in to your appropriate roles!\n \nhttps://my.pottermore.com/user-profile/my-house/ilvermorny \nhttps://my.pottermore.com/user-profile/my-house/hogwarts\n\nWe don't have a set series of rules as we're a relatively small server,\nbut I do kindly ask that you don't spam, be mature and don't troll.\n\nSincerely, Kurisu." } });
         }
     },
     handleReady: (bot, util) => {
+        console.log("outdated util.handleReady called");
         console.log(chalk.blue.bold("Discord: Ready"));
 
         // Spawn Subprocesses
@@ -37,6 +39,8 @@ module.exports = {
         }
     },
     error: (message, from, channel) => {
+        console.log("outdated util.error called, referrer", from);
+
         channel = channel || index.client.channels.get("212917108445544449");
         const time = () => moment().format("HH:mm:ss");
         const embed = new RichEmbed()
