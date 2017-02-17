@@ -52,7 +52,7 @@ export const log = async (name, message, style) => {
 
 // Handle Client Ready
 export const handleReady = async client => {
-    log("Ready", "Discord", "success");
+    log("Discord", "Ready", "success");
 
     return client;
 
@@ -79,4 +79,4 @@ export const handleJoin = async member => {
 };
 
 // Log Start
-log("Started", "Process", "info");
+log("Process", "Started", "info");
