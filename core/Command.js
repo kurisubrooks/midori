@@ -7,9 +7,6 @@ import { RichEmbed } from "discord.js";
 
 const time = () => moment().format("HH:mm:ss");
 
-process.on("unhandledRejection", reason =>
-    console.log(chalk.red.bold(`[${time()} Unhandled Rejection]`), chalk.red(reason)));
-
 module.exports = class Command {
     constructor(client, data) {
         this.client = client;
