@@ -5,12 +5,6 @@ import blacklist from "../blacklist.json";
 import { error, log } from "./Util";
 import { Collection, RichEmbed } from "discord.js";
 
-process.on("unhandledRejection", (reason, promise) =>
-    log("Unhandled Rejection", [reason, require("util").inspect(promise)], "error"));
-
-process.on("uncaughtException", error =>
-    log("Uncaught Exception", error, "error"));
-
 export default class CommandManager {
     constructor(client) {
         this.client = client;
@@ -42,8 +36,8 @@ export default class CommandManager {
         try {
             log("Command Parser", `Matched ${command.name}, Running...`, "warn");
             return command.run(message, channel, user, args);
-        } catch(error) {
-            return error("Command", error);
+        } catch(err) {
+            return error("Command", err);
         }
     }
 

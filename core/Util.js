@@ -22,7 +22,7 @@ export const error = (name, message, channel) => {
 };
 
 // Global Logging Function
-export const log = (name, message, style) => {
+export const log = (name, message, style, stacktrace) => {
     let styles = {
         default: chalk.white,
         success: chalk.green,
@@ -42,32 +42,20 @@ export const log = (name, message, style) => {
         }
 
         return false;
+    } else if (stacktrace) {
+        console.log(
+            styles[style].bold(`[${time()} ${name}]`),
+            styles[style](message)
+        );
+
+        return console.trace(styles[style](message));
     } else {
+        message = typeof message === "string" ? message.replace(/\r?\n|\r/g, " ") : message;
         return console.log(
             styles[style].bold(`[${time()} ${name}]`),
-            styles[style](message.replace(/\r?\n|\r/g, " "))
+            styles[style](message)
         );
     }
-};
-
-// Handle Client Ready
-export const handleReady = async client => {
-    log("Discord", "Ready", "success");
-
-    return client;
-
-    /*
-    // Spawn Subprocesses
-    for (const command in config.subprocesses) {
-        try {
-            console.log(chalk.blue.bold("Spawning Subprocess:"), chalk.green.bold(command));
-            require(path.join(__dirname, "modules", command, "main.js"))(client, util, config, keychain, __dirname);
-        } catch(error) {
-            error(`Failed to start subprocess "${command}"\n${error}`, null, "index");
-            throw error;
-        }
-    }
-    */
 };
 
 // Handle User Join
@@ -82,6 +70,14 @@ export const handleJoin = member => {
 export const toUpper = string => {
     return string.charAt(0).toUpperCase() + string.slice(1);
 };
+
+// Unhandled Promise Rejections
+process.on("unhandledRejection", reason =>
+    log("Unhandled Rejection", reason, "error", true));
+
+// Unhandled Errors
+process.on("uncaughtException", error =>
+    log("Uncaught Exception", error, "error", true));
 
 // Log Start
 log("Process", "Started", "info");
