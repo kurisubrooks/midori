@@ -1,7 +1,7 @@
 import request from "request-promise";
 import Command from "../../core/Command";
 
-module.exports = class ShibeCommand extends Command {
+export default class ShibeCommand extends Command {
     constructor(client) {
         super(client, {
             name: "shibe",

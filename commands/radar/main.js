@@ -1,7 +1,7 @@
 import qs from "qs";
 import Command from "../../core/Command";
 
-module.exports = class RadarCommand extends Command {
+export default class RadarCommand extends Command {
     constructor(client) {
         super(client, {
             name: "radar",

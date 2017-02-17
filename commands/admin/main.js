@@ -1,6 +1,6 @@
 import Command from "../../core/Command";
 
-module.exports = class AdminCommand extends Command {
+export default class AdminCommand extends Command {
     constructor(client) {
         super(client, {
             name: "admin",

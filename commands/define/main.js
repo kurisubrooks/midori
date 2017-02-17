@@ -3,7 +3,7 @@ import request from "request-promise";
 import markdown from "to-markdown";
 import Command from "../../core/Command";
 
-module.exports = class DefineCommand extends Command {
+export default class DefineCommand extends Command {
     constructor(client) {
         super(client, {
             name: "define",

@@ -1,6 +1,6 @@
 import Command from "../../core/Command";
 
-module.exports = class EmbedCommand extends Command {
+export default class EmbedCommand extends Command {
     constructor(client) {
         super(client, {
             name: "embed",

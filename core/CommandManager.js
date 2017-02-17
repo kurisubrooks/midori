@@ -34,7 +34,7 @@ module.exports = class CommandManager {
 
             // Add Command to Commands Collection
             const Command = require(location);
-            this.commands.set(item, new Command(this.client));
+            this.commands.set(item, new Command(this.client).default);
 
             // Set Command Aliases
             if (item.hasOwnProperty("alias")) {
