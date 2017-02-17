@@ -109,14 +109,15 @@ module.exports = class CommandManager {
         );
     }
 
-    error(message) {
+    error(message, referrer) {
+        const channel = this.client.channels.get("212917108445544449");
         const embed = new RichEmbed()
             .setColor(config.colours.error)
-            .addField("Module:", this.name, true)
+            .addField("Module:", referrer, true)
             .addField("Time:", time(), true)
             .addField("Message:", message);
 
         this.log(message, "error");
-        return this.channel.sendEmbed(embed);
+        return channel.sendEmbed(embed);
     }
 };
