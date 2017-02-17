@@ -1,5 +1,6 @@
 import util from "../util";
 import config from "../config";
+import keychain from "../keychain.json";
 
 import chalk from "chalk";
 import moment from "moment";
@@ -12,6 +13,7 @@ module.exports = class Command {
         this.client = client;
         this.util = util;
         this.config = config;
+        this.keychain = keychain;
 
         this.name = data.name;
         this.description = data.description;
