@@ -13,68 +13,6 @@ module.exports = {
         info: 0x52B7D6
     },
 
-    commands: [
-        {
-            command: "admin",
-            description: "Administrative Commands",
-            admin: true
-        },
-        {
-            command: "air",
-            description: "Global Air Pollution Levels"
-        },
-        {
-            command: "define",
-            description: "Basic Dictionary",
-            alias: ["d"]
-        },
-        {
-            command: "embed",
-            description: "Discord Embed API Preview",
-            alias: ["e"]
-        },
-        {
-            command: "help",
-            description: "Displays the Help Prompt",
-            alias: ["halp", "たすけて", "助けて"]
-        },
-        {
-            command: "radar",
-            description: "Weather Radar for Australia",
-            alias: ["rain", "r"]
-        },
-        {
-            command: "search",
-            description: "Search with Google",
-            alias: ["s"]
-        },
-        {
-            command: "shibe",
-            description: "Posts an Image of Shiba Inus",
-            alias: ["shib", "doge"]
-        },
-        {
-            command: "time",
-            description: "Grab the Time from a given timezone",
-            alias: ["time", "tz"]
-        },
-        {
-            command: "translate",
-            description: "Translate with Google",
-            alias: ["t"]
-        },
-        {
-            command: "weather",
-            description: "Grab the Current Weather",
-            alias: ["w"]
-        }
-    ],
-
-    subprocesses: {
-        shake: { description: "Earthquake Alerts" }
-        // fires: { description: "Bush Fire Proximity Alerts" }
-    },
-
     weather: {
         "132368482120499201": ["Penrith", "NSW", "Australia"],
         "169842543410937856": ["Werrington", "NSW", "Australia"],
