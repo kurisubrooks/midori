@@ -10,6 +10,7 @@ export default class Subprocess {
 
         this.name = data.name;
         this.description = data.description;
+        this.disable = data.disable || false;
 
         if (!this.name) throw new Error("Subprocess Name is required");
         if (!this.description) throw new Error("Subprocess Description is required");
@@ -24,6 +25,6 @@ export default class Subprocess {
     }
 
     error(message, channel) {
-        return error(toUpper(this.name), message, channel);
+        return error(this.name, message, channel);
     }
 }

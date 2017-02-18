@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import config from "../config";
 import blacklist from "../blacklist.json";
-import { error, log } from "./Util";
+import { error, log, toUpper } from "./Util";
 import { Collection, RichEmbed } from "discord.js";
 
 export default class CommandManager {
@@ -23,7 +23,12 @@ export default class CommandManager {
 
             // Add Command to Commands Collection
             const Command = require(location).default;
-            this.commands.set(item, new Command(this.client));
+            const Construct = new Command(this.client);
+
+            if (Construct.disable) continue;
+            log("Loaded Command", toUpper(Command.name), "info");
+
+            this.commands.set(item, Construct);
 
             // Set Command Aliases
             if (item.hasOwnProperty("alias")) {

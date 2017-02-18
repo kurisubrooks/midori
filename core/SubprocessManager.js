@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { error, log } from "./Util";
+import { error, log, toUpper } from "./Util";
 import { Collection } from "discord.js";
 
 export default class SubprocessManager {
@@ -19,8 +19,13 @@ export default class SubprocessManager {
             if (!fs.existsSync(location)) continue;
 
             // Add Subprocess to Processes Collection
-            const Subprocess = require(location).default;
-            this.processes.set(item, new Subprocess(this.client));
+            const Process = require(location).default;
+            const Construct = new Process(this.client);
+
+            if (Construct.disable) continue;
+            log("Loaded Process", toUpper(Process.name), "info");
+
+            this.commands.set(item, Construct);
         }
 
         for (const subprocess of this.processes.values()) {

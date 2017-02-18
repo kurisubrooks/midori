@@ -14,6 +14,7 @@ export default class Command {
         this.usage = data.usage || "";
         this.guildOnly = data.guildOnly || false;
         this.adminOnly = data.adminOnly || false;
+        this.disable = data.disable || false;
 
         if (!this.name) throw new Error("Command Name is required");
         if (!this.description) throw new Error("Command Description is required");
@@ -28,7 +29,7 @@ export default class Command {
     }
 
     error(message, channel) {
-        return error(toUpper(this.name), message, channel);
+        return error(this.name, message, channel);
     }
 
     hasAdmin(user) {
