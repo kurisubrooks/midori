@@ -11,9 +11,9 @@ const time = () => moment().format("HH:mm:ss");
 export const error = (name, message, channel) => {
     const embed = new RichEmbed()
         .setColor(config.colours.error)
-        .addField("Module:", name, true)
-        .addField("Time:", time(), true)
-        .addField("Message:", message);
+        .addField("Module", name, true)
+        .addField("Time", time(), true)
+        .addField("Message", message);
 
     channel = channel || client.channels.get("212917108445544449");
     log(name, message, "error");
