@@ -1,9 +1,10 @@
 import config from "../config";
 import keychain from "../keychain.json";
 import { error, log, toUpper } from "./Util";
+import { Client } from "discord.js";
 
 export default class Command {
-    constructor(client, data) {
+    constructor(client, data = {}) {
         this.client = client;
         this.config = config;
         this.keychain = keychain;
@@ -15,7 +16,8 @@ export default class Command {
         this.guildOnly = data.guildOnly || false;
         this.adminOnly = data.adminOnly || false;
         this.disabled = data.disabled || false;
-
+        
+        if (!this.client || !(this.client instanceof Client)) throw new Error("Discord Client is required");
         if (!this.name) throw new Error("Command Name is required");
         if (!this.description) throw new Error("Command Description is required");
     }
