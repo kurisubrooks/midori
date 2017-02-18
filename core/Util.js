@@ -7,6 +7,11 @@ import { RichEmbed } from "discord.js";
 // Logging Time Format
 const time = () => moment().format("HH:mm:ss");
 
+// String First Letter Upper Case
+export const toUpper = string => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
 // Global Error Function
 export const error = (name, message, channel) => {
     const embed = new RichEmbed()
@@ -37,7 +42,7 @@ export const log = (name, message, style, stacktrace) => {
     if (Array.isArray(message)) {
         for (const item of message) {
             console.log(
-                styles[style].bold(`[${time()} ${name}]`),
+                styles[style].bold(`[${time()} ${toUpper(name)}]`),
                 styles[style](item)
             );
         }
@@ -45,7 +50,7 @@ export const log = (name, message, style, stacktrace) => {
         return false;
     } else if (stacktrace) {
         console.log(
-            styles[style].bold(`[${time()} ${name}]`),
+            styles[style].bold(`[${time()} ${toUpper(name)}]`),
             styles[style](message)
         );
 
@@ -53,7 +58,7 @@ export const log = (name, message, style, stacktrace) => {
     } else {
         message = typeof message === "string" ? message.replace(/\r?\n|\r/g, " ") : message;
         return console.log(
-            styles[style].bold(`[${time()} ${name}]`),
+            styles[style].bold(`[${time()} ${toUpper(name)}]`),
             styles[style](message)
         );
     }
@@ -65,11 +70,6 @@ export const handleJoin = member => {
         member.addRole(member.guild.roles.find("name", "Muggle"));
         member.send("", { embed: { "description": "Welcome to Kurisu's Server!\nTo get started, I kindly ask you take the following quizzes,\nand post the results in #general, so you can be sorted in to your appropriate roles!\n \nhttps://my.pottermore.com/user-profile/my-house/ilvermorny \nhttps://my.pottermore.com/user-profile/my-house/hogwarts\n\nWe don't have a set series of rules as we're a relatively small server,\nbut I do kindly ask that you don't spam, be mature and don't troll.\n\nSincerely, Kurisu." } });
     }
-};
-
-// String First Letter Upper Case
-export const toUpper = string => {
-    return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
 // Unhandled Promise Rejections
