@@ -4,10 +4,7 @@ import path from "path";
 import Canvas from "canvas";
 import socket from "socket.io-client";
 import request from "request-promise";
-import keychain from "../../keychain.json";
 import Subprocess from "../../core/Subprocess";
-
-const io = socket(keychain.shake);
 
 let previous_message;
 let previous_quake = { };
@@ -22,6 +19,8 @@ export default class ShakeProcess extends Subprocess {
     }
 
     run() {
+        const io = socket(this.keychain.shake);
+
         // Kurisu#updates
         this.postChannel = this.client.channels.get("276249021579001857");
         // Kurisu#owlery
@@ -50,6 +49,8 @@ export default class ShakeProcess extends Subprocess {
     }
 
     async parse(data) {
+        this.log("Running EEW Parser", "debug");
+
         const response = await request({
             uri: this.getMap(data),
             headers: { "User-Agent": "Mozilla/5.0" },
@@ -96,13 +97,17 @@ export default class ShakeProcess extends Subprocess {
         if (!(data.id in previous_quake)) {
             previous_quake[data.id] = data;
             previous_message = await this.postChannel.sendFile(canvas.toBuffer());
+            this.log("Posted Image to postChannel", "debug");
             return true;
         // Last Revision
         } else if (data.situation === 1) {
             previous_quake[data.id] = data;
             await previous_message.delete();
+            this.log("Deleted Previous Image from PostChannel", "debug");
             previous_message = "";
-            return this.postChannel.sendFile(canvas.toBuffer());
+            await this.postChannel.sendFile(canvas.toBuffer());
+            this.log("Posted Image to postChannel", "debug");
+            return true;
         }
 
         return null;
