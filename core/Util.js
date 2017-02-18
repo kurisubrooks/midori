@@ -27,8 +27,9 @@ export const log = (name, message, style, stacktrace) => {
         default: chalk.white,
         success: chalk.green,
         warn: chalk.yellow,
+        error: chalk.red,
         info: chalk.blue,
-        error: chalk.red
+        debug: chalk.magenta
     };
 
     style = style || "default";
