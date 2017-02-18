@@ -18,12 +18,23 @@ export default class TimeCommand extends Command {
             return message.reply("Please provide a query");
         }
 
-        const $ = await request({
-            uri: `http://time.is/${args.join(" ").replace(/^in/, "")}`,
-            headers: { "User-Agent": "Mozilla/5.0" },
-            transform: body => cheerio.load(body)
-        });
+        let response;
 
+        try {
+            response = await request({
+                uri: `http://time.is/${args.join(" ").replace(/^in/, "")}`,
+                headers: { "User-Agent": "Mozilla/5.0" },
+                resolveWithFullResponse: true
+            });
+        } catch(err) {
+            this.log(err, "error");
+            return this.error("API Error", channel);
+        }
+
+        if (response.statusCode === 404) return this.error("No Results", channel);
+        if (response.statusCode === 500) return this.error("API Error", channel);
+
+        const $ = cheerio.load(response.body);
         const place = $("#msgdiv > h1").text();
         const date = $("#dd").text();
         const time = $("#twd").text();
