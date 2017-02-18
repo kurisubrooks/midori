@@ -25,7 +25,7 @@ export default class SubprocessManager {
             if (Construct.disable) continue;
             log("Loaded Process", toUpper(Process.name), "info");
 
-            this.commands.set(item, Construct);
+            this.processes.set(item, Construct);
         }
 
         for (const subprocess of this.processes.values()) {
