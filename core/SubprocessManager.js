@@ -20,12 +20,12 @@ export default class SubprocessManager {
 
             // Add Subprocess to Processes Collection
             const Process = require(location).default;
-            const Construct = new Process(this.client);
+            const instance = new Process(this.client);
 
-            if (Construct.disabled) continue;
-            log("Loaded Process", toUpper(Process.name), "info");
+            if (instance.disabled) continue;
+            log("Loaded Process", toUpper(instance.name), "info");
 
-            this.processes.set(item, Construct);
+            this.processes.set(item, instance);
         }
 
         for (const subprocess of this.processes.values()) {

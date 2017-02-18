@@ -23,16 +23,16 @@ export default class CommandManager {
 
             // Add Command to Commands Collection
             const Command = require(location).default;
-            const Construct = new Command(this.client);
+            const instance = new Command(this.client);
 
-            if (Construct.disabled) continue;
-            log("Loaded Command", toUpper(Command.name), "info");
+            if (instance.disabled) continue;
+            log("Loaded Command", toUpper(instance.name), "info");
 
-            this.commands.set(item, Construct);
+            this.commands.set(item, instance);
 
             // Set Command Aliases
-            if (item.hasOwnProperty("aliases")) {
-                for (const alias of item.aliases) this.aliases.set(alias, item.command);
+            if (instance.hasOwnProperty("aliases")) {
+                for (const alias of instance.aliases) this.aliases.set(alias, instance.command);
             }
         }
     }
