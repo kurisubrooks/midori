@@ -1,3 +1,24 @@
+// import request from "request-promise";
+import Subprocess from "../../core/Subprocess";
+
+export default class FireProcess extends Subprocess {
+    constructor(client) {
+        super(client, {
+            name: "Fires",
+            description: "RFS Bushfire Warnings",
+            disabled: true
+        });
+    }
+
+    run() {
+        setInterval(this.check, 1 * 60 * 1000);
+    }
+
+    check() {
+        return true;
+    }
+}
+
 /*
 import request from "superagent";
 
