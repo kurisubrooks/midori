@@ -32,7 +32,7 @@ export default class CommandManager {
 
             // Set Command Aliases
             if (instance.hasOwnProperty("aliases")) {
-                for (const alias of instance.aliases) this.aliases.set(alias, instance.command);
+                for (const alias of instance.aliases) this.aliases.set(alias, instance);
             }
         }
     }
@@ -66,7 +66,7 @@ export default class CommandManager {
         if (text.startsWith(config.sign)) {
             const args = text.split(" ");
             const commandName = args.splice(0, 1)[0].toLowerCase().slice(config.sign.length);
-            const command = this.commands.get(commandName) || this.commands.get(this.aliases.get(commandName));
+            const command = this.commands.get(commandName) || this.aliases.get(commandName);
 
             log("Log", `<${user.username}#${user.discriminator}>: ${text}`, "warn");
 
