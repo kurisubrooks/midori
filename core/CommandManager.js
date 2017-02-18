@@ -31,8 +31,8 @@ export default class CommandManager {
             this.commands.set(item, Construct);
 
             // Set Command Aliases
-            if (item.hasOwnProperty("alias")) {
-                for (const alias of item.alias) this.aliases.set(alias, item.command);
+            if (item.hasOwnProperty("aliases")) {
+                for (const alias of item.aliases) this.aliases.set(alias, item.command);
             }
         }
     }
