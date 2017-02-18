@@ -14,7 +14,7 @@ export default class Command {
         this.usage = data.usage || "";
         this.guildOnly = data.guildOnly || false;
         this.adminOnly = data.adminOnly || false;
-        this.disable = data.disable || false;
+        this.disabled = data.disabled || false;
 
         if (!this.name) throw new Error("Command Name is required");
         if (!this.description) throw new Error("Command Description is required");
