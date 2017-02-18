@@ -25,7 +25,7 @@ export default class CommandManager {
             const Command = require(location).default;
             const Construct = new Command(this.client);
 
-            if (Construct.disable) continue;
+            if (Construct.disabled) continue;
             log("Loaded Command", toUpper(Command.name), "info");
 
             this.commands.set(item, Construct);

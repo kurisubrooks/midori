@@ -22,7 +22,7 @@ export default class SubprocessManager {
             const Process = require(location).default;
             const Construct = new Process(this.client);
 
-            if (Construct.disable) continue;
+            if (Construct.disabled) continue;
             log("Loaded Process", toUpper(Process.name), "info");
 
             this.processes.set(item, Construct);
