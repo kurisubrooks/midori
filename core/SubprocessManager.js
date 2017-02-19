@@ -25,7 +25,11 @@ export default class SubprocessManager {
             if (instance.disabled) continue;
             log("Loaded Process", toUpper(instance.name), "info");
 
-            this.processes.set(item, instance);
+            if (this.processes.has(instance.name) {
+                throw new Error("Subprocesses cannot have the same name");
+            } else {
+                this.processes.set(instance.name, instance);
+            }
         }
 
         for (const subprocess of this.processes.values()) {
