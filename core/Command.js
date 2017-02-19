@@ -24,7 +24,7 @@ export default class Command {
         if (!this.description) throw new Error("Command Description is required");
         if (typeof this.name !== "string") throw new TypeError("Command name must be a string");
         if (typeof this.description !== "string") throw new TypeError("Command description must be a string");
-        if (!(this.aliases instanceof Array) throw new TypeError("Command aliases must be an array of strings");
+        if (!(this.aliases instanceof Array)) throw new TypeError("Command aliases must be an array of strings");
         if (this.aliases.some(alias => typeof alias !== "string")) throw new TypeError("Command aliases must be an array of strings");
         if (typeof this.guildOnly !== "boolean") throw new TypeError("Command guildOnly property must be a boolean");
         if (typeof this.adminOnly !== "boolean") throw new TypeError("Command adminOnly property must be a boolean");
