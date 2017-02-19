@@ -26,7 +26,6 @@ Create a file called `keychain.json` in the main directory, with the following c
 
 ```js
 {
-    "shake": "http://shake.kurisubrooks.com:3390",
     "discord": "", // Discord Bot Token
     "darksky": "", // DarkSky Weather API Key
     "google": {
