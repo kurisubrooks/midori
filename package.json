@@ -21,7 +21,9 @@
     "qs": "^6.2.1",
     "request": "^2.74.0",
     "request-promise": "^4.1.1",
+    "sequelize": "^3.30.2",
     "socket.io-client": "^1.4.8",
+    "sqlite3": "^3.1.8",
     "to-markdown": "^3.0.3"
   },
   "devDependencies": {
