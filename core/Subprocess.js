@@ -1,6 +1,7 @@
 import config from "../config";
 import keychain from "../keychain.json";
 import { error, log, toUpper } from "./Util";
+import { Client } from "discord.js";
 
 export default class Subprocess {
     constructor(client, data = {}) {
@@ -11,10 +12,11 @@ export default class Subprocess {
         this.name = data.name;
         this.description = data.description;
         this.disabled = data.disabled || false;
-
+        
+        if (!this.client || !(this.client instanceof Client)) throw new Error("Discord client is required for Subprocess");
         if (!this.name) throw new Error("Subprocess Name is required");
         if (!this.description) throw new Error("Subprocess Description is required");
-        if (typeof this.disabled !== "boolean") throw new TypeError("Subprocess disbaled property must be a boolean") 
+        if (typeof this.disabled !== "boolean") throw new TypeError("Subprocess disbaled property must be a boolean");
         if (typeof this.name !== "string") throw new TypeError("Subprocess name must be a string");
         if (typeof this.description !== "string") throw new TypeError("Subprocess description must be a string");
         
