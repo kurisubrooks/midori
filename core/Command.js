@@ -6,7 +6,7 @@ import { Client } from "discord.js";
 export default class Command {
     constructor(client, data = {}) {
         if (typeof data !== "object") throw new TypeError("The data parameter must be an object");
-        if (!this.client || !(this.client instanceof Client)) throw new Error("Discord Client is required");
+        if (client || !(client instanceof Client)) throw new Error("Discord Client is required");
         
         this.client = client;
         this.config = config;
