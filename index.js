@@ -11,15 +11,19 @@ import SubprocessManager from "./core/SubprocessManager";
 // Initialise
 const client = new Client();
 
-const Subprocesses = new SubprocessManager(client);
-Subprocesses.loadModules("./subprocesses/");
+let onReady = () => {
+    log("Discord", "Ready", "success");
+
+    const Subprocesses = new SubprocessManager(client);
+    Subprocesses.loadModules("./subprocesses/");
+};
 
 const Manager = new CommandManager(client);
 Manager.loadCommands("./commands/");
 
 // Handle Discord
 client.login(keychain.discord);
-client.once("ready", () => log("Discord", "Ready", "success"));
+client.once("ready", () => onReady());
 client.on("warn", warning => error("Core", warning));
 client.on("error", error => error("Core", error));
 client.on("guildMemberAdd", member => handleJoin(member));

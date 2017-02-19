@@ -16,20 +16,20 @@ export default class ShakeProcess extends Subprocess {
             name: "Shake",
             description: "Earthquake Early Warnings Poster"
         });
-    }
-
-    run() {
-        const io = socket(this.keychain.shake);
 
         // Kurisu#updates
         this.postChannel = this.client.channels.get("276249021579001857");
         // Kurisu#owlery
         this.debugChannel = this.client.channels.get("212917108445544449");
+        // Init WebSocket
+        this.io = socket(this.keychain.shake);
+    }
 
-        io.on("connect", () => io.emit("auth", { version: 2.1 }));
-        io.on("quake.eew", data => this.parse(data));
+    run() {
+        this.io.on("connect", () => this.io.emit("auth", { version: 2.1 }));
+        this.io.on("quake.eew", data => this.parse(data));
 
-        io.on("auth", data => {
+        this.io.on("auth", data => {
             if (data.ok) {
                 this.log("Connected", "success");
 
@@ -42,7 +42,7 @@ export default class ShakeProcess extends Subprocess {
             }
         });
 
-        io.on("disconnect", () => {
+        this.io.on("disconnect", () => {
             this.error("Disconnected from Socket", this.debugChannel);
             disconnected = true;
         });
