@@ -15,7 +15,7 @@ export default class Subprocess {
         this.name = data.name;
         this.description = data.description;
         this.disabled = data.disabled || false;
-        
+
         if (!this.name) throw new Error("Subprocess Name is required");
         if (!this.description) throw new Error("Subprocess Description is required");
         if (typeof this.disabled !== "boolean") throw new TypeError("Subprocess disbaled property must be a boolean");
