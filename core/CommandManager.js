@@ -10,7 +10,7 @@ export default class CommandManager {
         this.client = client;
         this.commands = new Collection();
         this.aliases = new Collection();
-        
+
         if (!this.client || !(this.client instanceof Client)) throw new Error("Discord Client is required");
     }
 
@@ -31,20 +31,20 @@ export default class CommandManager {
             log("Loaded Command", toUpper(instance.name), "info");
 
             // Set command name
-            if (this.commands.has(instance.name) {
+            if (this.commands.has(instance.name)) {
                 throw new Error("Commands cannot have the same name");
             } else {
                 this.commands.set(instance.name, instance);
             }
-            
+
             // Set command aliases
             for (const alias of instance.aliases) {
                 if (this.aliases.has(alias)) {
-                    throw new Error("Commands cannot share aliases")
+                    throw new Error("Commands cannot share aliases");
                 } else {
                     this.aliases.set(alias, instance);
                 }
-            ]
+            }
         }
     }
 
@@ -77,7 +77,7 @@ export default class CommandManager {
         if (text.startsWith(config.sign)) {
             const args = text.split(" ");
             const commandName = args.splice(0, 1)[0].toLowerCase().slice(config.sign.length);
-            const command = this.commands.get(commandName) || this.aliases.get(commandName);
+            const command = message.command = this.commands.get(commandName) || this.aliases.get(commandName);
 
             log("Log", `<${user.username}#${user.discriminator}>: ${text}`, "warn");
 
