@@ -19,7 +19,7 @@ export default class Command {
         this.guildOnly = data.guildOnly || false;
         this.adminOnly = data.adminOnly || false;
         this.disabled = data.disabled || false;
-       
+
         if (!this.name) throw new Error("Command Name is required");
         if (!this.description) throw new Error("Command Description is required");
         if (typeof this.name !== "string") throw new TypeError("Command name must be a string");
