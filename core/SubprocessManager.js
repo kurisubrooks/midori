@@ -1,10 +1,12 @@
 import fs from "fs";
 import path from "path";
 import { error, log, toUpper } from "./Util";
-import { Collection } from "discord.js";
+import { Collection, Client } from "discord.js";
 
 export default class SubprocessManager {
     constructor(client) {
+        if (!client || !(client instanceof Client)) throw new Error("Discord Client is required for Subprocess Manager");
+        
         this.client = client;
         this.processes = new Collection();
     }
@@ -25,7 +27,11 @@ export default class SubprocessManager {
             if (instance.disabled) continue;
             log("Loaded Process", toUpper(instance.name), "info");
 
-            this.processes.set(item, instance);
+            if (this.processes.has(instance.name) {
+                throw new Error("Subprocesses cannot have the same name");
+            } else {
+                this.processes.set(instance.name, instance);
+            }
         }
 
         for (const subprocess of this.processes.values()) {

@@ -3,13 +3,15 @@ import path from "path";
 import config from "../config";
 import blacklist from "../blacklist.json";
 import { error, log, toUpper } from "./Util";
-import { Collection, RichEmbed } from "discord.js";
+import { Collection, RichEmbed, Client } from "discord.js";
 
 export default class CommandManager {
     constructor(client) {
         this.client = client;
         this.commands = new Collection();
         this.aliases = new Collection();
+        
+        if (!this.client || !(this.client instanceof Client)) throw new Error("Discord Client is required");
     }
 
     loadCommands(dir) {
@@ -28,12 +30,21 @@ export default class CommandManager {
             if (instance.disabled) continue;
             log("Loaded Command", toUpper(instance.name), "info");
 
-            this.commands.set(item, instance);
-
-            // Set Command Aliases
-            if (instance.hasOwnProperty("aliases")) {
-                for (const alias of instance.aliases) this.aliases.set(alias, instance);
+            // Set command name
+            if (this.commands.has(instance.name) {
+                throw new Error("Commands cannot have the same name");
+            } else {
+                this.commands.set(instance.name, instance);
             }
+            
+            // Set command aliases
+            for (const alias of instance.aliases) {
+                if (this.aliases.has(alias)) {
+                    throw new Error("Commands cannot share aliases")
+                } else {
+                    this.aliases.set(alias, instance);
+                }
+            ]
         }
     }
 
