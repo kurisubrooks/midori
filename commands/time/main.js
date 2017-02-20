@@ -9,7 +9,7 @@ export default class TimeCommand extends Command {
         super(client, {
             name: "time",
             description: "Get the Time for your Given Location",
-            aliases: ["t", "clock"]
+            aliases: ["clock"]
         });
     }
 
