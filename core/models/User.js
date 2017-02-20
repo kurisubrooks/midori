@@ -2,10 +2,15 @@ import Sequelize from "sequelize";
 import Database from "../Database";
 
 const Users = Database.define("users", {
-    id: Sequelize.STRING,
+    id: {
+        type: Sequelize.STRING,
+        primaryKey: true
+    },
     data: Sequelize.STRING
 });
 
 Users.sync();
 
-export default Users;
+console.log(Users);
+
+module.exports = Users;
