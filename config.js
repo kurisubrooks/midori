@@ -13,6 +13,14 @@ module.exports = {
         info: 0x52B7D6
     },
 
+    shake: {
+        socket: "http://shake.kurisubrooks.com:3390",
+        channels: {
+            post: "276249021579001857",
+            debug: "212917108445544449"
+        }
+    },
+
     weather: {
         "132368482120499201": ["Penrith", "NSW", "Australia"],
         "169842543410937856": ["Werrington", "NSW", "Australia"],

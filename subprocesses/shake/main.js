@@ -14,22 +14,20 @@ export default class ShakeProcess extends Subprocess {
     constructor(client) {
         super(client, {
             name: "Shake",
-            description: "Earthquake Early Warnings Poster"
+            description: "Earthquake Early Warnings Poster",
+            config: "shake"
         });
+
+        this.postChannel = this.client.channels.get(this.config.channels.post);
+        this.debugChannel = this.client.channels.get(this.config.channels.debug);
+        this.io = socket(this.config.socket);
     }
 
     run() {
-        const io = socket(this.keychain.shake);
+        this.io.on("connect", () => this.io.emit("auth", { version: 2.1 }));
+        this.io.on("quake.eew", data => this.parse(data));
 
-        // Kurisu#updates
-        this.postChannel = this.client.channels.get("276249021579001857");
-        // Kurisu#owlery
-        this.debugChannel = this.client.channels.get("212917108445544449");
-
-        io.on("connect", () => io.emit("auth", { version: 2.1 }));
-        io.on("quake.eew", data => this.parse(data));
-
-        io.on("auth", data => {
+        this.io.on("auth", data => {
             if (data.ok) {
                 this.log("Connected", "success");
 
@@ -42,7 +40,7 @@ export default class ShakeProcess extends Subprocess {
             }
         });
 
-        io.on("disconnect", () => {
+        this.io.on("disconnect", () => {
             this.error("Disconnected from Socket", this.debugChannel);
             disconnected = true;
         });
@@ -54,8 +52,7 @@ export default class ShakeProcess extends Subprocess {
         const response = await request({
             uri: this.getMap(data),
             headers: { "User-Agent": "Mozilla/5.0" },
-            encoding: "binary",
-            json: true
+            encoding: "binary"
         });
 
         Canvas.registerFont(path.join(__dirname, "Roboto.ttf"), { family: "Roboto" });
@@ -97,16 +94,16 @@ export default class ShakeProcess extends Subprocess {
         if (!(data.id in previous_quake)) {
             previous_quake[data.id] = data;
             previous_message = await this.postChannel.sendFile(canvas.toBuffer());
-            this.log("Posted Image to postChannel", "debug");
+            this.log(`Posted Image to #${this.postChannel.name}`, "debug");
             return true;
         // Last Revision
         } else if (data.situation === 1) {
             previous_quake[data.id] = data;
             await previous_message.delete();
-            this.log("Deleted Previous Image from PostChannel", "debug");
+            this.log(`Deleted Previous Image from #${this.postChannel.name}`, "debug");
             previous_message = "";
             await this.postChannel.sendFile(canvas.toBuffer());
-            this.log("Posted Image to postChannel", "debug");
+            this.log(`Posted Image to #${this.postChannel.name}`, "debug");
             return true;
         }
 

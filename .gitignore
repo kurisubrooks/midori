@@ -5,3 +5,4 @@ bin
 node_modules
 npm-debug.log*
 keychain.json
+*.sqlite
