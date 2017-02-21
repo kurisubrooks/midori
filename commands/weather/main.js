@@ -1,7 +1,8 @@
 const path = require("path");
 const Canvas = require("canvas");
-const request = require("request-promise");
+const request = require("superagent");
 const Command = require("../../core/Command");
+const { Users } = require("../../core/Models");
 
 module.exports = class WeatherCommand extends Command {
     constructor(client) {
@@ -14,52 +15,57 @@ module.exports = class WeatherCommand extends Command {
 
     async run(message, channel, user, args) {
         if (args.length === 0) {
-            if (user.id in this.config.weather) {
-                args = this.config.weather[user.id];
+            const userDB = await Users.findOne({ where: { id: user.id } });
+            const err = "Please provide a query, or set your location with `/set weather <location>`";
+
+            if (userDB) {
+                const data = JSON.parse(userDB.data);
+
+                if (data.weather || data.location) {
+                    args = data.weather.split(" ");
+                } else {
+                    return message.reply(err);
+                }
             } else {
-                return message.reply("Please provide a query");
+                return message.reply(err);
             }
         }
 
-        const location = encodeURIComponent(args.join("+"));
-        const geolocation = await request({
-            uri: `https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=${this.keychain.google.geocode}`,
-            headers: { "User-Agent": "Mozilla/5.0" },
-            json: true
-        });
+        const geolocation = await request
+            .get(`https://maps.googleapis.com/maps/api/geocode/json`)
+            .query(`address=${encodeURIComponent(args.join("+"))}`)
+            .query(`key=${this.keychain.google.geocode}`);
 
         // Handle Errors
-        if (geolocation.status !== "OK") return this.handleNotOK(channel, geolocation);
-        if (geolocation.results.length > 1) {
+        if (geolocation.body.status !== "OK") return this.handleNotOK(channel, geolocation.body);
+        if (geolocation.body.results.length > 1) {
             let places = [];
 
-            for (const val of geolocation.results) {
+            for (const val of geolocation.body.results) {
                 places.push(`\`${val.formatted_address}\``);
             }
 
             return message.reply(`Too many results, please refine your search:\n${places.join(", ")}`);
         }
 
-        const locality = geolocation.results[0].address_components.find(elem => elem.types.includes("locality"));
-        const governing = geolocation.results[0].address_components.find(elem => elem.types.includes("administrative_area_level_1"));
-        const country = geolocation.results[0].address_components.find(elem => elem.types.includes("country"));
-        const continent = geolocation.results[0].address_components.find(elem => elem.types.includes("continent"));
+        const locality = geolocation.body.results[0].address_components.find(elem => elem.types.includes("locality"));
+        const governing = geolocation.body.results[0].address_components.find(elem => elem.types.includes("administrative_area_level_1"));
+        const country = geolocation.body.results[0].address_components.find(elem => elem.types.includes("country"));
+        const continent = geolocation.body.results[0].address_components.find(elem => elem.types.includes("continent"));
 
         const city = locality || governing || country || continent || {};
         const state = locality && governing ? governing : locality ? country : {};
-        const geocode = [geolocation.results[0].geometry.location.lat, geolocation.results[0].geometry.location.lng];
+        const geocode = [geolocation.body.results[0].geometry.location.lat, geolocation.body.results[0].geometry.location.lng];
 
-        const weather = await request({
-            uri: `https://api.forecast.io/forecast/${this.keychain.darksky}/${geocode.join(",")}?units=si`,
-            headers: { "User-Agent": "Mozilla/5.0" },
-            json: true
-        });
+        const weather = await request
+            .get(`https://api.darksky.net/forecast/${this.keychain.darksky}/${geocode.join(",")}`)
+            .query(`units=si`);
 
-        const condition = weather.currently.summary;
-        const icon = weather.currently.icon;
-        const chanceofrain = Math.round((weather.currently.precipProbability * 100) / 5) * 5;
-        const temperature = Math.round(weather.currently.temperature);
-        const humidity = Math.round(weather.currently.humidity * 100);
+        const condition = weather.body.currently.summary;
+        const icon = weather.body.currently.icon;
+        const chanceofrain = Math.round((weather.body.currently.precipProbability * 100) / 5) * 5;
+        const temperature = Math.round(weather.body.currently.temperature);
+        const humidity = Math.round(weather.body.currently.humidity * 100);
 
         Canvas.registerFont(path.join(__dirname, "fonts", "Roboto-Regular.ttf"), { family: "Roboto" });
         Canvas.registerFont(path.join(__dirname, "fonts", "RobotoCondensed-Regular.ttf"), { family: "Roboto Condensed" });
