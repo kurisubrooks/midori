@@ -2,11 +2,11 @@
 // by @kurisubrooks
 
 // Core
-import { Client } from "discord.js";
-import { log, error, handleJoin } from "./core/Util";
-import keychain from "./keychain.json";
-import CommandManager from "./core/CommandManager";
-import SubprocessManager from "./core/SubprocessManager";
+const { Client } = require("discord.js");
+const { log, error, handleJoin } = require("./core/Util");
+const keychain = require("./keychain.json");
+const CommandManager = require("./core/CommandManager");
+const SubprocessManager = require("./core/SubprocessManager");
 
 // Initialise
 const client = new Client();
@@ -29,4 +29,4 @@ client.on("error", error => error("Core", error));
 client.on("guildMemberAdd", member => handleJoin(member));
 client.on("message", message => Manager.handleMessage(message));
 
-export default client;
+module.exports = client;

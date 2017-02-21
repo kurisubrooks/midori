@@ -1,9 +1,9 @@
-import { RichEmbed } from "discord.js";
-import request from "request-promise";
-import markdown from "to-markdown";
-import Command from "../../core/Command";
+const { RichEmbed } = require("discord.js");
+const request = require("request-promise");
+const markdown = require("to-markdown");
+const Command = require("../../core/Command");
 
-export default class DefineCommand extends Command {
+module.exports = class DefineCommand extends Command {
     constructor(client) {
         super(client, {
             name: "define",
@@ -52,4 +52,4 @@ export default class DefineCommand extends Command {
         await channel.sendEmbed(embed);
         return message.delete();
     }
-}
+};

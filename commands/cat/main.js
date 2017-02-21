@@ -1,7 +1,7 @@
-import request from "request-promise";
-import Command from "../../core/Command";
+const request = require("request-promise");
+const Command = require("../../core/Command");
 
-export default class CatCommand extends Command {
+module.exports = class CatCommand extends Command {
     constructor(client) {
         super(client, {
             name: "cat",
@@ -20,4 +20,4 @@ export default class CatCommand extends Command {
         await channel.sendFile(response[0]);
         return message.delete();
     }
-}
+};

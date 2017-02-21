@@ -1,9 +1,9 @@
-import config from "../config";
-import keychain from "../keychain.json";
-import { error, log, toUpper } from "./Util";
-import { Client } from "discord.js";
+const config = require("../config");
+const keychain = require("../keychain.json");
+const { error, log, toUpper } = require("./Util");
+const { Client } = require("discord.js");
 
-export default class Subprocess {
+module.exports = class Subprocess {
     constructor(client, data = {}) {
         if (typeof data !== "object") throw new Error("Subprocess data parameter must be an object");
         if (!client || !(client instanceof Client)) throw new Error("Discord Client is required for Subprocess");
@@ -37,4 +37,4 @@ export default class Subprocess {
     error(message, channel) {
         return error(this.name, message, channel);
     }
-}
+};

@@ -1,8 +1,8 @@
-import Command from "../../core/Command";
-import Database from "../../core/Database";
-import { Users } from "../../core/Models";
+const Command = require("../../core/Command");
+const Database = require("../../core/Database");
+const { Users } = require("../../core/Models");
 
-export default class DatabaseCommand extends Command {
+module.exports = class DatabaseCommand extends Command {
     constructor(client) {
         super(client, {
             name: "database",
@@ -16,7 +16,7 @@ export default class DatabaseCommand extends Command {
         const intention = args[0];
         const query = args.slice(1).join(" ");
         console.log(Database.models.users);
-        let dbUser = await Users.findOne({ where: { id: user.id } });
+        let dbUser = await Users.findOne({ where: { guid: user.id } });
 
         console.log(dbUser);
         console.log(Database.models.users);
@@ -24,7 +24,7 @@ export default class DatabaseCommand extends Command {
         // Check if User Exists in DB, Create if they don't
         if (!user) {
             dbUser = await Users.create({
-                id: user.id,
+                guid: user.id,
                 data: "{}"
             });
         }
@@ -44,4 +44,4 @@ export default class DatabaseCommand extends Command {
 
         return false;
     }
-}
+};

@@ -1,8 +1,8 @@
-import request from "request-promise";
-import { RichEmbed } from "discord.js";
-import Command from "../../core/Command";
+const request = require("request-promise");
+const { RichEmbed } = require("discord.js");
+const Command = require("../../core/Command");
 
-export default class TranslateCommand extends Command {
+module.exports = class TranslateCommand extends Command {
     constructor(client) {
         super(client, {
             name: "translate",
@@ -50,4 +50,4 @@ export default class TranslateCommand extends Command {
         await channel.sendEmbed(embed);
         return message.delete();
     }
-}
+};

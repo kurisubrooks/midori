@@ -1,6 +1,6 @@
-import Command from "../../core/Command";
+const Command = require("../../core/Command");
 
-export default class AdminCommand extends Command {
+module.exports = class AdminCommand extends Command {
     constructor(client) {
         super(client, {
             name: "admin",
@@ -35,4 +35,4 @@ export default class AdminCommand extends Command {
 
         return false;
     }
-}
+};

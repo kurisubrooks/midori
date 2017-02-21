@@ -1,11 +1,8 @@
-import Sequelize from "sequelize";
-import Database from "../Database";
+const Sequelize = require("sequelize");
+const Database = require("../Database");
 
 const Users = Database.define("users", {
-    id: {
-        type: Sequelize.STRING,
-        primaryKey: true
-    },
+    guid: Sequelize.STRING,
     data: Sequelize.STRING
 });
 

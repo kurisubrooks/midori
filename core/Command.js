@@ -1,9 +1,9 @@
-import config from "../config";
-import keychain from "../keychain.json";
-import { error, log, toUpper } from "./Util";
-import { Client } from "discord.js";
+const config = require("../config");
+const keychain = require("../keychain.json");
+const { error, log, toUpper } = require("./Util");
+const { Client } = require("discord.js");
 
-export default class Command {
+module.exports = class Command {
     constructor(client, data = {}) {
         if (typeof data !== "object") throw new TypeError("The data parameter must be an object");
         if (!client || !(client instanceof Client)) throw new Error("Discord Client is required");
@@ -46,4 +46,4 @@ export default class Command {
     hasAdmin(user) {
         return config.admin.includes(user.id);
     }
-}
+};

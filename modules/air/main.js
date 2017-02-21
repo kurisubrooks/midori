@@ -1,7 +1,7 @@
-import path from "path";
-import chalk from "chalk";
-import Canvas from "canvas";
-import request from "request";
+const path = require("path");
+const chalk = require("chalk");
+const Canvas = require("canvas");
+const request = require("request");
 
 module.exports = (bot, channel, user, args, id, message, extra) => {
     const { util, config, trigger } = extra;

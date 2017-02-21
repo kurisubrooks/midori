@@ -1,9 +1,9 @@
-import path from "path";
-import Canvas from "canvas";
-import request from "request-promise";
-import Command from "../../core/Command";
+const path = require("path");
+const Canvas = require("canvas");
+const request = require("request-promise");
+const Command = require("../../core/Command");
 
-export default class WeatherCommand extends Command {
+module.exports = class WeatherCommand extends Command {
     constructor(client) {
         super(client, {
             name: "weather",
@@ -160,4 +160,4 @@ export default class WeatherCommand extends Command {
             return this.error("Unknown API Error", channel);
         }
     }
-}
+};

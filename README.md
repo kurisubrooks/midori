@@ -39,14 +39,12 @@ Create a file called `keychain.json` in the main directory, with the following c
 To start Midori, you can start her with
 
 ```bash
-npm run build
 npm start
 ```
 
 If you wish to run Midori under Production, you can start her with pm2 by using
 
 ```bash
-npm run build
 pm2 start bin/index.js --name "midori" --node-args="--harmony" -- --color
 ```
 
@@ -60,13 +58,6 @@ Run this command to find errors in your syntax.
 
 ```bash
 npm run lint
-```
-
-**Build**  
-Run this command to compile Midori in `/bin`
-
-```bash
-npm run build
 ```
 
 **Run**  

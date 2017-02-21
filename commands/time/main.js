@@ -1,10 +1,10 @@
-import moment from "moment";
-import cheerio from "cheerio";
-import request from "request-promise";
-import { RichEmbed } from "discord.js";
-import Command from "../../core/Command";
+const moment = require("moment");
+const cheerio = require("cheerio");
+const request = require("request-promise");
+const { RichEmbed } = require("discord.js");
+const Command = require("../../core/Command");
 
-export default class TimeCommand extends Command {
+module.exports = class TimeCommand extends Command {
     constructor(client) {
         super(client, {
             name: "time",
@@ -52,4 +52,4 @@ export default class TimeCommand extends Command {
         await channel.sendEmbed(embed);
         return message.delete();
     }
-}
+};

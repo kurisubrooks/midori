@@ -1,11 +1,11 @@
-import fs from "fs";
-import path from "path";
-import config from "../config";
-import blacklist from "../blacklist.json";
-import { error, log, toUpper } from "./Util";
-import { Collection, RichEmbed, Client } from "discord.js";
+const fs = require("fs");
+const path = require("path");
+const config = require("../config");
+const blacklist = require("../blacklist.json");
+const { error, log, toUpper } = require("./Util");
+const { Collection, RichEmbed, Client } = require("discord.js");
 
-export default class CommandManager {
+module.exports = class CommandManager {
     constructor(client) {
         this.client = client;
         this.commands = new Collection();
@@ -24,7 +24,7 @@ export default class CommandManager {
             if (!fs.existsSync(location)) continue;
 
             // Add Command to Commands Collection
-            const Command = require(location).default;
+            const Command = require(location);
             const instance = new Command(this.client);
 
             if (instance.disabled) continue;
@@ -103,4 +103,4 @@ export default class CommandManager {
             return error("Blacklist", `Unable to delete message ${message.id} from ${guild}`);
         }
     }
-}
+};

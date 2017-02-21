@@ -1,7 +1,7 @@
-// import request from "request-promise";
-import Subprocess from "../../core/Subprocess";
+// const request = require("request-promise");
+const Subprocess = require("../../core/Subprocess");
 
-export default class FireProcess extends Subprocess {
+module.exports = class FireProcess extends Subprocess {
     constructor(client) {
         super(client, {
             name: "Fires",
@@ -17,10 +17,10 @@ export default class FireProcess extends Subprocess {
     check() {
         return true;
     }
-}
+};
 
 /*
-import request from "superagent";
+const request = require("superagent");
 
 const levels = {
     "Not Applicable": { url: "http://i.imgur.com/LzUSutH.png" },
@@ -29,7 +29,7 @@ const levels = {
     "Emergency Warning": { url: "http://i.imgur.com/treI1DH.png" }
 };
 
-module.exports = (bot, util, config, keychain, dir) => {
+module.exports =  (bot, util, config, keychain, dir) => {
     const channel = bot.channels.get("276249021579001857");
     const run = () => {
         request.get("https://api.kurisubrooks.com/api/fire", (error, res, body) => {

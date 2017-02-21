@@ -1,16 +1,16 @@
-import fs from "fs";
-import qs from "querystring";
-import path from "path";
-import Canvas from "canvas";
-import socket from "socket.io-client";
-import request from "request-promise";
-import Subprocess from "../../core/Subprocess";
+const fs = require("fs");
+const qs = require("querystring");
+const path = require("path");
+const Canvas = require("canvas");
+const socket = require("socket.io-client");
+const request = require("request-promise");
+const Subprocess = require("../../core/Subprocess");
 
 let previous_message;
 let previous_quake = { };
 let disconnected = false;
 
-export default class ShakeProcess extends Subprocess {
+module.exports = class ShakeProcess extends Subprocess {
     constructor(client) {
         super(client, {
             name: "Shake",
@@ -123,4 +123,4 @@ export default class ShakeProcess extends Subprocess {
 
         return `https://maps.googleapis.com/maps/api/staticmap?${options}`;
     }
-}
+};

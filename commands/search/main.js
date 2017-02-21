@@ -1,9 +1,9 @@
-import qs from "qs";
-import request from "request-promise";
-import { RichEmbed } from "discord.js";
-import Command from "../../core/Command";
+const qs = require("qs");
+const request = require("request-promise");
+const { RichEmbed } = require("discord.js");
+const Command = require("../../core/Command");
 
-export default class SearchCommand extends Command {
+module.exports = class SearchCommand extends Command {
     constructor(client) {
         super(client, {
             name: "search",
@@ -50,4 +50,4 @@ export default class SearchCommand extends Command {
 
         return false;
     }
-}
+};

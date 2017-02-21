@@ -1,9 +1,9 @@
-import fs from "fs";
-import path from "path";
-import { error, log, toUpper } from "./Util";
-import { Collection, Client } from "discord.js";
+const fs = require("fs");
+const path = require("path");
+const { error, log, toUpper } = require("./Util");
+const { Collection, Client } = require("discord.js");
 
-export default class SubprocessManager {
+module.exports = class SubprocessManager {
     constructor(client) {
         if (!client || !(client instanceof Client)) throw new Error("Discord Client is required for Subprocess Manager");
 
@@ -21,7 +21,7 @@ export default class SubprocessManager {
             if (!fs.existsSync(location)) continue;
 
             // Add Subprocess to Processes Collection
-            const Process = require(location).default;
+            const Process = require(location);
             const instance = new Process(this.client);
 
             if (instance.disabled) continue;
@@ -47,4 +47,4 @@ export default class SubprocessManager {
             return error("Subprocess", err);
         }
     }
-}
+};

@@ -1,7 +1,7 @@
-import qs from "qs";
-import Command from "../../core/Command";
+const qs = require("qs");
+const Command = require("../../core/Command");
 
-export default class RadarCommand extends Command {
+module.exports = class RadarCommand extends Command {
     constructor(client) {
         super(client, {
             name: "radar",
@@ -19,4 +19,4 @@ export default class RadarCommand extends Command {
         await channel.sendFile(url, `radar.${ext}`);
         return message.delete();
     }
-}
+};

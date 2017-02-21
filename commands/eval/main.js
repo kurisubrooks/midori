@@ -1,6 +1,6 @@
-import Command from "../../core/Command";
+const Command = require("../../core/Command");
 
-export default class EvalCommand extends Command {
+module.exports = class EvalCommand extends Command {
     constructor(client) {
         super(client, {
             name: "eval",
@@ -25,4 +25,4 @@ export default class EvalCommand extends Command {
             return message.edit(`${input}\n${error(err)}`).catch(err => message.edit(`${input}\n${error(err)}`));
         }
     }
-}
+};
