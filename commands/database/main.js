@@ -1,5 +1,4 @@
 const Command = require("../../core/Command");
-const Database = require("../../core/Database");
 const { Users } = require("../../core/Models");
 
 module.exports = class DatabaseCommand extends Command {
@@ -15,26 +14,44 @@ module.exports = class DatabaseCommand extends Command {
         const command = message.command;
         const intention = args[0];
         const query = args.slice(1).join(" ");
-        console.log(Database.models.users);
-        let dbUser = await Users.findOne({ where: { guid: user.id } });
 
-        console.log(dbUser);
-        console.log(Database.models.users);
+        let dbUser = await Users.findOne({ where: { id: user.id } });
+
+        let template = {
+            weather: null,
+            balance: null
+        };
 
         // Check if User Exists in DB, Create if they don't
-        if (!user) {
+        if (!dbUser) {
             dbUser = await Users.create({
-                guid: user.id,
-                data: "{}"
+                id: user.id,
+                data: JSON.stringify(template)
             });
+
+            this.log(`Added User: ${user.id}`, "debug");
         }
 
-        console.log(dbUser);
+        let data = await Users.findOne({ where: { id: user.id } });
 
         // Add or Set a value in the DB
         if (command === "add" || command === "set") {
-            console.log(command, intention, query);
-            return dbUser;
+            let manipulate = JSON.parse(data.data);
+            let update = false;
+
+            if (intention === "weather" || intention === "location") {
+                manipulate.weather = query;
+                update = true;
+            }
+
+            if (update) {
+                await data.update({ data: JSON.stringify(manipulate) });
+                this.log(`Updated User: ${user.id}`, "debug");
+                this.log(JSON.stringify(manipulate), "debug");
+                message.reply(`Updated Database successfully.`);
+            }
+
+            return null;
         }
 
         // Remove or Delete a value from the DB

@@ -77,11 +77,14 @@ module.exports = class CommandManager {
         if (text.startsWith(config.sign)) {
             const args = text.split(" ");
             const commandName = args.splice(0, 1)[0].toLowerCase().slice(config.sign.length);
-            const command = message.command = this.commands.get(commandName) || this.aliases.get(commandName);
+            const command = this.commands.get(commandName) || this.aliases.get(commandName);
 
             log("Log", `<${user.username}#${user.discriminator}>: ${text}`, "warn");
 
-            if (command) return this.runCommand(command, message, channel, user, args);
+            if (command) {
+                message.command = commandName;
+                return this.runCommand(command, message, channel, user, args);
+            }
         }
 
         return false;
