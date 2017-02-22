@@ -33,6 +33,7 @@ const log = exports.log = (name, message, style, stacktrace) => {
         success: chalk.green,
         warn: chalk.yellow,
         error: chalk.red,
+        fatal: chalk.bgRed.white,
         info: chalk.blue,
         debug: chalk.magenta
     };
