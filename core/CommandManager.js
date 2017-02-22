@@ -79,7 +79,7 @@ module.exports = class CommandManager {
             const commandName = args.splice(0, 1)[0].toLowerCase().slice(config.sign.length);
             const command = this.commands.get(commandName) || this.aliases.get(commandName);
 
-            log("Log", `<${user.username}#${user.discriminator}>: ${text}`, "warn");
+            log("Chat Log", `<${user.username}#${user.discriminator}>: ${text}`, "warn");
 
             if (command) {
                 message.command = commandName;
