@@ -13,7 +13,9 @@ module.exports = class WeatherCommand extends Command {
         });
     }
 
-    async run(message, channel, user, args) {
+    async run(message, channel, user, args) { // eslint-disable-line complexity
+        let geolocation, weather, city, state, geocode;
+
         if (args.length === 0) {
             const userDB = await Users.findOne({ where: { id: user.id } });
             const err = "Please provide a query, or set your location with `/set weather <location>`";
@@ -22,7 +24,10 @@ module.exports = class WeatherCommand extends Command {
                 const data = JSON.parse(userDB.data);
 
                 if (data.weather || data.location) {
-                    args = data.weather.split(" ");
+                    city = data.weather[0];
+                    state = data.weather[1];
+                    geocode = data.weather[2];
+                    geolocation = true;
                 } else {
                     return message.reply(err);
                 }
@@ -31,41 +36,57 @@ module.exports = class WeatherCommand extends Command {
             }
         }
 
-        const geolocation = await request
-            .get(`https://maps.googleapis.com/maps/api/geocode/json`)
-            .query(`address=${encodeURIComponent(args.join("+"))}`)
-            .query(`key=${this.keychain.google.geocode}`);
-
-        // Handle Errors
-        if (geolocation.body.status !== "OK") return this.handleNotOK(channel, geolocation.body);
-        if (geolocation.body.results.length > 1) {
-            let places = [];
-
-            for (const val of geolocation.body.results) {
-                places.push(`\`${val.formatted_address}\``);
+        if (!geolocation) {
+            try {
+                geolocation = await request
+                    .get(`https://maps.googleapis.com/maps/api/geocode/json`)
+                    .query(`address=${encodeURIComponent(args.join("+"))}`)
+                    .query(`key=${this.keychain.google.geocode}`);
+            } catch(err) {
+                this.log(err, "fatal", true);
+                return this.error(err, channel);
             }
 
-            return message.reply(`Too many results, please refine your search:\n${places.join(", ")}`);
+            // Handle Errors
+            if (geolocation.body.status !== "OK") return this.handleNotOK(channel, geolocation.body);
+            if (geolocation.body.results.length > 1) {
+                let places = [];
+
+                for (const val of geolocation.body.results) {
+                    places.push(`\`${val.formatted_address}\``);
+                }
+
+                return message.reply(`Too many results, please refine your search:\n${places.join(", ")}`);
+            }
+
+            const locality = geolocation.body.results[0].address_components.find(elem => elem.types.includes("locality"));
+            const governing = geolocation.body.results[0].address_components.find(elem => elem.types.includes("administrative_area_level_1"));
+            const country = geolocation.body.results[0].address_components.find(elem => elem.types.includes("country"));
+            const continent = geolocation.body.results[0].address_components.find(elem => elem.types.includes("continent"));
+
+            city = locality || governing || country || continent || {};
+            state = locality && governing ? governing : locality ? country : {};
+            geocode = [geolocation.body.results[0].geometry.location.lat, geolocation.body.results[0].geometry.location.lng];
+
+            this.log(`Geolocation Retrieved`, "debug");
         }
 
-        const locality = geolocation.body.results[0].address_components.find(elem => elem.types.includes("locality"));
-        const governing = geolocation.body.results[0].address_components.find(elem => elem.types.includes("administrative_area_level_1"));
-        const country = geolocation.body.results[0].address_components.find(elem => elem.types.includes("country"));
-        const continent = geolocation.body.results[0].address_components.find(elem => elem.types.includes("continent"));
-
-        const city = locality || governing || country || continent || {};
-        const state = locality && governing ? governing : locality ? country : {};
-        const geocode = [geolocation.body.results[0].geometry.location.lat, geolocation.body.results[0].geometry.location.lng];
-
-        const weather = await request
-            .get(`https://api.darksky.net/forecast/${this.keychain.darksky}/${geocode.join(",")}`)
-            .query(`units=si`);
+        try {
+            weather = await request
+                .get(`https://api.darksky.net/forecast/${this.keychain.darksky}/${geocode.join(",")}`)
+                .query(`units=si`);
+        } catch(err) {
+            this.log(err, "fatal", true);
+            return this.error(err, channel);
+        }
 
         const condition = weather.body.currently.summary;
         const icon = weather.body.currently.icon;
         const chanceofrain = Math.round((weather.body.currently.precipProbability * 100) / 5) * 5;
         const temperature = Math.round(weather.body.currently.temperature);
         const humidity = Math.round(weather.body.currently.humidity * 100);
+
+        this.log(`${temperature}°C, ${condition}, ${humidity}%`, "debug");
 
         Canvas.registerFont(path.join(__dirname, "fonts", "Roboto-Regular.ttf"), { family: "Roboto" });
         Canvas.registerFont(path.join(__dirname, "fonts", "RobotoCondensed-Regular.ttf"), { family: "Roboto Condensed" });
