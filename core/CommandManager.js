@@ -63,31 +63,28 @@ module.exports = class CommandManager {
         const server = message.guild ? message.guild.name : "DM";
         const user = message.author;
         const attachments = message.attachments.size > 0;
-        let text = message.cleanContent;
+        const mentioned = message.isMentioned(this.client.user);
+        const triggered = message.content.startsWith(config.sign);
+        const matched = new RegExp(blacklist.join("|")).test(message.content);
 
         user.nickname = message.member ? message.member.displayName : message.author.username;
 
+        let text = message.cleanContent;
         if (type === "text" && user.bot) return false;
         if (text.length < 1 && !attachments) return false;
         if (attachments) text += attachments && text.length < 1 ? "<file>" : " <file>";
-        if (server !== "DM" && new RegExp(blacklist.join("|")).test(message.content)) {
-            return this.handleBlacklist(message);
-        }
+        if (server !== "DM" && matched) return this.handleBlacklist(message);
+        if (!triggered && !mentioned) return false;
 
-        if (text.startsWith(config.sign)) {
-            const args = text.split(" ");
-            const commandName = args.splice(0, 1)[0].toLowerCase().slice(config.sign.length);
-            const command = this.commands.get(commandName) || this.aliases.get(commandName);
+        const args = text.split(" ");
+        const commandName = mentioned ? args.splice(0, 2)[1].toLowerCase() : args.splice(0, 1)[0].toLowerCase().slice(config.sign.length);
+        const command = this.commands.get(commandName) || this.aliases.get(commandName);
 
-            log("Chat Log", `<${user.username}#${user.discriminator}>: ${text}`, "warn");
+        log("Chat Log", `<${user.username}#${user.discriminator}>: ${text}`, "warn");
 
-            if (command) {
-                message.command = commandName;
-                return this.runCommand(command, message, channel, user, args);
-            }
-        }
-
-        return false;
+        if (!command) return false;
+        message.command = commandName;
+        return this.runCommand(command, message, channel, user, args);
     }
 
     async handleBlacklist(message) {
