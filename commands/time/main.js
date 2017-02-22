@@ -1,6 +1,6 @@
 const moment = require("moment");
 const cheerio = require("cheerio");
-const request = require("request-promise");
+const request = require("superagent");
 const { RichEmbed } = require("discord.js");
 const Command = require("../../core/Command");
 
@@ -21,20 +21,16 @@ module.exports = class TimeCommand extends Command {
         let response;
 
         try {
-            response = await request({
-                uri: `http://time.is/${args.join(" ").replace(/^in/, "")}`,
-                headers: { "User-Agent": "Mozilla/5.0" },
-                resolveWithFullResponse: true
-            });
+            response = await request.get(`http://time.is/${args.join(" ").replace(/^in/, "")}`);
         } catch(err) {
-            this.log(err, "error");
-            return this.error("API Error", channel);
+            this.log(err, "fatal", true);
+            return this.error(err, channel);
         }
 
         if (response.statusCode === 404) return this.error("No Results", channel);
         if (response.statusCode === 500) return this.error("API Error", channel);
 
-        const $ = cheerio.load(response.body);
+        const $ = cheerio.load(response.text);
         const place = $("#msgdiv > h1").text();
         const date = $("#dd").text();
         const time = $("#twd").text();
@@ -50,6 +46,6 @@ module.exports = class TimeCommand extends Command {
             .addField("Date", date, true);
 
         await channel.sendEmbed(embed);
-        return message.delete();
+        return message.delete().catch();
     }
 };

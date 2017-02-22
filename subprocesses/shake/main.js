@@ -1,9 +1,8 @@
 const fs = require("fs");
-const qs = require("querystring");
 const path = require("path");
 const Canvas = require("canvas");
 const socket = require("socket.io-client");
-const request = require("request-promise");
+const request = require("superagent");
 const Subprocess = require("../../core/Subprocess");
 
 let previous_message;
@@ -25,7 +24,7 @@ module.exports = class ShakeProcess extends Subprocess {
 
     run() {
         this.io.on("connect", () => this.io.emit("auth", { version: 2.1 }));
-        this.io.on("quake.eew", data => this.parse(data));
+        this.io.on("quake.eew", data => this.parse(data, false));
 
         this.io.on("auth", data => {
             if (data.ok) {
@@ -46,14 +45,24 @@ module.exports = class ShakeProcess extends Subprocess {
         });
     }
 
-    async parse(data) {
+    async parse(data, debug) {
         this.log("Running EEW Parser", "debug");
 
-        const response = await request({
-            uri: this.getMap(data),
-            headers: { "User-Agent": "Mozilla/5.0" },
-            encoding: "binary"
-        });
+        let response, channel = debug ? this.debugChannel : this.postChannel;
+
+        try {
+            response = await request.get("https://maps.googleapis.com/maps/api/staticmap")
+                .query("zoom=6")
+                .query("size=386x159")
+                .query("format=png")
+                .query("maptype=roadmap")
+                .query("style=feature:road|color:0xFFFFFF")
+                .query(`center=${data.details.geography.lat},${data.details.geography.long}`)
+                .query(`markers=${data.details.geography.lat},${data.details.geography.long}`);
+        } catch(err) {
+            this.log(err, "fatal", true);
+            return this.error(err, this.debugChannel);
+        }
 
         Canvas.registerFont(path.join(__dirname, "Roboto.ttf"), { family: "Roboto" });
 
@@ -64,7 +73,7 @@ module.exports = class ShakeProcess extends Subprocess {
         const map = new Image();
         const base = new Image();
 
-        map.src = new Buffer(response, "binary");
+        map.src = new Buffer(response.body, "binary");
         base.src = fs.readFileSync(path.join(__dirname, "base.png"));
 
         // Draw Image
@@ -93,34 +102,20 @@ module.exports = class ShakeProcess extends Subprocess {
         // New Quake
         if (!(data.id in previous_quake)) {
             previous_quake[data.id] = data;
-            previous_message = await this.postChannel.sendFile(canvas.toBuffer());
-            this.log(`Posted Image to #${this.postChannel.name}`, "debug");
+            previous_message = await channel.sendFile(canvas.toBuffer());
+            this.log(`Posted Image to #${channel.name}`, "debug");
             return true;
         // Last Revision
         } else if (data.situation === 1) {
             previous_quake[data.id] = data;
             await previous_message.delete();
-            this.log(`Deleted Previous Image from #${this.postChannel.name}`, "debug");
+            this.log(`Deleted Previous Image from #${channel.name}`, "debug");
             previous_message = "";
-            await this.postChannel.sendFile(canvas.toBuffer());
-            this.log(`Posted Image to #${this.postChannel.name}`, "debug");
+            await channel.sendFile(canvas.toBuffer());
+            this.log(`Posted Image to #${channel.name}`, "debug");
             return true;
         }
 
-        return null;
-    }
-
-    getMap(data) {
-        const options = qs.stringify({
-            zoom: 6,
-            size: "386x159",
-            format: "png",
-            center: `${data.details.geography.lat},${data.details.geography.long}`,
-            markers: `${data.details.geography.lat},${data.details.geography.long}`,
-            maptype: "roadmap",
-            style: "feature:road|color:0xFFFFFF"
-        });
-
-        return `https://maps.googleapis.com/maps/api/staticmap?${options}`;
+        return false;
     }
 };

@@ -1,4 +1,4 @@
-const request = require("request-promise");
+const request = require("superagent");
 const { RichEmbed } = require("discord.js");
 const Command = require("../../core/Command");
 
@@ -22,32 +22,37 @@ module.exports = class TranslateCommand extends Command {
         let query = to === langs[0].toLowerCase() ? args.slice(1).join(" ") : args.join(" ");
 
         if (query === "^") {
-            query = (await channel.fetchMessages({ before: message.id, limit: 1 })).first().content;
-        } else if (Number(query)) {
-            query = (await channel.fetchMessage(query)).content;
+            this.log("Using Previous Message as Query", "debug");
+            const res = await channel.fetchMessages({ before: message.id, limit: 1 });
+            query = res.first().content;
+        }
+        /* else if (Number(query)) {
+            this.log("Using Given Message (from ID) as Query", "debug");
+            const res = await channel.fetchMessage(query);
+            query = res.content;
+        }*/
+
+        let response;
+
+        try {
+            response = await request.get("https://api.kurisubrooks.com/api/translate")
+                .query(`to=${to}`)
+                .query(`from=${from}`)
+                .query(`query=${query}`);
+        } catch(err) {
+            this.log(err, "fatal", true);
+            return this.error(err, channel);
         }
 
-        const response = await request({
-            method: "POST",
-            uri: "https://api.kurisubrooks.com/api/translate",
-            headers: { "User-Agent": "Mozilla/5.0" },
-            json: true,
-            body: {
-                to: to,
-                from: from || "",
-                query: query
-            }
-        });
-
-        if (!response.ok) return this.error(response.error, channel);
+        if (!response.body.ok) return this.error(response.body.error, channel);
 
         const embed = new RichEmbed()
             .setColor(this.config.colours.default)
             .setAuthor(user.nickname, user.avatarURL)
-            .addField(response.from.name, response.query)
-            .addField(response.to.name, response.result);
+            .addField(response.body.from.name, response.body.query)
+            .addField(response.body.to.name, response.body.result);
 
         await channel.sendEmbed(embed);
-        return message.delete();
+        return message.delete().catch();
     }
 };

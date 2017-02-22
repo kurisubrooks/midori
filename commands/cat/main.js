@@ -1,4 +1,4 @@
-const request = require("request-promise");
+const request = require("superagent");
 const Command = require("../../core/Command");
 
 module.exports = class CatCommand extends Command {
@@ -11,13 +11,16 @@ module.exports = class CatCommand extends Command {
     }
 
     async run(message, channel) {
-        const response = await request({
-            uri: "http://shibe.online/api/cats?count=1&httpsurls=true",
-            headers: { "User-Agent": "Mozilla/5.0" },
-            json: true
-        });
+        let response;
 
-        await channel.sendFile(response[0]);
-        return message.delete();
+        try {
+            response = await request.get("http://shibe.online/api/cats?count=1&httpsurls=true");
+        } catch(err) {
+            this.log(err, "fatal", true);
+            return this.error(err, channel);
+        }
+
+        await channel.sendFile(response.body[0]);
+        return message.delete().catch();
     }
 };

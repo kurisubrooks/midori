@@ -1,5 +1,4 @@
-const qs = require("qs");
-const request = require("request-promise");
+const request = require("superagent");
 const { RichEmbed } = require("discord.js");
 const Command = require("../../core/Command");
 
@@ -8,8 +7,7 @@ module.exports = class SearchCommand extends Command {
         super(client, {
             name: "search",
             description: "Return Google Search Results",
-            aliases: ["s", "google"],
-            expectedArgs: ["query"]
+            aliases: ["s", "google"]
         });
     }
 
@@ -18,20 +16,21 @@ module.exports = class SearchCommand extends Command {
             return message.reply("Please provide a query");
         }
 
-        const options = qs.stringify({
-            key: this.keychain.google.search,
-            num: "1", cx: "006735756282586657842:s7i_4ej9amu",
-            q: args.join(" ") // eslint-disable-line id-length
-        });
+        let response;
 
-        const response = await request({
-            uri: `https://www.googleapis.com/customsearch/v1?${options}`,
-            headers: { "User-Agent": "Mozilla/5.0" },
-            json: true
-        });
+        try {
+            response = await request.get("https://www.googleapis.com/customsearch/v1")
+                .query(`key=${this.keychain.google.search}`)
+                .query("num=1")
+                .query("cx=006735756282586657842:s7i_4ej9amu")
+                .query(`q=${args.join(" ")}`);
+        } catch(err) {
+            this.log(err, "fatal", true);
+            return this.error(err, channel);
+        }
 
-        if (response.searchInformation.totalResults !== "0") {
-            const result = response.items[0];
+        if (response.body.searchInformation.totalResults !== "0") {
+            const result = response.body.items[0];
             const link = decodeURIComponent(result.link);
 
             const embed = new RichEmbed()
@@ -45,7 +44,7 @@ module.exports = class SearchCommand extends Command {
             if (result.pagemap && result.pagemap.cse_thumbnail) embed.setThumbnail(result.pagemap.cse_thumbnail[0].src);
 
             await channel.sendEmbed(embed);
-            return message.delete();
+            return message.delete().catch();
         }
 
         return false;
