@@ -16,6 +16,6 @@ module.exports = class RadarCommand extends Command {
         const url = `https://api.kurisubrooks.com/api/radar?id=${place}&type=${type}`;
 
         await channel.sendFile(url, `radar.${ext}`);
-        return message.delete();
+        return message.delete().catch();
     }
 };

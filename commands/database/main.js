@@ -76,7 +76,8 @@ module.exports = class DatabaseCommand extends Command {
                 await data.update({ data: JSON.stringify(manipulate) });
                 this.log(`Updated User: ${user.id}`, "debug");
                 this.log(JSON.stringify(manipulate), "debug");
-                message.reply(`Updated Database successfully.`);
+                await message.reply(`Updated Database successfully.`);
+                return message.delete().catch();
             }
 
             return false;

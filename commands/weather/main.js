@@ -16,13 +16,16 @@ module.exports = class WeatherCommand extends Command {
     async run(message, channel, user, args) { // eslint-disable-line complexity
         let geolocation, weather, city, state, geocode;
 
+        // No Args Supplied
         if (args.length === 0) {
             const userDB = await Users.findOne({ where: { id: user.id } });
             const err = "Please provide a query, or set your location with `/set weather <location>`";
 
+            // Check if User exists in DB
             if (userDB) {
                 const data = JSON.parse(userDB.data);
 
+                // Checks if User has a set location
                 if (data.weather || data.location) {
                     city = data.weather[0];
                     state = data.weather[1];
@@ -37,6 +40,7 @@ module.exports = class WeatherCommand extends Command {
             }
         }
 
+        // Ignore geolocation request if User has set a location
         if (!geolocation) {
             try {
                 geolocation = await request
@@ -72,6 +76,7 @@ module.exports = class WeatherCommand extends Command {
             this.log(`Geolocation Retrieved`, "debug");
         }
 
+        // Get Weather
         try {
             weather = await request
                 .get(`https://api.darksky.net/forecast/${this.keychain.darksky}/${geocode.join(",")}`)
@@ -93,6 +98,7 @@ module.exports = class WeatherCommand extends Command {
         Canvas.registerFont(path.join(__dirname, "fonts", "RobotoCondensed-Regular.ttf"), { family: "Roboto Condensed" });
         Canvas.registerFont(path.join(__dirname, "fonts", "RobotoMono-Light.ttf"), { family: "Roboto Mono" });
 
+        // Generate Response Image
         const canvas = new Canvas(400, 180);
         const ctx = canvas.getContext("2d");
         const { Image } = Canvas;
@@ -152,9 +158,10 @@ module.exports = class WeatherCommand extends Command {
 
         // Send
         await channel.sendFile(canvas.toBuffer());
-        return message.delete();
+        return message.delete().catch();
     }
 
+    // Get Background Image based on Weather Condition
     getBaseImage(input) {
         if (input === "clear-day" || input === "partly-cloudy-day") {
             return "day";
@@ -175,6 +182,7 @@ module.exports = class WeatherCommand extends Command {
         }
     }
 
+    // Handle Geolocation API Errors
     handleNotOK(channel, geolocation) {
         if (geolocation.status === "ZERO_RESULTS") {
             return this.error("Query returned no results", channel);
