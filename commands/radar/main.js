@@ -1,4 +1,3 @@
-const qs = require("qs");
 const Command = require("../../core/Command");
 
 module.exports = class RadarCommand extends Command {
@@ -14,7 +13,7 @@ module.exports = class RadarCommand extends Command {
         const place = args[0] || "sydney";
         const type = args[1] || "animated";
         const ext = type === "animated" ? "gif" : "png";
-        const url = `https://api.kurisubrooks.com/api/radar?${qs.stringify({ id: place, type })}`;
+        const url = `https://api.kurisubrooks.com/api/radar?id=${place}&type=${type}`;
 
         await channel.sendFile(url, `radar.${ext}`);
         return message.delete();
