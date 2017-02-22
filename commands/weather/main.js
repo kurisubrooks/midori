@@ -28,6 +28,7 @@ module.exports = class WeatherCommand extends Command {
                     state = data.weather[1];
                     geocode = data.weather[2];
                     geolocation = true;
+                    this.log(`Using Cached Geolocation`, "debug");
                 } else {
                     return message.reply(err);
                 }
