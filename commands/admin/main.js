@@ -6,7 +6,6 @@ module.exports = class AdminCommand extends Command {
             name: "admin",
             description: "Administrative Commands",
             aliases: ["op"],
-            expectedArgs: ["command"],
             adminOnly: true
         });
     }
