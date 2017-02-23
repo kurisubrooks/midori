@@ -10,7 +10,7 @@ module.exports = class CatCommand extends Command {
         });
     }
 
-    async run(message, channel) {
+    async run(message, channel, user) {
         let response;
 
         try {
@@ -20,7 +20,8 @@ module.exports = class CatCommand extends Command {
             return this.error(err, channel);
         }
 
-        await channel.sendFile(response.body[0]);
+        let embed = { author: { name: user.nickname, icon_url: user.avatarURL }, image: { url: response.body[0] } };
+        await channel.sendMessage("", { embed });
         return message.delete().catch();
     }
 };
