@@ -76,7 +76,7 @@ module.exports = class CommandManager {
         if (server !== "DM" && matched) return this.handleBlacklist(message);
         if (!triggered && !mentioned) return false;
 
-        const args = text.split(" ");
+        const args = message.content.split(" ");
         const commandName = mentioned ? args.splice(0, 2)[1].toLowerCase() : args.splice(0, 1)[0].toLowerCase().slice(config.sign.length);
         const command = this.commands.get(commandName) || this.aliases.get(commandName);
 
