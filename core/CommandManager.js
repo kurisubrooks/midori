@@ -79,10 +79,10 @@ module.exports = class CommandManager {
 
         log("Chat Log", `<${user.username}#${user.discriminator}>: ${text}`, "warn");
 
-        const commandName = (mentioned ? args.splice(0, 2)[1] : args.splice(0, 1)[0].slice(config.sign.length)).toLowerCase();
+        const commandName = mentioned && args.length > 0 ? args.splice(0, 2)[1].toLowerCase() : args.splice(0, 1)[0].slice(config.sign.length).toLowerCase();
         const command = this.commands.get(commandName) || this.aliases.get(commandName);
 
-        if (!commandName && mentioned) return message.reply("How may I help?");
+        if (mentioned && args.length === 0) return message.reply("How may I help?");
         // if (!command && mentioned && args.length >= 1) return message.reply("Sorry, I don't recognise that command. Try `help` to see what I know!");
         if (!command) return false;
 
