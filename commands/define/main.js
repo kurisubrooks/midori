@@ -55,6 +55,6 @@ module.exports = class DefineCommand extends Command {
 
         embed.setDescription(description);
         await channel.sendEmbed(embed);
-        return message.delete().catch();
+        return message.delete().catch(err => err.message);
     }
 };

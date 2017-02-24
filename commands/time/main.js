@@ -46,6 +46,6 @@ module.exports = class TimeCommand extends Command {
             .addField("Date", date, true);
 
         await channel.sendEmbed(embed);
-        return message.delete().catch();
+        return message.delete().catch(err => err.message);
     }
 };

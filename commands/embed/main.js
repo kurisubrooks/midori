@@ -24,6 +24,6 @@ module.exports = class EmbedCommand extends Command {
         if (embed.color) embed.color = Number(embed.color);
 
         await channel.sendMessage(`\`\`\`json\n${JSON.stringify(before, null, 4)}\n\`\`\``, { embed });
-        return message.delete().catch();
+        return message.delete().catch(err => err.message);
     }
 };

@@ -159,7 +159,7 @@ module.exports = class WeatherCommand extends Command {
 
         // Send
         await channel.sendFile(canvas.toBuffer());
-        return message.delete().catch();
+        return message.delete().catch(err => err.message);
     }
 
     // Get Background Image based on Weather Condition

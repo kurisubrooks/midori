@@ -16,7 +16,7 @@ module.exports = class DatabaseCommand extends Command {
         this.log(`Updated User: ${message.author.id}`, "debug");
         this.log(JSON.stringify(data), "debug");
         await message.reply(`Updated Database successfully.`);
-        return message.delete().catch();
+        return message.delete().catch(err => err.message);
     }
 
     async run(message, channel, _user, args) {

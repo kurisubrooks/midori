@@ -53,6 +53,6 @@ module.exports = class TranslateCommand extends Command {
             .addField(response.body.to.name, response.body.result);
 
         await channel.sendEmbed(embed);
-        return message.delete().catch();
+        return message.delete().catch(err => err.message);
     }
 };

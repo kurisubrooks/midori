@@ -22,6 +22,6 @@ module.exports = class ShibeCommand extends Command {
 
         let embed = { author: { name: user.nickname, icon_url: user.avatarURL }, image: { url: response.body[0] } };
         await channel.sendMessage("", { embed });
-        return message.delete().catch();
+        return message.delete().catch(err => err.message);
     }
 };
