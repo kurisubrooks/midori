@@ -19,7 +19,7 @@ module.exports = class WeatherCommand extends Command {
         // No Args Supplied
         if (args.length === 0) {
             const userDB = await Users.findOne({ where: { id: user.id } });
-            const err = "Please provide a query, or set your location with `/set weather <location>`";
+            const err = "Please provide a query, or set your location with `/set location <location>`";
 
             // Check if User exists in DB
             if (userDB) {
@@ -27,6 +27,7 @@ module.exports = class WeatherCommand extends Command {
 
                 // Checks if User has a set location
                 if (data.weather || data.location) {
+                    console.log(data.weather);
                     city = data.weather[0];
                     state = data.weather[1];
                     geocode = data.weather[2];

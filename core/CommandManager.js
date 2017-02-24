@@ -66,6 +66,7 @@ module.exports = class CommandManager {
         const mentioned = message.isMentioned(this.client.user);
         const triggered = message.content.startsWith(config.sign);
         const matched = new RegExp(blacklist.join("|")).test(message.content);
+        const args = message.content.split(" ");
 
         user.nickname = message.member ? message.member.displayName : message.author.username;
 
@@ -76,13 +77,15 @@ module.exports = class CommandManager {
         if (server !== "DM" && matched) return this.handleBlacklist(message);
         if (!triggered && !mentioned) return false;
 
-        const args = message.content.split(" ");
-        const commandName = mentioned ? args.splice(0, 2)[1].toLowerCase() : args.splice(0, 1)[0].toLowerCase().slice(config.sign.length);
-        const command = this.commands.get(commandName) || this.aliases.get(commandName);
-
         log("Chat Log", `<${user.username}#${user.discriminator}>: ${text}`, "warn");
 
+        const commandName = (mentioned ? args.splice(0, 2)[1] : args.splice(0, 1)[0].slice(config.sign.length)).toLowerCase();
+        const command = this.commands.get(commandName) || this.aliases.get(commandName);
+
+        if (!commandName && mentioned) return message.reply("How may I help?");
+        // if (!command && mentioned && args.length >= 1) return message.reply("Sorry, I don't recognise that command. Try `help` to see what I know!");
         if (!command) return false;
+
         message.command = commandName;
         return this.runCommand(command, message, channel, user, args);
     }
