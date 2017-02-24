@@ -7,40 +7,47 @@ module.exports = class DatabaseCommand extends Command {
         super(client, {
             name: "database",
             description: "Interact with Midori's Database",
-            aliases: ["db", "set"]
+            aliases: ["db", "get", "set", "reset"]
         });
     }
 
-    async run(message, channel, user, args) {
+    async update(message, user, data) {
+        await user.update({ data: JSON.stringify(data) });
+        this.log(`Updated User: ${message.author.id}`, "debug");
+        this.log(JSON.stringify(data), "debug");
+        await message.reply(`Updated Database successfully.`);
+        return message.delete().catch();
+    }
+
+    async run(message, channel, _user, args) {
         const command = message.command;
+        const mentioned = message.mentions.users;
+        const user = mentioned.size > 0 ? mentioned.first() : message.author;
+
         const intention = args[0];
         const query = args.slice(1).join(" ");
+        const template = { weather: null, balance: null };
 
-        let dbUser = await Users.findOne({ where: { id: user.id } });
-
-        let template = {
-            weather: null,
-            balance: null
-        };
+        if (mentioned.size > 0 && !this.hasAdmin(message.author)) return message.reply("Insufficient Permissions");
+        let data = await Users.findOne({ where: { id: user.id } });
 
         // Check if User Exists in DB, Create if they don't
-        if (!dbUser) {
-            dbUser = await Users.create({
-                id: user.id,
-                data: JSON.stringify(template)
-            });
-
+        if (!data) {
+            await Users.create({ id: user.id, data: JSON.stringify(template) });
+            data = await Users.findOne({ where: { id: user.id } });
             this.log(`Added User: ${user.id}`, "debug");
         }
 
-        let data = await Users.findOne({ where: { id: user.id } });
-
-        // Add or Set a value in the DB
-        if (command === "add" || command === "set") {
+        if (command === "reset") {
+            await data.update(JSON.stringify(template));
+            return message.reply(`Reset ${user.username} successfully.`);
+        } else if (command === "get") {
+            // if (!this.hasAdmin(message.author)) return message.reply("Insufficient Permissions");
+            await message.channel.send(`\`\`\`js\n${JSON.stringify(JSON.parse(data.data), null, 4)}\n\`\`\``);
+        } else if (command === "set") {
             let manipulate = JSON.parse(data.data);
-            let update = false;
 
-            if (intention === "weather" || intention === "location") {
+            if (intention === "location") {
                 let geolocation;
                 try {
                     geolocation = await request
@@ -69,18 +76,8 @@ module.exports = class DatabaseCommand extends Command {
                 const geocode = [geolocation.body.results[0].geometry.location.lat, geolocation.body.results[0].geometry.location.lng];
 
                 manipulate.weather = [city, state, geocode];
-                update = true;
+                return this.update(message, data, manipulate);
             }
-
-            if (update) {
-                await data.update({ data: JSON.stringify(manipulate) });
-                this.log(`Updated User: ${user.id}`, "debug");
-                this.log(JSON.stringify(manipulate), "debug");
-                await message.reply(`Updated Database successfully.`);
-                return message.delete().catch();
-            }
-
-            return false;
         }
 
         // Remove or Delete a value from the DB
