@@ -6,7 +6,6 @@ const { Client } = require("discord.js");
 module.exports = class Subprocess {
     constructor(client, data = {}) {
         if (typeof data !== "object") throw new Error("Subprocess data parameter must be an object");
-        if (!client || !(client instanceof Client)) throw new Error("Discord Client is required");
 
         this.client = client;
         this.keychain = keychain;
