@@ -20,11 +20,11 @@ class Util {
         const embed = new RichEmbed()
             .setColor(config.colours.error)
             .addField("Module", name, true)
-            .addField("Time", this.time(), true)
+            .addField("Time", Util.time(), true)
             .addField("Message", message);
 
         channel = channel || client.channels.get("212917108445544449");
-        this.log(name, message, "error");
+        Util.log(name, message, "error");
 
         return channel.sendEmbed(embed);
     }
@@ -46,7 +46,7 @@ class Util {
         if (Array.isArray(message)) {
             for (const item of message) {
                 console.log(
-                    styles[style].bold(`[${this.time()} ${this.toUpper(name)}]`),
+                    styles[style].bold(`[${Util.time()} ${Util.toUpper(name)}]`),
                     styles[style](item)
                 );
             }
@@ -54,7 +54,7 @@ class Util {
             return false;
         } else if (stacktrace) {
             console.log(
-                styles[style].bold(`[${this.time()} ${this.toUpper(name)}]`),
+                styles[style].bold(`[${Util.time()} ${Util.toUpper(name)}]`),
                 styles[style](message)
             );
 
@@ -62,7 +62,7 @@ class Util {
         } else {
             message = typeof message === "string" ? message.replace(/\r?\n|\r/g, " ") : message;
             return console.log(
-                styles[style].bold(`[${this.time()} ${this.toUpper(name)}]`),
+                styles[style].bold(`[${Util.time()} ${Util.toUpper(name)}]`),
                 styles[style](message)
             );
         }
@@ -74,7 +74,7 @@ class Util {
             member.addRole(member.guild.roles.find("name", "Muggle"));
             const embed = new RichEmbed()
                 .setDescription("Welcome to Kurisu's Server!\nTo get started, I kindly ask you take the following quizzes,\nand post the results in #general, so you can be sorted in to your appropriate roles!\n \nhttps://my.pottermore.com/user-profile/my-house/ilvermorny \nhttps://my.pottermore.com/user-profile/my-house/hogwarts\n\nWe don't have a set series of rules as we're a relatively small server,\nbut I do kindly ask that you don't spam, be mature and don't troll.\n\nSincerely, Kurisu.");
-            member.send("", { embed });
+            member.sendEmbed(embed);
         }
     }
 }
