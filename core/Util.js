@@ -4,7 +4,7 @@ const client = require("../index");
 const config = require("../config");
 const { RichEmbed } = require("discord.js");
 
-module.exports = class Util {
+const Util = module.exports = class Util {
     // Logging Time Format
     static time() {
         moment().format("HH:mm:ss");
@@ -81,11 +81,11 @@ module.exports = class Util {
 
 // Unhandled Promise Rejections
 process.on("unhandledRejection", reason =>
-    this.log("Unhandled Rejection", reason, "error", true));
+    Util.log("Unhandled Rejection", reason, "error", true));
 
 // Unhandled Errors
 process.on("uncaughtException", error =>
-    this.log("Uncaught Exception", error, "error", true));
+    Util.log("Uncaught Exception", error, "error", true));
 
 // Log Start
-this.log("Process", "Started", "info");
+Util.log("Process", "Started", "info");
