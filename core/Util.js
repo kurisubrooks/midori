@@ -74,7 +74,7 @@ class Util {
             member.addRole(member.guild.roles.find("name", "Muggle"));
             const embed = new RichEmbed()
                 .setDescription("Welcome to Kurisu's Server!\nTo get started, I kindly ask you take the following quizzes,\nand post the results in #general, so you can be sorted in to your appropriate roles!\n \nhttps://my.pottermore.com/user-profile/my-house/ilvermorny \nhttps://my.pottermore.com/user-profile/my-house/hogwarts\n\nWe don't have a set series of rules as we're a relatively small server,\nbut I do kindly ask that you don't spam, be mature and don't troll.\n\nSincerely, Kurisu.");
-            member.send("", { embed });
+            member.sendEmbed(embed);
         }
     }
 }
