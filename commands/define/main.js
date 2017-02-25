@@ -13,7 +13,7 @@ module.exports = class DefineCommand extends Command {
     }
 
     async run(message, channel, user, args) {
-        if (!args.length < 1) return message.reply("Please provide a query");
+        if (!args.length) return message.reply("Please provide a query");
         
         let response, description = "";
 
