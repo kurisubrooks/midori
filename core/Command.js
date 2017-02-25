@@ -6,7 +6,6 @@ const { Client } = require("discord.js");
 module.exports = class Command {
     constructor(client, data = {}) {
         if (typeof data !== "object") throw new TypeError("Client data parameter must be an object");
-        if (!client || !(client instanceof Client)) throw new Error("Discord Client is required");
 
         this.client = client;
         this.config = config;

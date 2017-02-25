@@ -5,10 +5,11 @@ const { Collection, Client } = require("discord.js");
 
 module.exports = class SubprocessManager {
     constructor(client) {
-        if (!client || !(client instanceof Client)) throw new Error("Discord Client is required for Subprocess Manager");
 
         this.client = client;
         this.processes = new Collection();
+
+        if (!this.client || !(this.client instanceof Client)) throw new Error("Discord Client is required");
     }
 
     loadModules(dir) {
