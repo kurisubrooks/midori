@@ -5,7 +5,7 @@ const config = require("../config");
 const { RichEmbed } = require("discord.js");
 
 module.exports = class Util {
-// Logging Time Format
+    // Logging Time Format
     static time() {
         moment().format("HH:mm:ss");
     }
