@@ -5,11 +5,11 @@ const config = require("../config");
 const { RichEmbed } = require("discord.js");
 
 class Util {
-
     // Throw error if someone tries to create an instance
     constructor() {
         throw new Error(`${this.constructor.name} class cannot be instantiated`);
     }
+
     // Logging Time Format
     static time() {
         return moment().format("HH:mm:ss");
