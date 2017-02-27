@@ -108,7 +108,7 @@ module.exports = class ShakeProcess extends Subprocess {
         // Last Revision
         } else if (data.situation === 1) {
             previous_quake[data.id] = data;
-            await previous_message.delete();
+            await previous_message.delete().catch(err => err.message);
             this.log(`Deleted Previous Image from #${channel.name}`, "debug");
             previous_message = "";
             await channel.sendFile(canvas.toBuffer());
