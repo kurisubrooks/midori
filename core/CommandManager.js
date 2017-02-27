@@ -57,35 +57,45 @@ module.exports = class CommandManager {
         }
     }
 
-    handleMessage(message) {
+    async handleMessage(message) {
+        let text = message.cleanContent;
+        let args = message.content.split(" ");
         const type = message.channel.type;
         const channel = message.channel;
         const server = message.guild ? message.guild.name : "DM";
         const user = message.author;
         const attachments = message.attachments.size > 0;
-        const mentioned = message.isMentioned(this.client.user);
+        const pattern = new RegExp(`<@!?${this.client.user.id}>`, "i");
+        const mentioned = message.isMentioned(this.client.user) && pattern.test(args[0]);
         const triggered = message.content.startsWith(config.sign);
         const matched = new RegExp(blacklist.join("|")).test(message.content);
-        const args = message.content.split(" ");
 
         user.nickname = message.member ? message.member.displayName : message.author.username;
 
-        let text = message.cleanContent;
         if (type === "text" && user.bot) return false;
         if (text.length < 1 && !attachments) return false;
         if (attachments) text += attachments && text.length < 1 ? "<file>" : " <file>";
         if (server !== "DM" && matched) return this.handleBlacklist(message);
         if (!triggered && !mentioned) return false;
+        if (mentioned && args.length === 1) {
+            await message.reply("How may I help? Respond with the command you want to use. Expires in 30s");
+            const filter = msg => msg.author.id === user.id;
+            const res = await channel.awaitMessages(filter, { max: 1, time: 30000 });
+            message = res.first();
+            text += ` ${message.content}`;
+            args = [args[0], ...message.content.split(" ")];
+        }
 
         log("Chat Log", `<${user.username}#${user.discriminator}>: ${text}`, "warn");
 
         const commandName = mentioned && args.length > 0 ? args.splice(0, 2)[1].toLowerCase() : args.splice(0, 1)[0].slice(config.sign.length).toLowerCase();
         const command = this.commands.get(commandName) || this.aliases.get(commandName);
 
-        if (mentioned && args.length === 0) return message.reply("How may I help?");
-        // if (!command && mentioned && args.length >= 1) return message.reply("Sorry, I don't recognise that command. Try `help` to see what I know!");
-        if (!command) return false;
+        if (!command && mentioned && args.length > 0) {
+            return message.reply("Sorry, I don't recognise that command... Try `help` to see what I know!");
+        }
 
+        if (!command) return false;
         message.command = commandName;
         return this.runCommand(command, message, channel, user, args);
     }
