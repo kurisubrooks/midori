@@ -91,7 +91,7 @@ module.exports = class CommandManager {
         log("Chat Log", `<${user.username}#${user.discriminator}>: ${text}`, "warn");
 
         if (!command && mentioned && args.length >= 0) {
-            return message.reply("Sorry, I don't recognise that command... Try `help` to see what I know!");
+            return message.reply("Sorry, I don't understand... Try `help` to see what I know!");
         }
 
         if (!command) return false;
