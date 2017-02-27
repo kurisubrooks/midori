@@ -19,25 +19,17 @@ module.exports = class CommandManager {
 
         for (const item of commands) {
             const location = path.join(__dirname, "../", dir, item, "main.js");
-
-            // Location doesn't exist, skip loop
             if (!fs.existsSync(location)) continue;
 
-            // Add Command to Commands Collection
             const Command = require(location);
             const instance = new Command(this.client);
 
             if (instance.disabled) continue;
+            if (this.commands.has(instance.name)) throw new Error("Commands cannot have the same name");
+
             log("Loaded Command", toUpper(instance.name), "info");
+            this.commands.set(instance.name, instance);
 
-            // Set command name
-            if (this.commands.has(instance.name)) {
-                throw new Error("Commands cannot have the same name");
-            } else {
-                this.commands.set(instance.name, instance);
-            }
-
-            // Set command aliases
             for (const alias of instance.aliases) {
                 if (this.aliases.has(alias)) {
                     throw new Error("Commands cannot share aliases");
@@ -57,10 +49,17 @@ module.exports = class CommandManager {
         }
     }
 
+    findCommand(mentioned, args) {
+        const commandName = mentioned && args.length > 0
+            ? args.splice(0, 2)[1].toLowerCase()
+            : args.splice(0, 1)[0].slice(config.sign.length).toLowerCase();
+        const command = this.commands.get(commandName) || this.aliases.get(commandName);
+        return { command, commandName };
+    }
+
     async handleMessage(message) {
         let text = message.cleanContent;
         let args = message.content.split(" ");
-        const type = message.channel.type;
         const channel = message.channel;
         const server = message.guild ? message.guild.name : "DM";
         const user = message.author;
@@ -70,12 +69,9 @@ module.exports = class CommandManager {
         const triggered = message.content.startsWith(config.sign);
         const matched = new RegExp(blacklist.join("|")).test(message.content);
 
-        user.nickname = message.member ? message.member.displayName : message.author.username;
-
-        if (type === "text" && user.bot) return false;
-        if (text.length < 1 && !attachments) return false;
-        if (attachments) text += attachments && text.length < 1 ? "<file>" : " <file>";
         if (server !== "DM" && matched) return this.handleBlacklist(message);
+        if (user.bot || (text.length < 1 && !attachments)) return false;
+        if (attachments) text += attachments && text.length < 1 ? "<file>" : " <file>";
         if (!triggered && !mentioned) return false;
         if (mentioned && args.length === 1) {
             await message.reply("How may I help? Respond with the command you want to use. Expires in 30s");
@@ -86,17 +82,19 @@ module.exports = class CommandManager {
             args = [args[0], ...message.content.split(" ")];
         }
 
+        const instance = this.findCommand(mentioned, args);
+        const command = instance.command;
+
+        message.command = instance.commandName;
+        user.nickname = message.member ? message.member.displayName : message.author.username;
+
         log("Chat Log", `<${user.username}#${user.discriminator}>: ${text}`, "warn");
 
-        const commandName = mentioned && args.length > 0 ? args.splice(0, 2)[1].toLowerCase() : args.splice(0, 1)[0].slice(config.sign.length).toLowerCase();
-        const command = this.commands.get(commandName) || this.aliases.get(commandName);
-
-        if (!command && mentioned && args.length > 0) {
+        if (!command && mentioned && args.length >= 0) {
             return message.reply("Sorry, I don't recognise that command... Try `help` to see what I know!");
         }
 
         if (!command) return false;
-        message.command = commandName;
         return this.runCommand(command, message, channel, user, args);
     }
 
