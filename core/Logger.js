@@ -2,8 +2,6 @@ const chalk = require("chalk");
 const moment = require("moment");
 const Util = require("./Util");
 
-console.log(require("util").inspect(Util));
-
 class Logger {
     // Throw error if someone tries to create an instance
     constructor() {
