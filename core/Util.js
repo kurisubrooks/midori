@@ -1,18 +1,12 @@
-const chalk = require("chalk");
-const moment = require("moment");
 const client = require("../index");
 const config = require("../config");
+const Logger = require("./Logger");
 const { RichEmbed } = require("discord.js");
 
 class Util {
     // Throw error if someone tries to create an instance
     constructor() {
         throw new Error(`${this.constructor.name} class cannot be instantiated`);
-    }
-
-    // Logging Time Format
-    static time() {
-        return moment().format("HH:mm:ss");
     }
 
     // String First Letter Upper Case
@@ -25,52 +19,13 @@ class Util {
         const embed = new RichEmbed()
             .setColor(config.colours.error)
             .addField("Module", name, true)
-            .addField("Time", Util.time(), true)
+            .addField("Time", Logger.time(), true)
             .addField("Message", message);
 
         channel = channel || client.channels.get("212917108445544449");
-        Util.log(name, message, "error");
+        Logger.error(name, message);
 
         return channel.sendEmbed(embed);
-    }
-
-    // Global Logging Function
-    static log(name, message, style, stacktrace) {
-        let styles = {
-            default: chalk.white,
-            success: chalk.green,
-            warn: chalk.yellow,
-            error: chalk.red,
-            fatal: chalk.bgRed.white,
-            info: chalk.blue,
-            debug: chalk.magenta
-        };
-
-        style = style || "default";
-
-        if (Array.isArray(message)) {
-            for (const item of message) {
-                console.log(
-                    styles[style].bold(`[${Util.time()} ${Util.toUpper(name)}]`),
-                    styles[style](item)
-                );
-            }
-
-            return false;
-        } else if (stacktrace) {
-            console.log(
-                styles[style].bold(`[${Util.time()} ${Util.toUpper(name)}]`),
-                styles[style](message)
-            );
-
-            return console.trace(styles[style](message));
-        } else {
-            message = typeof message === "string" ? message.replace(/\r?\n|\r/g, " ") : message;
-            return console.log(
-                styles[style].bold(`[${Util.time()} ${Util.toUpper(name)}]`),
-                styles[style](message)
-            );
-        }
     }
 
     // Handle User Join
@@ -86,13 +41,13 @@ class Util {
 
 // Unhandled Promise Rejections
 process.on("unhandledRejection", reason =>
-    Util.log("Unhandled Rejection", reason, "error", true));
+    Logger.error("Unhandled Rejection", reason, true));
 
 // Unhandled Errors
 process.on("uncaughtException", error =>
-    Util.log("Uncaught Exception", error, "error", true));
+    Logger.error("Uncaught Exception", error, true));
 
 // Log Start
-Util.log("Process", "Started", "info");
+Logger.info("Process", "Started");
 
 module.exports = Util;
