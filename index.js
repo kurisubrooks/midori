@@ -4,7 +4,8 @@
 // Core
 global.Promise = require("bluebird");
 const { Client } = require("discord.js");
-const { log, error, handleJoin } = require("./core/Util");
+const { error, handleJoin } = require("./core/Util");
+const Logger = require("./core/Logger");
 const keychain = require("./keychain.json");
 const CommandManager = require("./core/CommandManager");
 const SubprocessManager = require("./core/SubprocessManager");
@@ -13,7 +14,7 @@ const SubprocessManager = require("./core/SubprocessManager");
 const client = new Client();
 
 let onReady = () => {
-    log("Discord", "Ready", "success");
+    Logger.success("Discord", "Ready");
 
     const Subprocesses = new SubprocessManager(client);
     Subprocesses.loadModules("./subprocesses/");

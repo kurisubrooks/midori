@@ -2,7 +2,8 @@ const fs = require("fs");
 const path = require("path");
 const config = require("../config");
 const blacklist = require("../blacklist.json");
-const { error, log, toUpper } = require("./Util");
+const Logger = require("./Logger");
+const { error, toUpper } = require("./Util");
 const { Collection, RichEmbed, Client } = require("discord.js");
 
 module.exports = class CommandManager {
@@ -27,7 +28,7 @@ module.exports = class CommandManager {
             if (instance.disabled) continue;
             if (this.commands.has(instance.name)) throw new Error("Commands cannot have the same name");
 
-            log("Loaded Command", toUpper(instance.name), "info");
+            Logger.info("Loaded Command", toUpper(instance.name));
             this.commands.set(instance.name, instance);
 
             for (const alias of instance.aliases) {
@@ -42,7 +43,7 @@ module.exports = class CommandManager {
 
     runCommand(command, message, channel, user, args) {
         try {
-            log("Command Parser", `Matched ${command.name}, Running...`, "warn");
+            Logger.warn("Command Parser", `Matched ${command.name}, Running...`);
             return command.run(message, channel, user, args);
         } catch(err) {
             return error("Command", err);
@@ -88,7 +89,7 @@ module.exports = class CommandManager {
         message.command = instance.commandName;
         user.nickname = message.member ? message.member.displayName : message.author.username;
 
-        log("Chat Log", `<${user.username}#${user.discriminator}>: ${text}`, "warn");
+        Logger.warn("Chat Log", `<${user.username}#${user.discriminator}>: ${text}`);
 
         if (!command && mentioned && args.length >= 0) {
             return message.reply("Sorry, I don't understand... Try `help` to see what I know!");
@@ -107,7 +108,7 @@ module.exports = class CommandManager {
             .addField("Message", message.content);
 
         try {
-            log("Blacklist", `Deleting ${message.id} from ${guild}`, "info");
+            Logger.info("Blacklist", `Deleting ${message.id} from ${guild}`);
             await message.delete();
             return message.author.sendEmbed(embed);
         } catch(err) {

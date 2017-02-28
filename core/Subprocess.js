@@ -1,7 +1,7 @@
 const config = require("../config");
 const keychain = require("../keychain.json");
-const { error, log, toUpper } = require("./Util");
-const { Client } = require("discord.js");
+const Logger = require("./Logger");
+const { error, toUpper } = require("./Util");
 
 module.exports = class Subprocess {
     constructor(client, data = {}) {
@@ -30,7 +30,7 @@ module.exports = class Subprocess {
     }
 
     log(message, style, stacktrace) {
-        return log(toUpper(this.name), message, style, stacktrace);
+        return Logger[style](toUpper(this.name), message, stacktrace);
     }
 
     error(message, channel) {
