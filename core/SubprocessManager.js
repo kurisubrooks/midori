@@ -1,11 +1,11 @@
 const fs = require("fs");
 const path = require("path");
-const { error, log, toUpper } = require("./Util");
+const Logger = require("./Logger");
+const { error, toUpper } = require("./Util");
 const { Collection, Client } = require("discord.js");
 
 module.exports = class SubprocessManager {
     constructor(client) {
-
         this.client = client;
         this.processes = new Collection();
 
@@ -26,7 +26,7 @@ module.exports = class SubprocessManager {
             const instance = new Process(this.client);
 
             if (instance.disabled) continue;
-            log("Loaded Process", toUpper(instance.name), "info");
+            Logger.info("Loaded Process", toUpper(instance.name));
 
             if (this.processes.has(instance.name)) {
                 throw new Error("Subprocesses cannot have the same name");
@@ -42,7 +42,7 @@ module.exports = class SubprocessManager {
 
     startModule(subprocess) {
         try {
-            log("Spawning Process", `${subprocess.name}`, "info");
+            Logger.info("Spawning Process", subprocess.name);
             return subprocess.run();
         } catch(err) {
             return error("Subprocess", err);

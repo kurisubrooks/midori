@@ -2,7 +2,8 @@ const fs = require("fs");
 const path = require("path");
 const config = require("../config");
 const blacklist = require("../blacklist.json");
-const { error, log, toUpper } = require("./Util");
+const Logger = require("./Logger");
+const { error, toUpper } = require("./Util");
 const { Collection, RichEmbed, Client } = require("discord.js");
 
 module.exports = class CommandManager {
@@ -19,25 +20,17 @@ module.exports = class CommandManager {
 
         for (const item of commands) {
             const location = path.join(__dirname, "../", dir, item, "main.js");
-
-            // Location doesn't exist, skip loop
             if (!fs.existsSync(location)) continue;
 
-            // Add Command to Commands Collection
             const Command = require(location);
             const instance = new Command(this.client);
 
             if (instance.disabled) continue;
-            log("Loaded Command", toUpper(instance.name), "info");
+            if (this.commands.has(instance.name)) throw new Error("Commands cannot have the same name");
 
-            // Set command name
-            if (this.commands.has(instance.name)) {
-                throw new Error("Commands cannot have the same name");
-            } else {
-                this.commands.set(instance.name, instance);
-            }
+            Logger.info("Loaded Command", toUpper(instance.name));
+            this.commands.set(instance.name, instance);
 
-            // Set command aliases
             for (const alias of instance.aliases) {
                 if (this.aliases.has(alias)) {
                     throw new Error("Commands cannot share aliases");
@@ -50,43 +43,59 @@ module.exports = class CommandManager {
 
     runCommand(command, message, channel, user, args) {
         try {
-            log("Command Parser", `Matched ${command.name}, Running...`, "warn");
+            Logger.warn("Command Parser", `Matched ${command.name}, Running...`);
             return command.run(message, channel, user, args);
         } catch(err) {
             return error("Command", err);
         }
     }
 
-    handleMessage(message) {
-        const type = message.channel.type;
+    findCommand(mentioned, args) {
+        const commandName = mentioned && args.length > 0
+            ? args.splice(0, 2)[1].toLowerCase()
+            : args.splice(0, 1)[0].slice(config.sign.length).toLowerCase();
+        const command = this.commands.get(commandName) || this.aliases.get(commandName);
+        return { command, commandName };
+    }
+
+    async handleMessage(message) {
+        let text = message.cleanContent;
+        let args = message.content.split(" ");
         const channel = message.channel;
         const server = message.guild ? message.guild.name : "DM";
         const user = message.author;
         const attachments = message.attachments.size > 0;
-        const mentioned = message.isMentioned(this.client.user);
+        const pattern = new RegExp(`<@!?${this.client.user.id}>`, "i");
+        const mentioned = message.isMentioned(this.client.user) && pattern.test(args[0]);
         const triggered = message.content.startsWith(config.sign);
         const matched = new RegExp(blacklist.join("|")).test(message.content);
-        const args = message.content.split(" ");
 
+        if (server !== "DM" && matched) return this.handleBlacklist(message);
+        if (user.bot || (text.length < 1 && !attachments)) return false;
+        if (attachments) text += attachments && text.length < 1 ? "<file>" : " <file>";
+        if (!triggered && !mentioned) return false;
+        if (mentioned && args.length === 1) {
+            await message.reply("How may I help? Respond with the command you want to use. Expires in 30s");
+            const filter = msg => msg.author.id === user.id;
+            const res = await channel.awaitMessages(filter, { max: 1, time: 30000 });
+            message = res.first();
+            text += ` ${message.content}`;
+            args = [args[0], ...message.content.split(" ")];
+        }
+
+        const instance = this.findCommand(mentioned, args);
+        const command = instance.command;
+
+        message.command = instance.commandName;
         user.nickname = message.member ? message.member.displayName : message.author.username;
 
-        let text = message.cleanContent;
-        if (type === "text" && user.bot) return false;
-        if (text.length < 1 && !attachments) return false;
-        if (attachments) text += attachments && text.length < 1 ? "<file>" : " <file>";
-        if (server !== "DM" && matched) return this.handleBlacklist(message);
-        if (!triggered && !mentioned) return false;
+        Logger.warn("Chat Log", `<${user.username}#${user.discriminator}>: ${text}`);
 
-        log("Chat Log", `<${user.username}#${user.discriminator}>: ${text}`, "warn");
+        if (!command && mentioned && args.length >= 0) {
+            return message.reply("Sorry, I don't understand... Try `help` to see what I know!");
+        }
 
-        const commandName = mentioned && args.length > 0 ? args.splice(0, 2)[1].toLowerCase() : args.splice(0, 1)[0].slice(config.sign.length).toLowerCase();
-        const command = this.commands.get(commandName) || this.aliases.get(commandName);
-
-        if (mentioned && args.length === 0) return message.reply("How may I help?");
-        // if (!command && mentioned && args.length >= 1) return message.reply("Sorry, I don't recognise that command. Try `help` to see what I know!");
         if (!command) return false;
-
-        message.command = commandName;
         return this.runCommand(command, message, channel, user, args);
     }
 
@@ -99,7 +108,7 @@ module.exports = class CommandManager {
             .addField("Message", message.content);
 
         try {
-            log("Blacklist", `Deleting ${message.id} from ${guild}`, "info");
+            Logger.info("Blacklist", `Deleting ${message.id} from ${guild}`);
             await message.delete();
             return message.author.sendEmbed(embed);
         } catch(err) {
