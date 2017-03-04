@@ -1,8 +1,7 @@
 const chalk = require("chalk");
 const moment = require("moment");
-const Util = require("./Util");
 
-class Logger {
+module.exports = class Logger {
     // Throw error if someone tries to create an instance
     constructor() {
         throw new Error(`${this.constructor.name} class cannot be instantiated`);
@@ -61,4 +60,4 @@ class Logger {
 
 }
 
-module.exports = Logger;
+const Util = require("./Util");
