@@ -34,7 +34,7 @@ module.exports = class Command {
         throw new Error("Missing Run Method");
     }
 
-    log(message, style, stacktrace) {
+    log(message, style = "success", stacktrace) {
         return Logger[style](toUpper(this.name), message, stacktrace);
     }
 
