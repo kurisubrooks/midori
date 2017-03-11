@@ -1,6 +1,7 @@
 const chalk = require("chalk");
 const moment = require("moment");
-const Util = require("./Util");
+
+const toUpper = string => string.charAt(0).toUpperCase() + string.slice(1);
 
 class Logger {
     // Throw error if someone tries to create an instance
@@ -22,16 +23,16 @@ class Logger {
 
         // Log Multiple
         if (Array.isArray(message)) {
-            for (const item of message) console.log(style.bold(`[${Logger.time()} ${Util.toUpper(name)}]`), style(item));
+            for (const item of message) console.log(style.bold(`[${Logger.time()} ${toUpper(name)}]`), style(item));
             return false;
         // Log Stacktrace
         } else if (stacktrace) {
-            console.log(style.bold(`[${Logger.time()} ${Util.toUpper(name)}]`), style(message));
+            console.log(style.bold(`[${Logger.time()} ${toUpper(name)}]`), style(message));
             return console.trace(message);
         // Log Normally
         } else {
             message = typeof message === "string" ? message.replace(/\r?\n|\r/g, " ") : message;
-            return console.log(style.bold(`[${Logger.time()} ${Util.toUpper(name)}]`), style(message));
+            return console.log(style.bold(`[${Logger.time()} ${toUpper(name)}]`), style(message));
         }
     }
 

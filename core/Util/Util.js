@@ -3,31 +3,6 @@ const config = require("../../config");
 const Logger = require("./Logger");
 const { RichEmbed } = require("discord.js");
 
-exports.toUpper = string => string.charAt(0).toUpperCase() + string.slice(1);
-
-exports.error = (name, message, channel) => {
-    const embed = new RichEmbed()
-        .setColor(config.colours.error)
-        .addField("Module", name, true)
-        .addField("Time", Logger.time(), true)
-        .addField("Message", message);
-
-    channel = channel || client.channels.get("212917108445544449");
-    Logger.error(name, message);
-
-    return channel.sendEmbed(embed);
-};
-
-exports.handleJoin = (member) => {
-    if (config.adminServer.includes(member.guild.id)) {
-        member.addRole(member.guild.roles.find("name", "Muggle"));
-        const embed = new RichEmbed()
-            .setDescription("Welcome to Kurisu's Server!\nTo get started, I kindly ask you take the following quizzes,\nand post the results in #general, so you can be sorted in to your appropriate roles!\n \nhttps://my.pottermore.com/user-profile/my-house/ilvermorny \nhttps://my.pottermore.com/user-profile/my-house/hogwarts\n\nWe don't have a set series of rules as we're a relatively small server,\nbut I do kindly ask that you don't spam, be mature and don't troll.\n\nSincerely, Kurisu.");
-        member.sendEmbed(embed);
-    }
-};
-
-/*
 class Util {
     // Throw error if someone tries to create an instance
     constructor() {
@@ -63,7 +38,6 @@ class Util {
         }
     }
 }
-*/
 
 // Unhandled Promise Rejections
 process.on("unhandledRejection", reason =>
@@ -76,4 +50,4 @@ process.on("uncaughtException", error =>
 // Log Start
 Logger.info("Process", "Started");
 
-// module.exports = Util;
+module.exports = Util;
