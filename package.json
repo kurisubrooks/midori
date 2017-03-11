@@ -18,10 +18,10 @@
     "discord.js": "^11.0.0",
     "lodash": "^4.15.0",
     "moment": "^2.14.1",
+    "request-promise": "^4.1.1",
     "sequelize": "^3.30.2",
     "socket.io-client": "^1.4.8",
     "sqlite3": "^3.1.8",
-    "superagent": "^3.4.4",
     "to-markdown": "^3.0.3"
   },
   "devDependencies": {

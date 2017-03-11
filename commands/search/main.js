@@ -1,4 +1,4 @@
-const request = require("superagent");
+const request = require("request-promise");
 const { RichEmbed } = require("discord.js");
 const Command = require("../../core/Command");
 
@@ -16,21 +16,23 @@ module.exports = class SearchCommand extends Command {
             return message.reply("Please provide a query");
         }
 
-        let response;
-
-        try {
-            response = await request.get("https://www.googleapis.com/customsearch/v1")
-                .query(`key=${this.keychain.google.search}`)
-                .query("num=1")
-                .query("cx=006735756282586657842:s7i_4ej9amu")
-                .query(`q=${args.join(" ")}`);
-        } catch(err) {
+        const response = await request({
+            headers: { "User-Agent": "Mozilla/5.0" },
+            uri: "https://www.googleapis.com/customsearch/v1",
+            json: true,
+            qs: {
+                cx: "006735756282586657842:s7i_4ej9amu",
+                num: 1,
+                key: this.keychain.google.search,
+                q: args.join(" ") // eslint-disable-line id-length
+            }
+        }).catch(err => {
             this.log(err, "fatal", true);
             return this.error(err, channel);
-        }
+        });
 
-        if (response.body.searchInformation.totalResults !== "0") {
-            const result = response.body.items[0];
+        if (response.searchInformation.totalResults !== "0") {
+            const result = response.items[0];
             const link = decodeURIComponent(result.link);
 
             const embed = new RichEmbed()

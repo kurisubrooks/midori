@@ -1,6 +1,6 @@
 const moment = require("moment");
 const cheerio = require("cheerio");
-const request = require("superagent");
+const request = require("request-promise");
 const { RichEmbed } = require("discord.js");
 const Command = require("../../core/Command");
 
@@ -18,19 +18,20 @@ module.exports = class TimeCommand extends Command {
             return message.reply("Please provide a query");
         }
 
-        let response;
-
-        try {
-            response = await request.get(`http://time.is/${args.join(" ").replace(/^in/, "")}`);
-        } catch(err) {
+        const response = await request({
+            headers: { "User-Agent": "Mozilla/5.0" },
+            uri: `http://time.is/${args.join(" ").replace(/^in/, "")}`,
+            resolveWithFullResponse: true,
+            json: true
+        }).catch(err => {
             this.log(err, "fatal", true);
             return this.error(err, channel);
-        }
+        });
 
         if (response.statusCode === 404) return this.error("No Results", channel);
         if (response.statusCode === 500) return this.error("API Error", channel);
 
-        const $ = cheerio.load(response.text);
+        const $ = cheerio.load(response.body);
         const place = $("#msgdiv > h1").text();
         const date = $("#dd").text();
         const time = $("#twd").text();
@@ -41,6 +42,7 @@ module.exports = class TimeCommand extends Command {
 
         const embed = new RichEmbed()
             .setColor(this.config.colours.default)
+            .setAuthor(user.nickname, user.avatarURL)
             .addField("Location", place.replace("Time in ", "").replace(" now", ""))
             .addField("Time", moment(`${time}`, "HH:mm:ssA").format("h:mm a"), true)
             .addField("Date", date, true);

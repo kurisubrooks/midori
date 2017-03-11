@@ -1,5 +1,5 @@
 const { RichEmbed } = require("discord.js");
-const request = require("superagent");
+const request = require("request-promise");
 const markdown = require("to-markdown");
 const Command = require("../../core/Command");
 
@@ -17,33 +17,36 @@ module.exports = class DefineCommand extends Command {
             return message.reply("Please provide a query");
         }
 
-        let response, description = "";
-
-        try {
-            response = await request.get("https://glosbe.com/gapi/translate")
-                .query("from=en")
-                .query("dest=en")
-                .query("format=json")
-                .query(`phrase=${args.join(" ")}`);
-        } catch(err) {
+        let description = "";
+        const response = await request({
+            headers: { "User-Agent": "Mozilla/5.0" },
+            uri: "https://glosbe.com/gapi/translate",
+            json: true,
+            qs: {
+                from: "en",
+                dest: "en",
+                format: "json",
+                phrase: args.join(" ")
+            }
+        }).catch(err => {
             this.log(err, "fatal", true);
             return this.error(err, channel);
-        }
+        });
 
         const embed = new RichEmbed()
             .setColor(this.config.colours.default)
             .setAuthor(user.nickname, user.avatarURL)
             .setTitle(`Define: '${args.join(" ")}'`);
 
-        if (response.body.result !== "ok") {
+        if (response.result !== "ok") {
             return this.error("API Error", channel);
         }
 
-        if (!response.body.tuc) {
+        if (!response.tuc) {
             return this.error("No Results Returned", channel);
         }
 
-        const definitions = response.body.tuc.find(obj => obj.meanings);
+        const definitions = response.tuc.find(obj => obj.meanings);
 
         if (definitions.meanings.length === 0) {
             return this.error("No Results Returned", channel);

@@ -1,6 +1,6 @@
-const request = require("superagent");
+const request = require("request-promise");
 const Command = require("../../core/Command");
-const { Users } = require("../../core/Models");
+const Database = require("../../core/Database");
 
 module.exports = class DatabaseCommand extends Command {
     constructor(client) {
@@ -29,12 +29,12 @@ module.exports = class DatabaseCommand extends Command {
         const template = { weather: null, balance: null };
 
         if (mentioned.size > 0 && !this.hasAdmin(message.author)) return message.reply("Insufficient Permissions");
-        let data = await Users.findOne({ where: { id: user.id } });
+        let data = await Database.Models.Users.findOne({ where: { id: user.id } });
 
         // Check if User Exists in DB, Create if they don't
         if (!data) {
-            await Users.create({ id: user.id, data: JSON.stringify(template) });
-            data = await Users.findOne({ where: { id: user.id } });
+            await Database.Models.Users.create({ id: user.id, data: JSON.stringify(template) });
+            data = await Database.Models.Users.findOne({ where: { id: user.id } });
             this.log(`Added User: ${user.id}`, "debug");
         }
 
@@ -48,32 +48,34 @@ module.exports = class DatabaseCommand extends Command {
             let manipulate = JSON.parse(data.data);
 
             if (intention === "location") {
-                let geolocation;
-                try {
-                    geolocation = await request
-                        .get(`https://maps.googleapis.com/maps/api/geocode/json`)
-                        .query(`address=${encodeURIComponent(query)}`)
-                        .query(`key=${this.keychain.google.geocode}`);
-                } catch(err) {
+                const geolocation = await request({
+                    headers: { "User-Agent": "Mozilla/5.0" },
+                    uri: "https://maps.googleapis.com/maps/api/geocode/json",
+                    json: true,
+                    qs: {
+                        address: encodeURIComponent(query),
+                        key: this.keychain.google.geocode
+                    }
+                }).catch(err => {
                     this.log(err, "fatal", true);
                     return this.error(err, channel);
-                }
+                });
 
-                if (geolocation.body.status !== "OK") return this.handleNotOK(channel, geolocation.body);
-                if (geolocation.body.results.length > 1) {
+                if (geolocation.status !== "OK") return this.handleNotOK(channel, geolocation);
+                if (geolocation.results.length > 1) {
                     let places = [];
-                    for (const val of geolocation.body.results) places.push(`\`${val.formatted_address}\``);
+                    for (const val of geolocation.results) places.push(`\`${val.formatted_address}\``);
                     return message.reply(`Too many results, please refine your search:\n${places.join(", ")}`);
                 }
 
-                const locality = geolocation.body.results[0].address_components.find(elem => elem.types.includes("locality"));
-                const governing = geolocation.body.results[0].address_components.find(elem => elem.types.includes("administrative_area_level_1"));
-                const country = geolocation.body.results[0].address_components.find(elem => elem.types.includes("country"));
-                const continent = geolocation.body.results[0].address_components.find(elem => elem.types.includes("continent"));
+                const locality = geolocation.results[0].address_components.find(elem => elem.types.includes("locality"));
+                const governing = geolocation.results[0].address_components.find(elem => elem.types.includes("administrative_area_level_1"));
+                const country = geolocation.results[0].address_components.find(elem => elem.types.includes("country"));
+                const continent = geolocation.results[0].address_components.find(elem => elem.types.includes("continent"));
 
                 const city = locality || governing || country || continent || {};
                 const state = locality && governing ? governing : locality ? country : {};
-                const geocode = [geolocation.body.results[0].geometry.location.lat, geolocation.body.results[0].geometry.location.lng];
+                const geocode = [geolocation.results[0].geometry.location.lat, geolocation.results[0].geometry.location.lng];
 
                 manipulate.weather = [city, state, geocode];
                 return this.update(message, data, manipulate);

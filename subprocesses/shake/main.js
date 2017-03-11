@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const Canvas = require("canvas");
 const socket = require("socket.io-client");
-const request = require("superagent");
+const request = require("request-promise");
 const Subprocess = require("../../core/Subprocess");
 
 let previous_message;
@@ -48,21 +48,25 @@ module.exports = class ShakeProcess extends Subprocess {
     async parse(data, debug) {
         this.log("Running EEW Parser", "debug");
 
-        let response, channel = debug ? this.debugChannel : this.postChannel;
+        const channel = debug ? this.debugChannel : this.postChannel;
 
-        try {
-            response = await request.get("https://maps.googleapis.com/maps/api/staticmap")
-                .query("zoom=6")
-                .query("size=386x159")
-                .query("format=png")
-                .query("maptype=roadmap")
-                .query("style=feature:road|color:0xFFFFFF")
-                .query(`center=${data.details.geography.lat},${data.details.geography.long}`)
-                .query(`markers=${data.details.geography.lat},${data.details.geography.long}`);
-        } catch(err) {
+        const response = await request({
+            headers: { "User-Agent": "Mozilla/5.0" },
+            uri: "https://maps.googleapis.com/maps/api/staticmap",
+            encoding: "binary",
+            qs: {
+                zoom: 6,
+                size: "386x159",
+                format: "png",
+                maptype: "roadmap",
+                style: "feature:road|color:0xFFFFF",
+                center: `${data.details.geography.lat},${data.details.geography.long}`,
+                markers: `${data.details.geography.lat},${data.details.geography.long}`
+            }
+        }).catch(err => {
             this.log(err, "fatal", true);
             return this.error(err, this.debugChannel);
-        }
+        });
 
         Canvas.registerFont(path.join(__dirname, "Roboto.ttf"), { family: "Roboto" });
 
@@ -73,7 +77,7 @@ module.exports = class ShakeProcess extends Subprocess {
         const map = new Image();
         const base = new Image();
 
-        map.src = new Buffer(response.body, "binary");
+        map.src = new Buffer(response, "binary");
         base.src = fs.readFileSync(path.join(__dirname, "base.png"));
 
         // Draw Image
