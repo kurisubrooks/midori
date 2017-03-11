@@ -45,7 +45,7 @@ npm start
 If you wish to run Midori under Production, you can start her with pm2 by using
 
 ```bash
-pm2 start bin/index.js --name "midori" --node-args="--harmony" -- --color
+pm2 start index.js --name "midori" --node-args="--harmony" -- --color
 ```
 
 ### Development
