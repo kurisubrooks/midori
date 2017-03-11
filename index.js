@@ -4,8 +4,8 @@
 // Core
 global.Promise = require("bluebird");
 const { Client } = require("discord.js");
-const { error, handleJoin } = require("./core/Util");
-const Logger = require("./core/Logger");
+const { error, handleJoin } = require("./core/Util/Util");
+const Logger = require("./core/Util/Logger");
 const keychain = require("./keychain.json");
 const CommandManager = require("./core/CommandManager");
 const SubprocessManager = require("./core/SubprocessManager");

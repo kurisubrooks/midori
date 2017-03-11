@@ -1,8 +1,20 @@
 const Sequelize = require("sequelize");
 const path = require("path");
 
-module.exports = new Sequelize({
+const database = new Sequelize({
     logging: false,
     dialect: "sqlite",
-    storage: path.join(__dirname, "../", "db.sqlite")
+    storage: path.join(__dirname, "..", "db.sqlite")
 });
+
+class Database {
+    static get db() {
+        return database;
+    }
+
+    static get Models() {
+        return { Users: require("./Models/User") };
+    }
+}
+
+module.exports = Database;

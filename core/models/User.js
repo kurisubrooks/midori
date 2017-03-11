@@ -1,7 +1,7 @@
 const Sequelize = require("sequelize");
 const Database = require("../Database");
 
-const Users = Database.define("users", {
+const Users = Database.db.define("users", {
     id: {
         type: Sequelize.STRING,
         primaryKey: true

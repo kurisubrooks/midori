@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
-const Logger = require("./Logger");
-const { error, toUpper } = require("./Util");
+const Logger = require("./Util/Logger");
+const { error, toUpper } = require("./Util/Util");
 const { Collection, Client } = require("discord.js");
 
 module.exports = class SubprocessManager {

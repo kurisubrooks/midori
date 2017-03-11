@@ -1,7 +1,7 @@
 const config = require("../config");
 const keychain = require("../keychain.json");
-const Logger = require("./Logger");
-const { error, toUpper } = require("./Util");
+const Logger = require("./Util/Logger");
+const { error, toUpper } = require("./Util/Util");
 
 module.exports = class Subprocess {
     constructor(client, data = {}) {
