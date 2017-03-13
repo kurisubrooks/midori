@@ -12,33 +12,51 @@ module.exports = class CommandManager {
         this.commands = new Collection();
         this.aliases = new Collection();
 
-        if (!this.client || !(this.client instanceof Client)) throw new Error("Discord Client is required");
+        if (!this.client || !(this.client instanceof Client)) {
+            throw new Error("Discord Client is required");
+        }
     }
 
     loadCommands(dir) {
-        const commands = fs.readdirSync(path.join(__dirname, "../", dir));
+        const commands = fs.readdirSync(path.join(__dirname, "..", dir));
 
         for (const item of commands) {
-            const location = path.join(__dirname, "../", dir, item, "main.js");
+            const location = path.join(__dirname, "..", dir, item, "main.js");
             if (!fs.existsSync(location)) continue;
 
-            const Command = require(location);
-            const instance = new Command(this.client);
+            this.startModule(location);
+        }
+    }
 
-            if (instance.disabled) continue;
-            if (this.commands.has(instance.name)) throw new Error("Commands cannot have the same name");
+    startModule(location, re) {
+        const Command = require(location);
+        const instance = new Command(this.client);
+        instance.location = location;
 
-            Logger.info("Loaded Command", toUpper(instance.name));
-            this.commands.set(instance.name, instance);
+        if (instance.disabled) return;
+        if (this.commands.has(instance.name)) throw new Error("Commands cannot have the same name");
 
-            for (const alias of instance.aliases) {
-                if (this.aliases.has(alias)) {
-                    throw new Error("Commands cannot share aliases");
-                } else {
-                    this.aliases.set(alias, instance);
-                }
+        Logger.info(`${re ? "Reloaded" : "Loaded"} Command`, toUpper(instance.name));
+        this.commands.set(instance.name, instance);
+
+        for (const alias of instance.aliases) {
+            if (this.aliases.has(alias)) {
+                throw new Error("Commands cannot share aliases");
+            } else {
+                this.aliases.set(alias, instance);
             }
         }
+    }
+
+    reloadCommand(commandName) {
+        const existingCommand = this.commands.get(commandName) || this.aliases.get(commandName);
+        if (!existingCommand) return false;
+        const location = existingCommand.location;
+        for (const alias of existingCommand.aliases) this.aliases.delete(alias);
+        this.commands.delete(commandName);
+        delete require.cache[require.resolve(location)];
+        this.startModule(location);
+        return true;
     }
 
     runCommand(command, message, channel, user, args) {
@@ -59,6 +77,10 @@ module.exports = class CommandManager {
     }
 
     async handleMessage(message) {
+        // Don't Parse Bot Messages
+        if (message.author.bot) return false;
+
+        // Create Helper Variables
         let text = message.cleanContent;
         let args = message.content.split(" ");
         const channel = message.channel;
@@ -70,32 +92,43 @@ module.exports = class CommandManager {
         const triggered = message.content.startsWith(config.sign);
         const matched = new RegExp(blacklist.join("|")).test(message.content);
 
+        // Perform Various Checks
         if (server !== "DM" && matched) return this.handleBlacklist(message);
-        if (user.bot || (text.length < 1 && !attachments)) return false;
+        if (text.length < 1 && !attachments) return false;
         if (attachments) text += attachments && text.length < 1 ? "<file>" : " <file>";
         if (!triggered && !mentioned) return false;
+
+        // Bot was mentioned but no command supplied, await command
         if (mentioned && args.length === 1) {
-            await message.reply("How may I help? Respond with the command you want to use. Expires in 30s");
+            await message.reply("How may I help? Respond with the command you want to use. Expires in 60s");
             const filter = msg => msg.author.id === user.id;
-            const res = await channel.awaitMessages(filter, { max: 1, time: 30000 });
+            const res = await channel.awaitMessages(filter, { max: 1, time: 60000 });
             message = res.first();
             text += ` ${message.content}`;
             args = [args[0], ...message.content.split(" ")];
         }
 
+        // Find Command
         const instance = this.findCommand(mentioned, args);
         const command = instance.command;
 
+        // Set Variables
+        message.context = this;
         message.command = instance.commandName;
         user.nickname = message.member ? message.member.displayName : message.author.username;
 
+        // Log
         Logger.warn("Chat Log", `<${user.username}#${user.discriminator}>: ${text}`);
 
+        // Mentioned but command doesn't exist
         if (!command && mentioned && args.length >= 0) {
             return message.reply("Sorry, I don't understand... Try `help` to see what I know!");
         }
 
+        // Command doesn't exist
         if (!command) return false;
+
+        // Run Command
         return this.runCommand(command, message, channel, user, args);
     }
 

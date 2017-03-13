@@ -32,6 +32,17 @@ module.exports = class AdminCommand extends Command {
             return channel.send("Pong!");
         }
 
+        // Reload Module
+        if (command === "reload") {
+            const module = args[1];
+            const run = message.context.reloadCommand(module);
+            if (run) {
+                return channel.sendMessage(`Restarted ${module}`);
+            }
+
+            return channel.sendMessage(`Module ${module} doesn't exist!`);
+        }
+
         return false;
     }
 };
