@@ -55,7 +55,7 @@ module.exports = class CommandManager {
         for (const alias of existingCommand.aliases) this.aliases.delete(alias);
         this.commands.delete(commandName);
         delete require.cache[require.resolve(location)];
-        this.startModule(location);
+        this.startModule(location, true);
         return true;
     }
 
@@ -111,6 +111,10 @@ module.exports = class CommandManager {
         // Find Command
         const instance = this.findCommand(mentioned, args);
         const command = instance.command;
+
+        if (command.admin && !config.admin.includes(user.id)) {
+            return message.reply("Insufficient Permissions!");
+        }
 
         // Set Variables
         message.context = this;

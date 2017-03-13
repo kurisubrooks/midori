@@ -6,15 +6,12 @@ module.exports = class AdminCommand extends Command {
             name: "admin",
             description: "Administrative Commands",
             aliases: ["op"],
-            adminOnly: true
+            admin: true
         });
     }
 
     async run(message, channel, user, args) {
         const command = args[0];
-
-        // Check Perms
-        if (!this.hasAdmin(user)) return message.reply("Insufficient Permissions");
 
         // Stop or Restart Bot
         if (command === "stop" || command === "restart") {

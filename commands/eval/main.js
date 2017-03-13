@@ -5,18 +5,17 @@ module.exports = class EvalCommand extends Command {
         super(client, {
             name: "eval",
             description: "Evals Code",
-            adminOnly: true
+            aliases: [],
+            admin: true
         });
     }
 
     async run(message, channel, user, args) {
-        if (!this.hasAdmin(user)) return message.reply("Insufficient Permissions");
-
         const bot = this.client, client = this.client; // eslint-disable-line no-unused-vars
         const regex = new RegExp(this.client.token.replace(/\./g, "\\.").split("").join(".?"), "g");
 
         let input = `📥\u3000**Input:**\n\`\`\`js\n${args.join(" ")}\n\`\`\``;
-        let error = err => `🚫\u3000**Error:**\n\`\`\`js\n${err.toString().replace(regex, "<Token>")}\n\`\`\``;
+        let error = err => `🚫\u3000**Error:**\n\`\`\`js\n${err.toString().replace(regex, "[Token]")}\n\`\`\``;
 
         try {
             let output = eval(args.join(" "));

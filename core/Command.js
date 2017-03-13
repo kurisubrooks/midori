@@ -15,8 +15,8 @@ module.exports = class Command {
         this.description = data.description;
         this.aliases = data.aliases || [];
         this.usage = data.usage || "";
-        this.guildOnly = data.guildOnly || false;
-        this.adminOnly = data.adminOnly || false;
+        this.guild = data.guild || false;
+        this.admin = data.admin || false;
         this.disabled = data.disabled || false;
 
         if (!this.name) throw new Error("Command Name is required");
@@ -25,8 +25,8 @@ module.exports = class Command {
         if (typeof this.description !== "string") throw new TypeError("Command description must be a string");
         if (!(this.aliases instanceof Array)) throw new TypeError("Command aliases must be an array of strings");
         if (this.aliases.some(alias => typeof alias !== "string")) throw new TypeError("Command aliases must be an array of strings");
-        if (typeof this.guildOnly !== "boolean") throw new TypeError("Command guildOnly property must be a boolean");
-        if (typeof this.adminOnly !== "boolean") throw new TypeError("Command adminOnly property must be a boolean");
+        if (typeof this.guild !== "boolean") throw new TypeError("Command guildOnly property must be a boolean");
+        if (typeof this.admin !== "boolean") throw new TypeError("Command adminOnly property must be a boolean");
         if (typeof this.disabled !== "boolean") throw new TypeError("Command disabled property must be a boolean");
     }
 
