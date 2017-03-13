@@ -2,10 +2,10 @@ const request = require("request-promise");
 const { RichEmbed } = require("discord.js");
 const Command = require("../../core/Command");
 
-module.exports = class TranslateCommand extends Command {
+class Translate extends Command {
     constructor(client) {
         super(client, {
-            name: "translate",
+            name: "Translate",
             description: "Translate a Query with Google Translate",
             aliases: ["t"]
         });
@@ -53,4 +53,6 @@ module.exports = class TranslateCommand extends Command {
         await channel.sendEmbed(embed);
         return message.delete().catch(err => err.message);
     }
-};
+}
+
+module.exports = Translate;

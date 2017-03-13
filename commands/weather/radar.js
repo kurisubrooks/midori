@@ -1,9 +1,9 @@
 const Command = require("../../core/Command");
 
-module.exports = class RadarCommand extends Command {
+class Radar extends Command {
     constructor(client) {
         super(client, {
-            name: "radar",
+            name: "Radar",
             description: "Get the latest Weather Radar",
             aliases: ["rain"]
         });
@@ -18,4 +18,6 @@ module.exports = class RadarCommand extends Command {
         await channel.sendFile(url, `radar.${ext}`);
         return message.delete().catch(err => err.message);
     }
-};
+}
+
+module.exports = Radar;

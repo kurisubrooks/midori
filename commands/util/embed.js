@@ -1,9 +1,9 @@
 const Command = require("../../core/Command");
 
-module.exports = class EmbedCommand extends Command {
+class Embed extends Command {
     constructor(client) {
         super(client, {
-            name: "embed",
+            name: "Embed",
             description: "Preview Discord JSON Embeds",
             aliases: ["e"]
         });
@@ -26,4 +26,6 @@ module.exports = class EmbedCommand extends Command {
         await channel.sendMessage(`\`\`\`json\n${JSON.stringify(before, null, 4)}\n\`\`\``, { embed });
         return message.delete().catch(err => err.message);
     }
-};
+}
+
+module.exports = Embed;

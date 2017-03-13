@@ -1,10 +1,10 @@
 const Command = require("../../core/Command");
 const { RichEmbed } = require("discord.js");
 
-module.exports = class InviteCommand extends Command {
+class Invite extends Command {
     constructor(client) {
         super(client, {
-            name: "invite",
+            name: "Invite",
             description: "Invite Midori to your own server",
             aliases: []
         });
@@ -19,4 +19,6 @@ module.exports = class InviteCommand extends Command {
             .addField("\u200b", `[Click Here](${invite})`);
         return channel.sendEmbed(embed);
     }
-};
+}
+
+module.exports = Invite;

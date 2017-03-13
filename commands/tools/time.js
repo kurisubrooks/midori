@@ -4,12 +4,12 @@ const request = require("request-promise");
 const { RichEmbed } = require("discord.js");
 const Command = require("../../core/Command");
 
-module.exports = class TimeCommand extends Command {
+class Time extends Command {
     constructor(client) {
         super(client, {
-            name: "time",
+            name: "Time",
             description: "Get the Time for your Given Location",
-            aliases: ["clock"]
+            aliases: ["clock", "tz"]
         });
     }
 
@@ -50,4 +50,6 @@ module.exports = class TimeCommand extends Command {
         await channel.sendEmbed(embed);
         return message.delete().catch(err => err.message);
     }
-};
+}
+
+module.exports = Time;

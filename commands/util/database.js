@@ -2,10 +2,10 @@ const request = require("request-promise");
 const Command = require("../../core/Command");
 const Database = require("../../core/Database");
 
-module.exports = class DatabaseCommand extends Command {
+class DB extends Command {
     constructor(client) {
         super(client, {
-            name: "database",
+            name: "Database",
             description: "Interact with Midori's Database",
             aliases: ["db", "get", "set", "reset"]
         });
@@ -103,4 +103,6 @@ module.exports = class DatabaseCommand extends Command {
             return this.error("Unknown API Error", channel);
         }
     }
-};
+}
+
+module.exports = DB;

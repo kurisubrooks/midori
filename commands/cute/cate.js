@@ -2,10 +2,10 @@ const request = require("request-promise");
 const { RichEmbed } = require("discord.js");
 const Command = require("../../core/Command");
 
-module.exports = class CatCommand extends Command {
+class Cate extends Command {
     constructor(client) {
         super(client, {
-            name: "cat",
+            name: "Cats",
             description: "Post a randomly selected image of a cat",
             aliases: ["kat", "kitty"]
         });
@@ -32,4 +32,6 @@ module.exports = class CatCommand extends Command {
         await channel.sendEmbed(embed);
         return message.delete().catch(err => err.message);
     }
-};
+}
+
+module.exports = Cate;

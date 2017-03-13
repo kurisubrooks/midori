@@ -3,12 +3,12 @@ const request = require("request-promise");
 const markdown = require("to-markdown");
 const Command = require("../../core/Command");
 
-module.exports = class DefineCommand extends Command {
+class Dictionary extends Command {
     constructor(client) {
         super(client, {
-            name: "define",
+            name: "Dictionary",
             description: "Get the Definition of a Word",
-            aliases: ["dictionary", "dict", "d"]
+            aliases: ["define", "dict", "d"]
         });
     }
 
@@ -60,4 +60,6 @@ module.exports = class DefineCommand extends Command {
         await channel.sendEmbed(embed);
         return message.delete().catch(err => err.message);
     }
-};
+}
+
+module.exports = Dictionary;

@@ -4,16 +4,16 @@ const request = require("request-promise");
 const Command = require("../../core/Command");
 const Database = require("../../core/Database");
 
-module.exports = class WeatherCommand extends Command {
+class Weather extends Command {
     constructor(client) {
         super(client, {
-            name: "weather",
+            name: "Weather",
             description: "Get the Weather for your Given Location",
-            aliases: ["w"]
+            aliases: ["w", "conditions"]
         });
     }
 
-    async run(message, channel, user, args) { // eslint-disable-line complexity
+    async run(message, channel, user, args) {
         let geolocation, city, state, geocode;
 
         // No Args Supplied
@@ -201,4 +201,6 @@ module.exports = class WeatherCommand extends Command {
             return this.error("Unknown API Error", channel);
         }
     }
-};
+}
+
+module.exports = Weather;

@@ -1,9 +1,9 @@
 const Command = require("../../core/Command");
 
-module.exports = class EvalCommand extends Command {
+class Evaluator extends Command {
     constructor(client) {
         super(client, {
-            name: "eval",
+            name: "Eval",
             description: "Evals Code",
             aliases: [],
             admin: true
@@ -22,9 +22,13 @@ module.exports = class EvalCommand extends Command {
             if (typeof output !== "string") output = require("util").inspect(output, { depth: 1 });
             let response = `📤\u3000**Output:**\n\`\`\`js\n${output.replace(regex, "[Token]")}\n\`\`\``;
             if (input.length + response.length > 1900) throw new Error("Output too long!");
-            return channel.send(`${input}\n${response}`).catch(err => channel.send(`${input}\n${error(err)}`));
+            await channel.send(`${input}\n${response}`).catch(err => channel.send(`${input}\n${error(err)}`));
+            return message.delete().catch(err => err.message);
         } catch(err) {
-            return channel.send(`${input}\n${error(err)}`).catch(err => channel.send(`${input}\n${error(err)}`));
+            await channel.send(`${input}\n${error(err)}`).catch(err => channel.send(`${input}\n${error(err)}`));
+            return message.delete().catch(err => err.message);
         }
     }
-};
+}
+
+module.exports = Evaluator;

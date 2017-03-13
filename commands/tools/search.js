@@ -2,10 +2,10 @@ const request = require("request-promise");
 const { RichEmbed } = require("discord.js");
 const Command = require("../../core/Command");
 
-module.exports = class SearchCommand extends Command {
+class Search extends Command {
     constructor(client) {
         super(client, {
-            name: "search",
+            name: "Search",
             description: "Return Google Search Results",
             aliases: ["s", "google"]
         });
@@ -51,4 +51,6 @@ module.exports = class SearchCommand extends Command {
 
         return false;
     }
-};
+}
+
+module.exports = Search;
