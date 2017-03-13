@@ -38,13 +38,14 @@ module.exports = class CommandManager {
     startModule(location, re) {
         const Command = require(location);
         const instance = new Command(this.client);
+        const commandName = instance.name.toLowerCase();
         instance.location = location;
 
         if (instance.disabled) return;
-        if (this.commands.has(instance.name)) throw new Error("Commands cannot have the same name");
+        if (this.commands.has(commandName)) throw new Error("Commands cannot have the same name");
 
-        Logger.info(`${re ? "Reloaded" : "Loaded"} Command`, toUpper(instance.name));
-        this.commands.set(instance.name, instance);
+        Logger.info(`${re ? "Reloaded" : "Loaded"} Command`, toUpper(commandName));
+        this.commands.set(commandName, instance);
 
         for (const alias of instance.aliases) {
             if (this.aliases.has(alias)) {
@@ -115,6 +116,9 @@ module.exports = class CommandManager {
             args = [args[0], ...message.content.split(" ")];
         }
 
+        // Log Message
+        Logger.warn("Chat Log", `<${user.username}#${user.discriminator}>: ${text}`);
+
         // Find Command
         const instance = this.findCommand(mentioned, args);
         const command = instance.command;
@@ -128,9 +132,6 @@ module.exports = class CommandManager {
         message.context = this;
         message.command = instance.commandName;
         user.nickname = message.member ? message.member.displayName : message.author.username;
-
-        // Log
-        Logger.warn("Chat Log", `<${user.username}#${user.discriminator}>: ${text}`);
 
         // Mentioned but command doesn't exist
         if (!command && mentioned && args.length >= 0) {
