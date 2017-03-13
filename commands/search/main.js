@@ -21,9 +21,9 @@ module.exports = class SearchCommand extends Command {
             uri: "https://www.googleapis.com/customsearch/v1",
             json: true,
             qs: {
-                cx: "006735756282586657842:s7i_4ej9amu",
-                num: 1,
+                cx: this.keychan.google.cx,
                 key: this.keychain.google.search,
+                num: 1,
                 q: args.join(" ") // eslint-disable-line id-length
             }
         }).catch(err => {
