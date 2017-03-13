@@ -17,14 +17,21 @@ module.exports = class CommandManager {
         }
     }
 
-    loadCommands(dir) {
-        const commands = fs.readdirSync(path.join(__dirname, "..", dir));
+    loadCommands(directory) {
+        const folders = fs.readdirSync(path.join(__dirname, "..", directory));
 
-        for (const item of commands) {
-            const location = path.join(__dirname, "..", dir, item, "main.js");
-            if (!fs.existsSync(location)) continue;
+        for (const folder of folders) {
+            const location = path.join(__dirname, "..", directory, folder);
+            if (!fs.statSync(location).isDirectory()) continue;
+            const files = fs.readdirSync(location);
 
-            this.startModule(location);
+            for (const file of files) {
+                if (path.extname(file) !== ".js") continue;
+
+                const location = path.join(__dirname, "..", directory, folder, file);
+
+                this.startModule(location);
+            }
         }
     }
 
@@ -112,6 +119,7 @@ module.exports = class CommandManager {
         const instance = this.findCommand(mentioned, args);
         const command = instance.command;
 
+        // Check if Command requires Admin
         if (command.admin && !config.admin.includes(user.id)) {
             return message.reply("Insufficient Permissions!");
         }
