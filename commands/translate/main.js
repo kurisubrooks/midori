@@ -25,12 +25,11 @@ module.exports = class TranslateCommand extends Command {
             this.log("Using Previous Message as Query", "debug");
             const res = await channel.fetchMessages({ before: message.id, limit: 1 });
             query = res.first().content;
-        }
-        /* else if (Number(query)) {
+        } else if (Number(query)) {
             this.log("Using Given Message (from ID) as Query", "debug");
             const res = await channel.fetchMessage(query);
             query = res.content;
-        }*/
+        }
 
         const response = await request({
             method: "POST",
