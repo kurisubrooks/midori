@@ -21,7 +21,7 @@ class Search extends Command {
             uri: "https://www.googleapis.com/customsearch/v1",
             json: true,
             qs: {
-                cx: this.keychan.google.cx,
+                cx: this.keychain.google.cx,
                 key: this.keychain.google.search,
                 num: 1,
                 q: args.join(" ") // eslint-disable-line id-length
