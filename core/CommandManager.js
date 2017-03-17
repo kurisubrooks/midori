@@ -123,11 +123,6 @@ module.exports = class CommandManager {
         const instance = this.findCommand(mentioned, args);
         const command = instance.command;
 
-        // Check if Command requires Admin
-        if (command.admin && !config.admin.includes(user.id)) {
-            return message.reply("Insufficient Permissions!");
-        }
-
         // Set Variables
         message.context = this;
         message.command = instance.commandName;
@@ -140,6 +135,11 @@ module.exports = class CommandManager {
 
         // Command doesn't exist
         if (!command) return false;
+
+        // Check if Command requires Admin
+        if (command.admin && !config.admin.includes(user.id)) {
+            return message.reply("Insufficient Permissions!");
+        }
 
         // Run Command
         return this.runCommand(command, message, channel, user, args);
