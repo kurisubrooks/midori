@@ -10,7 +10,7 @@ class Ping extends Command {
     }
 
     async run(message, channel) {
-        message.delete();
+        message.delete().catch(err => err.message);
         return channel.sendMessage("Ping...")
             .then(msg => msg.edit(`Pong! \`${msg.createdTimestamp - message.createdTimestamp}ms\``));
     }
