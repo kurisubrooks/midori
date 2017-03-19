@@ -33,7 +33,10 @@ class Translate extends Command {
 
         const response = await request({
             method: "POST",
-            headers: { "User-Agent": "Mozilla/5.0" },
+            headers: {
+                "User-Agent": "Mozilla/5.0",
+                "Authorization": this.keychain.sherlock
+            },
             uri: "https://api.kurisubrooks.com/api/translate",
             body: { to, from, query },
             json: true

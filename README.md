@@ -28,6 +28,7 @@ Create a file called `keychain.json` in the main directory, with the following c
 {
     "discord": "", // Discord Bot Token
     "darksky": "", // DarkSky Weather API Key
+    "sherlock": "", // Sherlock API Key
     "google": {
         "cx": "", // Google Search API CX
         "search": "", // Google Search API Key
