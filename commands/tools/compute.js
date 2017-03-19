@@ -2,16 +2,6 @@
 const { RichEmbed } = require("discord.js");
 const Command = require("../../core/Command");
 
-// Converters
-const ctof = celsius => celsius * 9 / 5 + 32;
-const ctok = celsius => celsius + 273.15;
-
-const ftoc = fahrenheit => (fahrenheit - 32) * 5 / 9;
-const ftok = fahrenheit => (fahrenheit + 459.67) * 5 / 9;
-
-const ktoc = kelvin => 271.15 - kelvin;
-const ktof = kelvin => kelvin * 9 / 5 - 459.67;
-
 class Compute extends Command {
     constructor(client) {
         super(client, {
@@ -19,6 +9,41 @@ class Compute extends Command {
             description: "Compute Various Equations with Topaz Engine",
             aliases: ["c", "comp"]
         });
+    }
+
+    protocols() {
+        return {
+            celsius: {
+                name: "Celsius",
+                type: "temp",
+                unit: "c",
+                display: "°C",
+                to: {
+                    fahrenheit: celsius => celsius * 9 / 5 + 32,
+                    kelvin: celsius => celsius + 273.15
+                }
+            },
+            fahrenheit: {
+                name: "Fahrenheit",
+                type: "temp",
+                unit: "f",
+                display: "°F",
+                to: {
+                    celsius: fahrenheit => (fahrenheit - 32) * 5 / 9,
+                    kelvin: fahrenheit => (fahrenheit + 459.67) * 5 / 9
+                }
+            },
+            kelvin: {
+                name: "Kelvin",
+                type: "temp",
+                unit: "k",
+                display: "°K",
+                to: {
+                    celsius: kelvin => 271.15 - kelvin,
+                    fahrenheit: kelvin => kelvin * 9 / 5 - 459.67
+                }
+            }
+        };
     }
 
     async run(message, channel, user, args) {
