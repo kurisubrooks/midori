@@ -30,5 +30,8 @@ client.on("warn", warning => error("Core", warning));
 client.on("error", error => error("Core", error));
 client.on("guildMemberAdd", member => handleJoin(member));
 client.on("message", message => Manager.handleMessage(message));
+client.on("messageUpdate", (old, neue) => {
+    if (old.content !== neue.content) Manager.handleMessage(neue);
+});
 
 module.exports = client;
