@@ -2,12 +2,12 @@ const { RichEmbed } = require("discord.js");
 const request = require("request-promise");
 const Command = require("../../core/Command");
 
-class Compute extends Command {
+class Currency extends Command {
     constructor(client) {
         super(client, {
-            name: "Compute",
-            description: "Computes Computations",
-            aliases: ["c", "comp", "convert"]
+            name: "Currency",
+            description: "Converts Currency",
+            aliases: ["m", "money"]
         });
     }
 
@@ -22,7 +22,7 @@ class Compute extends Command {
                 "User-Agent": "Mozilla/5.0",
                 "Authorization": this.keychain.sherlock
             },
-            uri: "https://api.kurisubrooks.com/api/compute/convert",
+            uri: "https://api.kurisubrooks.com/api/compute/currency",
             body: { query: args.join(" ") },
             json: true
         }).catch(err => {
@@ -43,4 +43,4 @@ class Compute extends Command {
     }
 }
 
-module.exports = Compute;
+module.exports = Currency;
