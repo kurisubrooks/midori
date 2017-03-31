@@ -32,17 +32,18 @@ class Help extends Command {
                 return `**${name}** — ${description}\nMatches: ${aliases.map(alias => `\`${alias}\``).join(", ")}\n`;
             });
 
-            text.unshift(`Type \`${config.sign}<command>\` to use a command.\n`);
+            text.unshift(`Type \`${config.sign}<command>\`, or \`@Midori#7635 <command>\` to use a command.\n`);
             text.unshift("__**List of available commands**__\n");
 
             await user.sendMessage(text.join("\n"));
+            await message.reply("Sent you a DM with information!");
             return message.delete().catch(err => err.message);
         }
 
         const command = this.findCommand(commands, args[0]);
         if (!command) return message.reply("That command does not exist!");
         const embed = new RichEmbed()
-            .setAuthor(`${message.author.username}#${message.author.discriminator} — ${command.name}`, message.author.displayAvatarURL)
+            .setAuthor(`${message.author.username}#${message.author.discriminator}`, message.author.displayAvatarURL)
             .setThumbnail(this.client.user.displayAvatarURL)
             .addField("Usage", `\`${config.sign}${command.name.toLowerCase()}\``, true)
             .addField("Aliases", [command.name, ...command.aliases].map(name => name.toLowerCase()).join(", "), true)
