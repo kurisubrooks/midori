@@ -11,8 +11,16 @@ class Help extends Command {
     }
 
     async run(message, channel, user) {
-        const commands = message.context.commands;
-        const text = commands.map(command => `\`${command.name}\`     ${command.description}`);
+        let commands = message.context.commands;
+        if (!config.admin.includes(user.id)) commands = commands.filter(command => !command.admin);
+
+        const text = commands.map(command => {
+            const { name, description, aliases } = command;
+            aliases.unshift(command.name.toLowerCase());
+
+            return `**${name}** — ${description}\nMatches: ${aliases.map(alias => `\`${alias}\``).join(", ")}\n`;
+        });
+
         text.unshift(`Type \`${config.sign}<command>\` to use a command.\n`);
         text.unshift("__**List of available commands**__\n");
 
