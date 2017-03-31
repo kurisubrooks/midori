@@ -5,7 +5,8 @@ class Embed extends Command {
         super(client, {
             name: "Embed",
             description: "Preview Discord JSON Embeds",
-            aliases: ["e"]
+            aliases: ["e"],
+            disabled: true
         });
     }
 
