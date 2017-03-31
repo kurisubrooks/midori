@@ -137,9 +137,7 @@ module.exports = class CommandManager {
         if (!command) return false;
 
         // Check if Command requires Admin
-        if (command.admin && !config.admin.includes(user.id)) {
-            return message.reply("Insufficient Permissions!");
-        }
+        if (command.admin && !config.admin.includes(user.id)) return false;
 
         // Run Command
         return this.runCommand(command, message, channel, user, args);
