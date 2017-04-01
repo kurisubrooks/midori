@@ -26,17 +26,16 @@ class Help extends Command {
 
         if (!args[0]) {
             const text = commands.map(command => {
-                const { name, description, aliases } = command;
-                aliases.unshift(command.name.toLowerCase());
+                const aliases = [command.name, ...command.aliases].map(name => name.toLowerCase());
 
-                return `**${name}** — ${description}\nMatches: ${aliases.map(alias => `\`${alias}\``).join(", ")}\n`;
+                return `**${command.name}** — ${command.description}\nMatches: ${aliases.map(alias => `\`${alias}\``).join(", ")}\n`;
             });
 
             text.unshift(`Type \`${config.sign}<command>\`, or \`@Midori#7635 <command>\` to use a command.\n`);
             text.unshift("__**List of available commands**__\n");
 
+            if (channel.type !== "dm") await message.reply("Sent you a DM with information!");
             await user.sendMessage(text.join("\n"));
-            await message.reply("Sent you a DM with information!");
             return message.delete().catch(err => err.message);
         }
 
