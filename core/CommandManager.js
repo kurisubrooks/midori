@@ -130,6 +130,10 @@ module.exports = class CommandManager {
 
         // Mentioned but command doesn't exist
         if (!command && mentioned && args.length >= 0) {
+            if (user.id === "169842543410937856" || user.id === "268963316200767488") {
+                return message.reply("I'm not sure what you mean... but please don't drink me!");
+            }
+
             return message.reply("Sorry, I don't understand... Try `help` to see what I know!");
         }
 
