@@ -17,7 +17,6 @@ class Logger {
     // Logger
     static log(style, name, message, stacktrace) {
         if (typeof style !== "function") {
-            Logger.log(chalk.white, "Logger", "Missing Style Type");
             style = chalk.white;
         }
 

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const Command = require("../../core/Command");
 
 class Evaluator extends Command {
@@ -11,7 +12,7 @@ class Evaluator extends Command {
     }
 
     async run(message, channel, user, args) {
-        const bot = this.client, client = this.client; // eslint-disable-line no-unused-vars
+        const bot = this.client, client = this.client;
         const regex = new RegExp(this.client.token.replace(/\./g, "\\.").split("").join(".?"), "g");
 
         const input = `📥\u3000**Input:**\n\`\`\`js\n${args.join(" ")}\n\`\`\``;

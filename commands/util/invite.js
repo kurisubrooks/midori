@@ -17,6 +17,7 @@ class Invite extends Command {
             .setDescription("Thanks for showing interest in Midori! Click the link below to invite her to your server.")
             .setThumbnail(this.client.user.avatarURL)
             .addField("\u200b", `[Click Here](${invite})`);
+
         return channel.sendEmbed(embed);
     }
 }

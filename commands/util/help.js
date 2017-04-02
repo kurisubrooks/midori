@@ -13,6 +13,7 @@ class Help extends Command {
 
     findCommand(commands, name) {
         const lower = name.toLowerCase();
+
         for (const command of commands.values()) {
             if (command.name.toLowerCase().startsWith(lower)) return command;
         }
@@ -41,12 +42,14 @@ class Help extends Command {
 
         const command = this.findCommand(commands, args[0]);
         if (!command) return message.reply("That command does not exist!");
+
         const embed = new RichEmbed()
             .setAuthor(`${message.author.username}#${message.author.discriminator}`, message.author.displayAvatarURL)
             .setThumbnail(this.client.user.displayAvatarURL)
             .addField("Usage", `\`${config.sign}${command.name.toLowerCase()}\``, true)
             .addField("Aliases", [command.name, ...command.aliases].map(name => name.toLowerCase()).join(", "), true)
             .addField("Description", command.description);
+
         await message.channel.send({ embed });
         return message.delete().catch(err => err.message);
     }
