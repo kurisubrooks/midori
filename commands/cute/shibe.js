@@ -20,10 +20,9 @@ class Shibe extends Command {
                 count: 1,
                 httpsurls: true
             }
-        }).catch(err => {
-            this.log(err, "fatal", true);
-            return this.error(err, channel);
-        });
+        }).catch(error => this.error(error.response.body.error, channel));
+
+        if (!response) return false;
 
         const embed = new RichEmbed()
             .setAuthor(user.nickname, user.avatarURL)

@@ -25,12 +25,9 @@ class Currency extends Command {
             uri: "https://api.kurisubrooks.com/api/compute/currency",
             body: { query: args.join(" ") },
             json: true
-        }).catch(err => {
-            this.log(err, "fatal", true);
-            return this.error(err, channel);
-        });
+        }).catch(error => this.error(error.response.body.error, channel));
 
-        if (!response.ok) return this.error(response.error, channel);
+        if (!response) return false;
 
         const embed = new RichEmbed()
             .setColor(this.config.colours.default)

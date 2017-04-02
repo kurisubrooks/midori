@@ -23,11 +23,9 @@ class Time extends Command {
             uri: `http://time.is/${args.join(" ").replace(/^in/, "")}`,
             resolveWithFullResponse: true,
             json: true
-        }).catch(err => {
-            this.log(err, "fatal", true);
-            return this.error(err, channel);
-        });
+        }).catch(error => this.error(error.response.body.error, channel));
 
+        if (!response) return false;
         if (response.statusCode === 404) return this.error("No Results", channel);
         if (response.statusCode === 500) return this.error("API Error", channel);
 

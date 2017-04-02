@@ -51,12 +51,10 @@ class Weather extends Command {
                     address: encodeURIComponent(args.join("+")),
                     key: this.keychain.google.geocode
                 }
-            }).catch(err => {
-                this.log(err, "fatal", true);
-                return this.error(err, channel);
-            });
+            }).catch(error => this.error(error.response.body.error, channel));
 
             // Handle Errors
+            if (!geolocation) return false;
             if (geolocation.status !== "OK") return this.handleNotOK(channel, geolocation);
             if (geolocation.results.length > 1) {
                 let places = [];
@@ -86,11 +84,9 @@ class Weather extends Command {
             uri: `https://api.darksky.net/forecast/${this.keychain.darksky}/${geocode.join(",")}`,
             json: true,
             qs: { units: "si" }
-        }).catch(err => {
-            this.log(err, "fatal", true);
-            return this.error(err, channel);
-        });
+        }).catch(error => this.error(error.response.body.error, channel));
 
+        if (!weather) return false;
         const condition = weather.currently.summary;
         const icon = weather.currently.icon;
         const chanceofrain = Math.round((weather.currently.precipProbability * 100) / 5) * 5;

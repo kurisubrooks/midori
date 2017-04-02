@@ -28,10 +28,9 @@ class Dictionary extends Command {
                 format: "json",
                 phrase: args.join(" ")
             }
-        }).catch(err => {
-            this.log(err, "fatal", true);
-            return this.error(err, channel);
-        });
+        }).catch(error => this.error(error.response.body.error, channel));
+
+        if (!response) return false;
 
         const embed = new RichEmbed()
             .setColor(this.config.colours.default)

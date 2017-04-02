@@ -26,10 +26,9 @@ class Search extends Command {
                 num: 1,
                 q: args.join(" ") // eslint-disable-line id-length
             }
-        }).catch(err => {
-            this.log(err, "fatal", true);
-            return this.error(err, channel);
-        });
+        }).catch(error => this.error(error.response.body.error, channel));
+
+        if (!response) return false;
 
         if (response.searchInformation.totalResults !== "0") {
             const result = response.items[0];

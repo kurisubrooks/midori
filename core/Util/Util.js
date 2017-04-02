@@ -25,7 +25,8 @@ class Util {
         channel = channel || client.channels.get("212917108445544449");
         Logger.error(name, message);
 
-        return channel.sendEmbed(embed);
+        channel.sendEmbed(embed);
+        return false;
     }
 
     // Handle User Join
