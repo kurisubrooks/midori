@@ -2,13 +2,12 @@ const Command = require("../../core/Command");
 const { RichEmbed } = require("discord.js");
 const Database = require("../../core/Database");
 
-class Embed extends Command {
+class EconomyPay extends Command {
     constructor(client) {
         super(client, {
             name: "Pay",
             description: "Give another user some money.",
-            aliases: ["send", "give", "pay"],
-            disabled: false
+            aliases: ["send", "give", "pay"]
         });
     }
 
@@ -58,4 +57,4 @@ class Embed extends Command {
     }
 }
 
-module.exports = Embed;
+module.exports = EconomyPay;

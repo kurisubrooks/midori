@@ -5,27 +5,26 @@
 global.Promise = require("bluebird");
 const { Client } = require("discord.js");
 const { error, handleJoin } = require("./core/Util/Util");
+const Keys = require("./keychain.json");
 const Logger = require("./core/Util/Logger");
-const keychain = require("./keychain.json");
 const CommandManager = require("./core/CommandManager");
 const SubprocessManager = require("./core/SubprocessManager");
 
 // Initialise
 const client = new Client();
+const Manager = new CommandManager(client);
+const Subprocesses = new SubprocessManager(client);
 
-let onReady = () => {
+const onReady = () => {
     Logger.success("Discord", "Ready");
-
-    const Subprocesses = new SubprocessManager(client);
     Subprocesses.loadModules("./subprocesses/");
 };
 
-const Manager = new CommandManager(client);
 Manager.loadCommands("./commands/");
 
 // Handle Discord
-client.login(keychain.discord);
-client.once("ready", () => onReady());
+client.login(Keys.discord);
+client.once("ready", onReady);
 client.on("warn", warning => error("Core", warning));
 client.on("error", error => error("Core", error));
 client.on("guildMemberAdd", member => handleJoin(member));

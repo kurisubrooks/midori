@@ -3,6 +3,7 @@ const path = require("path");
 const config = require("../config");
 const blacklist = require("../blacklist.json");
 const Logger = require("./Util/Logger");
+const Database = require("./Database");
 const { error, toUpper } = require("./Util/Util");
 const { Collection, RichEmbed, Client } = require("discord.js");
 
@@ -104,6 +105,7 @@ module.exports = class CommandManager {
         if (server !== "DM" && matched) return this.handleBlacklist(message);
         if (text.length < 1 && !attachments) return false;
         if (attachments) text += attachments && text.length < 1 ? "<file>" : " <file>";
+        if (server !== "DM") this.giveMoney(user);
         if (!triggered && !mentioned) return false;
 
         // Bot was mentioned but no command supplied, await command
@@ -162,5 +164,9 @@ module.exports = class CommandManager {
         } catch(err) {
             return error("Blacklist", `Unable to delete message ${message.id} from ${guild}`);
         }
+    }
+
+    giveMoney(user) {
+        return user;
     }
 };
