@@ -10,5 +10,4 @@ const Users = Database.db.define("users", {
 });
 
 Users.sync();
-
 module.exports = Users;

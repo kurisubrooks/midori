@@ -13,7 +13,7 @@ class Database {
     }
 
     static get Models() {
-        return { Users: require("./Models/User") };
+        return { Users: require("./Structures/User") };
     }
 }
 
