@@ -29,7 +29,7 @@ class Cate extends Command {
             .setImage(response[0]);
 
         await channel.sendEmbed(embed);
-        return message.delete().catch(err => err.message);
+        return this.delete(message);
     }
 }
 

@@ -42,6 +42,10 @@ module.exports = class Command {
         return error(this.name, message, channel);
     }
 
+    delete(message) {
+        return message.delete().catch(err => err.message);
+    }
+
     hasAdmin(user) {
         return config.admin.includes(user.id);
     }

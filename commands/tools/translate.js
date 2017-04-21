@@ -51,7 +51,7 @@ class Translate extends Command {
             .addField(response.to.name, response.result);
 
         await channel.sendEmbed(embed);
-        return message.delete().catch(err => err.message);
+        return this.delete(message);
     }
 }
 

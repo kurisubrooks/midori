@@ -24,10 +24,10 @@ class Evaluator extends Command {
             const response = `📤\u3000**Output:**\n\`\`\`js\n${output.replace(regex, "[Token]")}\n\`\`\``;
             if (input.length + response.length > 1900) throw new Error("Output too long!");
             await channel.send(`${input}\n${response}`).catch(err => channel.send(`${input}\n${error(err)}`));
-            return message.delete().catch(err => err.message);
+            return this.delete(message);
         } catch(err) {
             await channel.send(`${input}\n${error(err)}`).catch(err => channel.send(`${input}\n${error(err)}`));
-            return message.delete().catch(err => err.message);
+            return this.delete(message);
         }
     }
 }

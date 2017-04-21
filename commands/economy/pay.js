@@ -53,7 +53,7 @@ class EconomyPay extends Command {
             .addField("Balance", data.balance);
 
         await message.channel.send({ embed });
-        return message.delete().catch(err => err.message);
+        return this.delete(message);
     }
 }
 

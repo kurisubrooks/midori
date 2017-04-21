@@ -7,7 +7,7 @@ class Search extends Command {
         super(client, {
             name: "Search",
             description: "Return Google Search Results",
-            aliases: ["s", "google"]
+            aliases: ["s", "google", "find"]
         });
     }
 
@@ -45,7 +45,7 @@ class Search extends Command {
             if (result.pagemap && result.pagemap.cse_thumbnail) embed.setThumbnail(result.pagemap.cse_thumbnail[0].src);
 
             await channel.sendEmbed(embed);
-            return message.delete().catch(err => err.message);
+            return this.delete(message);
         }
 
         return false;

@@ -7,7 +7,7 @@ class EconomyBalance extends Command {
         super(client, {
             name: "Balance",
             description: "Get a user's balance.",
-            aliases: ["balance", "bal", "money"]
+            aliases: ["balance", "bal"]
         });
     }
 
@@ -22,7 +22,7 @@ class EconomyBalance extends Command {
             .addField("Balance", data.balance === null ? 0 : data.balance);
 
         await message.channel.send({ embed });
-        return message.delete().catch(err => err.message);
+        return this.delete(message);
     }
 }
 

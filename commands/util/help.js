@@ -37,7 +37,7 @@ class Help extends Command {
 
             if (channel.type !== "dm") await message.reply("Sent you a DM with information!");
             await user.sendMessage(text.join("\n"));
-            return message.delete().catch(err => err.message);
+            return this.delete(message);
         }
 
         const command = this.findCommand(commands, args[0]);
@@ -51,7 +51,7 @@ class Help extends Command {
             .addField("Description", command.description);
 
         await message.channel.send({ embed });
-        return message.delete().catch(err => err.message);
+        return this.delete(message);
     }
 }
 

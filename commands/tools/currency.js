@@ -36,7 +36,7 @@ class Currency extends Command {
             .addField("Result", response.output.display);
 
         await channel.sendEmbed(embed);
-        return message.delete().catch(err => err.message);
+        return this.delete(message);
     }
 }
 
