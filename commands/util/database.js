@@ -7,7 +7,7 @@ class DB extends Command {
         super(client, {
             name: "Database",
             description: "Interact with Midori's Database",
-            aliases: ["db", "get", "set", "reset"]
+            aliases: ["get", "set", "reset"]
         });
     }
 
@@ -39,6 +39,7 @@ class DB extends Command {
         }
 
         if (command === "reset") {
+            this.log(`${user.username} deleted their db entry`, "debug");
             await data.update(JSON.stringify(template));
             return message.reply(`Reset ${user.username} successfully.`);
         } else if (command === "get") {
