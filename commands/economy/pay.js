@@ -7,7 +7,8 @@ class EconomyPay extends Command {
         super(client, {
             name: "Pay",
             description: "Give another user some money.",
-            aliases: ["send", "give", "pay"]
+            aliases: ["send", "give", "pay"],
+            disabled: true
         });
     }
 

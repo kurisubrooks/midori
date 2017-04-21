@@ -14,8 +14,8 @@ class Database {
 
     static get Models() {
         return {
-            Users: require("./Structures/User"),
-            Bank: require("./Structures/Bank")
+            Users: require("./Structures/User")
+            // Bank: require("./Structures/Bank")
         };
     }
 }

@@ -7,7 +7,8 @@ class EconomyBalance extends Command {
         super(client, {
             name: "Balance",
             description: "Get a user's balance.",
-            aliases: ["balance", "bal"]
+            aliases: ["balance", "bal"],
+            disabled: true
         });
     }
 
