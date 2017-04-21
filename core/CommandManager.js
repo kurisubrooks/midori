@@ -50,7 +50,7 @@ module.exports = class CommandManager {
 
         for (const alias of instance.aliases) {
             if (this.aliases.has(alias)) {
-                throw new Error("Commands cannot share aliases");
+                throw new Error(`Commands cannot share aliases: ${instance.name} has ${alias}`);
             } else {
                 this.aliases.set(alias, instance);
             }
