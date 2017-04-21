@@ -41,7 +41,7 @@ class DB extends Command {
         if (command === "reset") {
             this.log(`${user.username} deleted their db entry`, "debug");
             await data.update(JSON.stringify(template));
-            return message.reply(`Reset ${user.username} successfully.`);
+            return message.reply("I've reset your database entry.");
         } else if (command === "get") {
             // if (!this.hasAdmin(message.author)) return message.reply("Insufficient Permissions");
             await message.channel.send(`\`\`\`js\n${JSON.stringify(JSON.parse(data.data), null, 4)}\n\`\`\``);
@@ -66,7 +66,7 @@ class DB extends Command {
                 if (geolocation.results.length > 1) {
                     let places = [];
                     for (const val of geolocation.results) places.push(`\`${val.formatted_address}\``);
-                    return message.reply(`Too many results, please refine your search:\n${places.join(", ")}`);
+                    return message.reply(`Too many results were returned! Here's some of the returned results, please try to narrow it down for me...\n${places.join(", ")}`);
                 }
 
                 const locality = geolocation.results[0].address_components.find(elem => elem.types.includes("locality"));
