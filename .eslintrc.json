@@ -17,7 +17,7 @@
         "comma-dangle": "error",
         "comma-spacing": "error",
         "comma-style": "error",
-        "complexity": "warn",
+        "complexity": 0,
         "computed-property-spacing": "error",
         "consistent-return": "error",
         "consistent-this": "error",
