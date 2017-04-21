@@ -18,6 +18,7 @@
     "discord.js": "^11.0.0",
     "lodash": "^4.15.0",
     "moment": "^2.14.1",
+    "moment-timezone": "^0.5.13",
     "request-promise": "^4.1.1",
     "sequelize": "^3.30.2",
     "socket.io-client": "^1.4.8",
