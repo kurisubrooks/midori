@@ -51,13 +51,15 @@ class Dictionary extends Command {
             return this.error("No Results Returned", channel);
         }
 
-        for (let index = 0; index < 5; index++) {
+        const length = definitions.meanings.length >= 5 ? 5 : definitions.meanings.length;
+
+        for (let index = 0; index < length; index++) {
             description += `**${index + 1}.**\u3000${markdown(definitions.meanings[index].text)}\n`;
         }
 
         embed.setDescription(description);
         await channel.sendEmbed(embed);
-        return message.delete().catch(err => err.message);
+        return this.delete(message);
     }
 }
 
