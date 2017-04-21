@@ -47,6 +47,8 @@ class DB extends Command {
         } else if (command === "set") {
             let manipulate = JSON.parse(data.data);
 
+            if (!query || query === "" || query === " ") return message.reply("Missing 'set' parameter");
+
             if (intention === "location") {
                 const geolocation = await request({
                     headers: { "User-Agent": "Mozilla/5.0" },
@@ -56,11 +58,9 @@ class DB extends Command {
                         address: encodeURIComponent(query),
                         key: this.keychain.google.geocode
                     }
-                }).catch(err => {
-                    this.log(err, "fatal", true);
-                    return this.error(err, channel);
-                });
+                }).catch(error => this.error(error.response.body.error, channel));
 
+                if (!geolocation) return false;
                 if (geolocation.status !== "OK") return this.handleNotOK(channel, geolocation);
                 if (geolocation.results.length > 1) {
                     let places = [];
