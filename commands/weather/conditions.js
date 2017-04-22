@@ -176,7 +176,7 @@ class Weather extends Command {
         ctx.textAlign = "right";
         ctx.font = "16px Rubik";
         ctx.fillText(`${Math.round(forecast[1].temperatureMax)}°${locale}`, 340, 193);
-        ctx.drawImage(day1, 350, 176, 24, 24);
+        ctx.drawImage(day1, 350, 174, 24, 24);
 
         // Forecast Day 2
         ctx.textAlign = "left";
@@ -186,7 +186,7 @@ class Weather extends Command {
         ctx.textAlign = "right";
         ctx.font = "16px Rubik";
         ctx.fillText(`${Math.round(forecast[2].temperatureMax)}°${locale}`, 340, 220);
-        ctx.drawImage(day2, 350, 203, 24, 24);
+        ctx.drawImage(day2, 350, 201, 24, 24);
 
         // Send
         await channel.sendFile(canvas.toBuffer());
