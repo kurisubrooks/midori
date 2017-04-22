@@ -176,7 +176,7 @@ class Weather extends Command {
         ctx.textAlign = "right";
         ctx.font = "16px Rubik";
         ctx.fillText(`${Math.round(forecast[1].temperatureMax)}°${locale}`, 340, 193);
-        ctx.drawImage(day1, 350, 174, 24, 24);
+        ctx.drawImage(day1, 350, 175, 24, 24);
 
         // Forecast Day 2
         ctx.textAlign = "left";
