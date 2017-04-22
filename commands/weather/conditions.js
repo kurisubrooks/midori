@@ -118,7 +118,7 @@ class Weather extends Command {
         this.log(`${temperature}°${locale}, ${condition}`, "debug");
 
         Canvas.registerFont(path.join(__dirname, "fonts", "Roboto.ttf"), { family: "Roboto" });
-        Canvas.registerFont(path.join(__dirname, "fonts", "NexaBold.otf"), { family: "Nexa Bold" });
+        Canvas.registerFont(path.join(__dirname, "fonts", "Rubik.ttf"), { family: "Rubik" });
 
         // Generate Response Image
         const canvas = new Canvas(400, 250);
@@ -152,9 +152,9 @@ class Weather extends Command {
         ctx.fillText(state.long_name ? state.long_name : "", 28, 63);
 
         // Temperature
-        ctx.font = "bold 34px 'Nexa Bold'";
+        ctx.font = "bold 34px Rubik";
         ctx.fillStyle = "#FFFFFF";
-        ctx.fillText(`${temperature}°C`, 28, 146);
+        ctx.fillText(`${temperature}°C`, 29, 146);
 
         // Local Time
         ctx.textAlign = "right";
@@ -174,8 +174,9 @@ class Weather extends Command {
         ctx.fillStyle = "#FFFFFF";
         ctx.fillText(moment.unix(forecast[1].time).format("dddd"), 28, 193);
         ctx.textAlign = "right";
+        ctx.font = "16px Rubik";
         ctx.fillText(`${Math.round(forecast[1].temperatureMax)}°${locale}`, 340, 193);
-        ctx.drawImage(day1, 350, 175, 24, 24);
+        ctx.drawImage(day1, 350, 176, 24, 24);
 
         // Forecast Day 2
         ctx.textAlign = "left";
@@ -183,6 +184,7 @@ class Weather extends Command {
         ctx.fillStyle = "#FFFFFF";
         ctx.fillText(moment.unix(forecast[2].time).format("dddd"), 28, 220);
         ctx.textAlign = "right";
+        ctx.font = "16px Rubik";
         ctx.fillText(`${Math.round(forecast[2].temperatureMax)}°${locale}`, 340, 220);
         ctx.drawImage(day2, 350, 203, 24, 24);
 
