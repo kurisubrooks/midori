@@ -10,8 +10,8 @@ class FullWidthConverter extends Command {
     }
 
     async run(message, channel, user, args) {
-        const fw = "ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ　ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ０１２３４５６７８９／－＋～！＠＃＄％＾＆＊（）＿＋";
-        const hw = "abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/-+~!@#$%^&*()_+";
+        const fw = "ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ　ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ０１２３４５６７８９／－＋～！＠＃＄％＾＆＊（）＿＋、。";
+        const hw = "abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/-+~!@#$%^&*()_+,.";
         const input = args.join(" ").split("");
         const output = input.map(letter => hw.indexOf(letter) > -1 ? fw[hw.indexOf(letter)] : letter).join("");
         channel.sendMessage(output);
