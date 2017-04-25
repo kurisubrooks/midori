@@ -49,10 +49,12 @@ class Weather extends Command {
                 uri: "https://maps.googleapis.com/maps/api/geocode/json",
                 json: true,
                 qs: {
-                    address: encodeURIComponent(args.join("+")),
+                    address: args.join("+"),
                     key: this.keychain.google.geocode
                 }
             }).catch(error => this.error(error.response.body.error, channel));
+
+            // console.log(geolocation);
 
             // Handle Errors
             if (!geolocation) return false;
@@ -109,6 +111,9 @@ class Weather extends Command {
                 line2 = "";
             }
 
+            if (line1.length > 25) line1 = `${line1.slice(0, 25)}...`;
+            if (line2.length > 40) line2 = `${line2.slice(0, 40)}...`;
+
             geocode = [geolocation.results[0].geometry.location.lat, geolocation.results[0].geometry.location.lng];
 
             this.log(`Geolocation Retrieved`, "debug");
@@ -119,12 +124,15 @@ class Weather extends Command {
             headers: { "User-Agent": "Mozilla/5.0" },
             uri: `https://api.darksky.net/forecast/${this.keychain.darksky}/${geocode.join(",")}`,
             json: true,
-            qs: { units: "si", excludes: "minutely,hourly,alerts" }
+            qs: {
+                units: "si",
+                excludes: "minutely,hourly,alerts"
+            }
         }).catch(error => this.error(error.response.body.error, channel));
 
-        if (!weather) return false;
-
         // console.log(weather);
+
+        if (!weather) return false;
 
         const locale = weather.flags.units === "us" ? "F" : "C";
         const condition = weather.currently.summary;
