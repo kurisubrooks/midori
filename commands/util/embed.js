@@ -24,7 +24,7 @@ class Embed extends Command {
         if (embed.colour) embed.color = embed.colour;
         if (embed.color) embed.color = Number(embed.color);
 
-        await channel.sendMessage(`\`\`\`json\n${JSON.stringify(before, null, 4)}\n\`\`\``, { embed });
+        await channel.send(`\`\`\`json\n${JSON.stringify(before, null, 4)}\n\`\`\``, { embed });
         return this.delete(message);
     }
 }

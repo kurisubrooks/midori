@@ -15,10 +15,10 @@ class Reload extends Command {
         const run = message.context.reloadCommand(module);
 
         if (run) {
-            return channel.sendMessage(`Reloaded '${module}'`);
+            return channel.send(`Reloaded '${module}'`);
         }
 
-        return channel.sendMessage(`Module ${module} doesn't exist!`);
+        return channel.send(`Module ${module} doesn't exist!`);
     }
 }
 

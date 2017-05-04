@@ -58,7 +58,7 @@ class Dictionary extends Command {
         }
 
         embed.setDescription(description);
-        await channel.sendEmbed(embed);
+        await channel.send({ embed });
         return this.delete(message);
     }
 }

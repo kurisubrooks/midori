@@ -45,7 +45,7 @@ class Time extends Command {
             .addField("Time", moment(`${time}`, "HH:mm:ssA").format("h:mm a"), true)
             .addField("Date", date, true);
 
-        await channel.sendEmbed(embed);
+        await channel.send({ embed });
         return this.delete(message);
     }
 }

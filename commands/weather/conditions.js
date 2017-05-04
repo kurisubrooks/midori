@@ -215,7 +215,7 @@ class Weather extends Command {
         ctx.drawImage(day2, 350, 201, 24, 24);
 
         // Send
-        await channel.sendFile(canvas.toBuffer());
+        await channel.send({ files: [{ attachment: canvas.toBuffer(), url: "weather.png" }] });
         return this.delete(message);
     }
 

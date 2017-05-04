@@ -28,7 +28,7 @@ class Shibe extends Command {
             .setAuthor(user.nickname, user.avatarURL)
             .setImage(response[0]);
 
-        await channel.sendEmbed(embed);
+        await channel.send({ embed });
         return this.delete(message);
     }
 }

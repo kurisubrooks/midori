@@ -5,7 +5,8 @@ class FullWidthConverter extends Command {
         super(client, {
             name: "FullWidth",
             description: "Convert Half Width Latin to Full Width",
-            aliases: ["fw"]
+            aliases: ["fw"],
+            disabled: true
         });
     }
 
@@ -14,7 +15,7 @@ class FullWidthConverter extends Command {
         const hw = "abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/-+~!@#$%^&*()_+,.";
         const input = args.join(" ").split("");
         const output = input.map(letter => hw.indexOf(letter) > -1 ? fw[hw.indexOf(letter)] : letter).join("");
-        channel.sendMessage(output);
+        channel.send(output);
     }
 }
 

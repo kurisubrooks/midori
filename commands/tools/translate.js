@@ -50,7 +50,7 @@ class Translate extends Command {
             .addField(response.from.name, response.query)
             .addField(response.to.name, response.result);
 
-        await channel.sendEmbed(embed);
+        await channel.send({ embed });
         return this.delete(message);
     }
 }

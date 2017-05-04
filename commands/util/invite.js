@@ -18,7 +18,7 @@ class Invite extends Command {
             .setThumbnail(this.client.user.avatarURL)
             .addField("\u200b", `[Click Here](${invite})`);
 
-        return channel.sendEmbed(embed);
+        return channel.send({ embed });
     }
 }
 
