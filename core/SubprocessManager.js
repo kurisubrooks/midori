@@ -13,10 +13,10 @@ module.exports = class SubprocessManager {
     }
 
     loadModules(dir) {
-        const subprocesses = fs.readdirSync(path.join(__dirname, "../", dir));
+        const subprocesses = fs.readdirSync(path.join(__dirname, "..", dir));
 
         for (const item of subprocesses) {
-            const location = path.join(__dirname, "../", dir, item, "main.js");
+            const location = path.join(__dirname, "..", dir, item, "main.js");
 
             // Location doesn't exist, skip loop
             if (!fs.existsSync(location)) continue;
