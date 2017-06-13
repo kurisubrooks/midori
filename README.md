@@ -1,17 +1,16 @@
+![Midori](http://i.imgur.com/XY3TmDR.png)
+
 <div align="center">
-    <div class="header">
-        <p>
-            <span><img src="http://i.imgur.com/XY3TmDR.png" width="50%" height="50%"/></span>
-        </p>
-    </div>
-    <p>
-        <a href="https://discord.gg/jD5V5EH"><img src="https://discordapp.com/api/guilds/292970618834649088/embed.png" /></a>
-        <a href="https://david-dm.org/kurisubrooks/midori"><img src="https://david-dm.org/kurisubrooks/midori/dev-status.svg" /></a>
-    </p>
-    <p>
-        <span>Brand spanking new Nano with 100% less shit code!</span>
-        <span>Click <a href="https://discordapp.com/oauth2/authorize?client_id=212915056491495424&scope=bot">here</a> to add Midori to your server!</span>
-    </p>
+    <a href="https://discord.gg/jD5V5EH">
+        <img src="https://discordapp.com/api/guilds/292970618834649088/embed.png" />
+    </a>
+    <a href="https://david-dm.org/kurisubrooks/midori">
+        <img src="https://david-dm.org/kurisubrooks/midori/dev-status.svg" />
+    </a>
+    <br /><br />
+    Brand spanking new Nano with 100% less shit code!
+    <br />
+    Click <a href="https://discordapp.com/oauth2/authorize?client_id=212915056491495424&scope=bot">here</a> to add Midori to your server!</span>
 </div>
 
 ## Building
