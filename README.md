@@ -1,7 +1,20 @@
-# Midori
-Brand spanking new Nano with 100% less shit code!
+<div align="center">
+    <div class="header">
+        <p>
+            <span><img src="http://i.imgur.com/XY3TmDR.png" width="50%" height="50%"/></span>
+        </p>
+    </div>
+    <p>
+        <a href="https://discord.gg/jD5V5EH"><img src="https://discordapp.com/api/guilds/292970618834649088/embed.png" /></a>
+        <a href="https://david-dm.org/kurisubrooks/midori"><img src="https://david-dm.org/kurisubrooks/midori/dev-status.svg" /></a>
+    </p>
+    <p>
+        <span>Brand spanking new Nano with 100% less shit code!</span>
+        <span>Click <a href="https://discordapp.com/oauth2/authorize?client_id=212915056491495424&scope=bot">here</a> to add Midori to your server!</span>
+    </p>
+</div>
 
-[Click here](https://discordapp.com/oauth2/authorize?client_id=212915056491495424&scope=bot) to add Midori to your Discord Server!
+## Building
 
 ### Prerequisites
 **macOS**
@@ -38,7 +51,7 @@ Create a file called `keychain.json` in the main directory, with the following c
 ```
 
 ### Run
-To start Midori, you can start her with
+You can start Midori by simply typing the following:
 
 ```bash
 npm start
@@ -48,6 +61,26 @@ If you wish to run Midori under Production, you can start her with pm2 by using
 
 ```bash
 pm2 start index.js --name "midori" --node-args="--harmony" -- --color
+```
+
+### Run with Docker (optional)
+If you want to deploy Midori with docker by using the ``Dockerfile`` provided, in the directory run
+
+```bash
+docker build -t midori .
+```
+
+To start simply execute
+
+```bash
+docker run -d midori
+```
+
+The ``-d`` flag means she will be running in the background.
+If you want to automatically restart her after a crash, docker has the ``restart always`` flag which you can use like so:
+
+```bash
+docker run --restart=always -d midori
 ```
 
 ### Development
