@@ -3,7 +3,6 @@ const path = require("path");
 const config = require("../config");
 const blacklist = require("../blacklist.json");
 const Logger = require("./Util/Logger");
-const Database = require("./Database");
 const { error, toUpper } = require("./Util/Util");
 const { Collection, RichEmbed, Client } = require("discord.js");
 
@@ -105,7 +104,6 @@ module.exports = class CommandManager {
         if (server !== "DM" && matched) return this.handleBlacklist(message);
         if (text.length < 1 && !attachments) return false;
         if (attachments) text += attachments && text.length < 1 ? "<file>" : " <file>";
-        if (server !== "DM") this.giveMoney(user);
         if (!triggered && !mentioned) return false;
 
         // Bot was mentioned but no command supplied, await command
@@ -132,10 +130,12 @@ module.exports = class CommandManager {
 
         // Mentioned but command doesn't exist
         if (!command && mentioned && args.length >= 0) {
+            // Easter Egg for certain users
             if (user.id === "169842543410937856" || user.id === "268963316200767488") {
                 return message.reply("I'm not sure what you mean... but please don't drink me!");
             }
 
+            // Generic response for less awesome users
             return message.reply("Sorry, I don't understand... Try `help` to see what I know!");
         }
 
@@ -160,13 +160,9 @@ module.exports = class CommandManager {
         try {
             Logger.info("Blacklist", `Deleting ${message.id} from ${guild}`);
             await message.delete();
-            return message.author.sendEmbed(embed);
+            return message.author.send({ embed });
         } catch(err) {
             return error("Blacklist", `Unable to delete message ${message.id} from ${guild}`);
         }
-    }
-
-    giveMoney(user) {
-        return user;
     }
 };
