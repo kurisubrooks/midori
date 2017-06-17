@@ -3,6 +3,7 @@ const path = require("path");
 const config = require("../config");
 const blacklist = require("../blacklist.json");
 const Logger = require("./Util/Logger");
+const Database = require("./Database");
 const { error, toUpper } = require("./Util/Util");
 const { Collection, RichEmbed, Client } = require("discord.js");
 
@@ -102,6 +103,8 @@ module.exports = class CommandManager {
 
         // Perform Various Checks
         if (server !== "DM" && matched) return this.handleBlacklist(message);
+        this.giveCoins(user);
+
         if (text.length < 1 && !attachments) return false;
         if (attachments) text += attachments && text.length < 1 ? "<file>" : " <file>";
         if (!triggered && !mentioned) return false;
@@ -163,6 +166,17 @@ module.exports = class CommandManager {
             return message.author.send({ embed });
         } catch(err) {
             return error("Blacklist", `Unable to delete message ${message.id} from ${guild}`);
+        }
+    }
+
+    async giveCoins(user) {
+        const db = Database.Models.Bank;
+        const person = await db.findOne({ where: { id: user.id } });
+
+        if (person) {
+            return person.update({ balance: person.balance + 1 });
+        } else {
+            return db.create({ id: user.id, balance: 1 });
         }
     }
 };
