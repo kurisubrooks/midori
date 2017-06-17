@@ -7,7 +7,7 @@ class Shibe extends Command {
         super(client, {
             name: "Shibe",
             description: "Post a randomly selected image of a Shiba Inu",
-            aliases: ["shib", "doge"]
+            aliases: ["shib", "doge", "inu"]
         });
     }
 
@@ -17,8 +17,8 @@ class Shibe extends Command {
             uri: "http://shibe.online/api/shibes",
             json: true,
             qs: {
-                count: 1,
-                httpsurls: true
+                count: 1
+                // httpsurls: true
             }
         }).catch(error => this.error(error.response.body.error, channel));
 
