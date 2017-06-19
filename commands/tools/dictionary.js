@@ -1,6 +1,6 @@
 const { RichEmbed } = require("discord.js");
 const request = require("request-promise");
-const markdown = require("to-markdown");
+const markdown = require("bbcode-to-markdown");
 const Command = require("../../core/Command");
 
 class Dictionary extends Command {
@@ -54,6 +54,7 @@ class Dictionary extends Command {
         const length = definitions.meanings.length >= 5 ? 5 : definitions.meanings.length;
 
         for (let index = 0; index < length; index++) {
+            definitions.meanings[index].text = definitions.meanings[index].text.replace(/<\/*.>/g, "");
             description += `**${index + 1}.**\u3000${markdown(definitions.meanings[index].text)}\n`;
         }
 
