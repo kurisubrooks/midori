@@ -2,7 +2,7 @@ const Command = require("../../core/Command");
 const { RichEmbed } = require("discord.js");
 const Database = require("../../core/Database");
 
-class EconomyBalance extends Command {
+class Balance extends Command {
     constructor(client) {
         super(client, {
             name: "Balance",
@@ -13,13 +13,20 @@ class EconomyBalance extends Command {
 
     async run(message) {
         const mentioned = message.mentions.users;
-        const user = message.isMentioned(this.client.user)
-                        ? mentioned.size > 1
-                            ? mentioned.first(2)
-                            : message.author
-                        : mentioned.size > 0
-                            ? mentioned.first()
-                            : message.author;
+        let user;
+
+        if (message.isMentioned(this.client.user)) {
+            if (mentioned.size > 1) {
+                user = mentioned.first(1);
+            } else {
+                user = message.author;
+            }
+        } else if (mentioned.size > 0) {
+            user = mentioned.first();
+        } else {
+            user = message.author;
+        }
+
         const data = await Database.Models.Bank.findOne({ where: { id: user.id } });
 
         const embed = new RichEmbed()
@@ -32,4 +39,4 @@ class EconomyBalance extends Command {
     }
 }
 
-module.exports = EconomyBalance;
+module.exports = Balance;
