@@ -1,61 +1,58 @@
 const Command = require("../../core/Command");
-const { RichEmbed } = require("discord.js");
 const Database = require("../../core/Database");
+const { RichEmbed } = require("discord.js");
 
-class EconomyPay extends Command {
+class Pay extends Command {
     constructor(client) {
         super(client, {
             name: "Pay",
             description: "Give another user some money.",
-            aliases: ["send", "give", "pay"],
-            disabled: true
+            aliases: ["send"]
         });
     }
 
     async run(message, channel, user, args) {
-        const mentioned = message.mentions.users;
+        for (let index = 0; index < args.length; index++) {
+            const userMatched = /<@!?([0-9]+)>/g.exec(args[index]);
 
-        // No Args Supplied
-        if (mentioned.size === 0) {
-            return message.reply("Please provide a valid user.");
+            if (userMatched && userMatched.length > 1) {
+                user = message.guild.members.get(userMatched[1]);
+                args.splice(index, 1);
+            }
         }
 
-        if (isNaN(args[1])) {
-            return message.reply("Please provide a valid number");
+        const amount = args[0];
+
+        if (!user) {
+            return message.reply("I couldn't find a user your message... Remember to ping who you want to send funds to!");
         }
 
-        const amount = parseInt(args[1]);
+        const payee = await Database.Models.Bank.findOne({ where: { id: message.author.id } });
+        const recipient = await Database.Models.Bank.findOne({ where: { id: user.user.id } });
 
-        const DB = await Database.Models.Users.findOne({ where: { id: user.id } });
-        const data = JSON.parse(DB.data);
-
-        if (data.balance > args[1]) {
-            return message.reply("You don't have enough balance!");
+        if (amount < 1) {
+            return message.reply("amount must be greater than 0!");
+        } else if (payee.balance < amount) {
+            return message.reply("You have insufficient funds to complete this transaction.");
+        } else if (user.user.bot) {
+            return message.reply("You can't send funds to Bots!");
+        } else if (!recipient) {
+            return message.reply("You can't send funds to players who aren't active!");
         }
 
-        if (args[1] < 1) {
-            return message.reply("Amount must be greater than 1.");
-        }
-
-        const target = mentioned.first();
-        const targetDB = await Database.Models.Users.findOne({ where: { id: target.id } });
-        const targetData = JSON.parse(targetDB.data);
-
-        data.balance -= amount;
-        targetData.balance += amount;
-
-        await DB.update({ data: JSON.stringify(data) });
-        await targetDB.update({ data: JSON.stringify(targetData) });
+        const balance = Number(recipient.balance) + Number(amount);
+        await recipient.update({ balance });
+        await payee.update({ balance: payee.balance - amount });
 
         const embed = new RichEmbed()
             .setColor(this.config.colours.default)
-            .setAuthor(user.nickname, user.avatarURL)
-            .addField("Paid", amount)
-            .addField("Balance", data.balance);
+            .setAuthor(user.user.nickname || user.user.username, user.user.avatarURL)
+            .addField("Paid", `${this.config.economy.emoji} ${amount}`)
+            .addField("Balance", `${this.config.economy.emoji} ${balance}`);
 
-        await message.channel.send({ embed });
+        await channel.send({ embed });
         return this.delete(message);
     }
 }
 
-module.exports = EconomyPay;
+module.exports = Pay;

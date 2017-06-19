@@ -1,6 +1,6 @@
 const Command = require("../../core/Command");
-const { RichEmbed } = require("discord.js");
 const Database = require("../../core/Database");
+const { RichEmbed } = require("discord.js");
 
 class Balance extends Command {
     constructor(client) {
@@ -11,30 +11,25 @@ class Balance extends Command {
         });
     }
 
-    async run(message) {
-        const mentioned = message.mentions.users;
-        let user;
+    async run(message, channel, user, args) {
+        for (let index = 0; index < args.length; index++) {
+            const userMatched = /<@!?([0-9]+)>/g.exec(args[index]);
 
-        if (message.isMentioned(this.client.user)) {
-            if (mentioned.size > 1) {
-                user = mentioned.first(1);
-            } else {
-                user = message.author;
+            if (userMatched && userMatched.length > 1) {
+                user = message.guild.members.get(userMatched[1]);
+                args.splice(index, 1);
             }
-        } else if (mentioned.size > 0) {
-            user = mentioned.first();
-        } else {
-            user = message.author;
         }
 
-        const data = await Database.Models.Bank.findOne({ where: { id: user.id } });
+        const data = await Database.Models.Bank.findOne({ where: { id: user.user.id } });
+        const balance = data === null ? 0 : data.balance;
 
         const embed = new RichEmbed()
             .setColor(this.config.colours.default)
-            .setAuthor(user.nickname || user.username, user.avatarURL)
-            .addField("Balance", data === null ? 0 : data.balance);
+            .setAuthor(user.user.nickname || user.user.username, user.user.avatarURL)
+            .addField("Balance", `${this.config.economy.emoji} ${balance}`);
 
-        await message.channel.send({ embed });
+        await channel.send({ embed });
         return this.delete(message);
     }
 }
