@@ -17,7 +17,7 @@ class Leaderboard extends Command {
         let total = 0;
 
         for (let index = 0; index < db.length; index++) {
-            if (total > 9) return false;
+            if (total > 9) break;
 
             const user = message.guild.members.get(db[index].id);
             if (!user) continue;

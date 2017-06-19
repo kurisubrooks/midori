@@ -21,12 +21,12 @@ class Balance extends Command {
             }
         }
 
-        const data = await Database.Models.Bank.findOne({ where: { id: user.user.id } });
+        const data = await Database.Models.Bank.findOne({ where: { id: user.id } });
         const balance = data === null ? 0 : data.balance;
 
         const embed = new RichEmbed()
             .setColor(this.config.colours.default)
-            .setAuthor(user.nickname || user.user.username, user.user.avatarURL)
+            .setAuthor(user.nickname || user.user.username, user.avatarURL || user.user.avatarURL)
             .addField("Balance", `${this.config.economy.emoji} ${balance}`);
 
         await channel.send({ embed });
