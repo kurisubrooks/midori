@@ -14,6 +14,7 @@ module.exports = class Command {
         this.name = data.name;
         this.description = data.description;
         this.aliases = data.aliases || [];
+        this.process = data.process || false;
         this.usage = data.usage || "";
         this.guild = data.guild || false;
         this.admin = data.admin || false;
