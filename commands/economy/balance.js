@@ -26,7 +26,7 @@ class Balance extends Command {
 
         const embed = new RichEmbed()
             .setColor(this.config.colours.default)
-            .setAuthor(user.user.nickname || user.user.username, user.user.avatarURL)
+            .setAuthor(user.nickname || user.user.username, user.user.avatarURL)
             .addField("Balance", `${this.config.economy.emoji} ${balance}`);
 
         await channel.send({ embed });
