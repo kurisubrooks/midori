@@ -4,6 +4,15 @@ module.exports = {
     userid: "188394341708857346",
     admin: ["132368482120499201"],
 
+    economy: {
+        range: [1, 3],
+        range_media: [2, 4],
+        currency: "cheese",
+        currency_plural: "cheese",
+        symbol: null,
+        emoji: "🧀"
+    },
+
     colours: {
         default: 0xB699FF,
         success: 0x52C652,
