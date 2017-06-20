@@ -1,6 +1,6 @@
 const Command = require("../../core/Command");
-const { RichEmbed } = require("discord.js");
 const config = require("../../config.js");
+const { RichEmbed } = require("discord.js");
 
 class Help extends Command {
     constructor(client) {
@@ -36,7 +36,7 @@ class Help extends Command {
             text.unshift("__**List of available commands**__\n");
 
             if (channel.type !== "dm") await message.reply("Sent you a DM with information!");
-            await user.sendMessage(text.join("\n"));
+            await user.send(text.join("\n"));
             return this.delete(message);
         }
 
