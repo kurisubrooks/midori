@@ -20,7 +20,7 @@ class Status extends Command {
             .setColor(this.config.colours.default)
             .setTitle("Midori Status")
             .setThumbnail(this.client.user.avatarURL)
-            .addField("Uptime", moment.duration(this.client.uptime).format("d[ days], h[ hours], m[ minutes, and ]s[ seconds]"), true)
+            .addField("Uptime", moment.duration(this.client.uptime).format("d[d] h[h] m[m] s[s]"), true)
             .addField("Memory Usage", `${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)} MB`, true)
             .addField("Node Version", process.version.replace("v", ""), true)
             .addField("NPM Version", npmv.data.replace("\n", ""), true);
