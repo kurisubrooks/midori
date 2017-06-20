@@ -89,6 +89,9 @@ module.exports = class CommandManager {
         // Don't Parse Bot Messages
         if (message.author.bot) return false;
 
+        // Handle Server Configuration
+        const { prefix } = await this.handleServer(message.guild);
+
         // Create Helper Variables
         let text = message.cleanContent;
         let args = message.content.split(" ");
@@ -98,7 +101,7 @@ module.exports = class CommandManager {
         const attachments = message.attachments.size > 0;
         const pattern = new RegExp(`<@!?${this.client.user.id}>`, "i");
         const mentioned = message.isMentioned(this.client.user) && pattern.test(args[0]);
-        const triggered = message.content.startsWith(config.sign);
+        const triggered = message.content.startsWith(prefix);
         const matched = new RegExp(blacklist.join("|")).test(message.content);
 
         // Perform Various Checks
@@ -167,6 +170,40 @@ module.exports = class CommandManager {
         } catch(err) {
             return error("Blacklist", `Unable to delete message ${message.id} from ${guild}`);
         }
+    }
+
+    async handleServer(guild) {
+        if (!guild) return { prefix: config.sign };
+        let db, id = guild.id;
+
+        db = await Database.Models.Config.findOne({ where: { id } });
+
+        if (!db) {
+            let owners = "";
+
+            for (const member of guild.members.values()) {
+                if (member.hasPermission("ADMINISTRATOR")) {
+                    owners = owners === "" ? member.user.id : `${owners},${member.user.id}`;
+                }
+            }
+
+            db = await Database.Models.Config.create({ id, owners, prefix: "/", disabled: false, permissions: "" });
+        }
+
+        if (!db.owners || db.owners === "") {
+            let owners = "";
+
+            for (const member of guild.members.values()) {
+                if (member.hasPermission("ADMINISTRATOR")) {
+                    owners = owners === "" ? member.user.id : `${owners},${member.user.id}`;
+                }
+            }
+
+            db = await db.update({ owners });
+        }
+
+        const prefix = db.prefix || config.sign;
+        return { prefix };
     }
 
     async giveCoins(user) {
