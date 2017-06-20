@@ -16,8 +16,6 @@ class Status extends Command {
     async run(message, channel) {
         const npmv = await worker.process("npm -v").death();
 
-        console.log(npmv);
-
         const embed = new RichEmbed()
             .setColor(this.config.colours.default)
             .setTitle("Midori Status")
