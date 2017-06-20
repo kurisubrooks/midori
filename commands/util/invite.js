@@ -13,8 +13,9 @@ class Invite extends Command {
     async run(message, channel) {
         const invite = await this.client.generateInvite(["MANAGE_MESSAGES"]);
         const embed = new RichEmbed()
+            .setColor(this.config.colours.default)
             .setTitle("Midori")
-            .setDescription("Thanks for showing interest in Midori! Click the link below to invite her to your server.")
+            .setDescription("Thanks for showing interest in Midori! Click the\nlink below to invite her to your server.")
             .setThumbnail(this.client.user.avatarURL)
             .addField("\u200b", `[Click Here](${invite})`);
 
