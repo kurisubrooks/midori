@@ -1,6 +1,7 @@
 FROM alpine:3.6
 
 WORKDIR /usr/src/midori
+COPY package.json package-lock.json ./
 
 RUN apk add --update \
     && apk add --no-cache --virtual .deps nodejs-current nodejs-npm curl \
