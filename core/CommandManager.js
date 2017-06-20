@@ -203,7 +203,8 @@ module.exports = class CommandManager {
         }
 
         const prefix = db.prefix || config.sign;
-        return { prefix };
+        const disabled = db.disabled || false;
+        return { prefix, disabled };
     }
 
     async giveCoins(user) {
