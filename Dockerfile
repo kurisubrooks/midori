@@ -14,4 +14,6 @@ COPY . .
 RUN npm install \
     && apk del .build-deps
 
+RUN npm i sqlite3
+
 CMD [ "node", "--harmony", "index.js"]
