@@ -122,9 +122,6 @@ module.exports = class CommandManager {
             args = [args[0], ...message.content.split(" ")];
         }
 
-        // Log Message
-        Logger.warn("Chat Log", `<${user.username}#${user.discriminator}>: ${text}`);
-
         // Find Command
         const instance = this.findCommand(mentioned, args);
         const command = instance.command;
@@ -151,6 +148,9 @@ module.exports = class CommandManager {
         // Check if Command requires Admin
         if (command.admin && !config.admin.includes(user.id)) return false;
 
+        // Log Message
+        Logger.warn("Chat Log", `<${user.username}#${user.discriminator}>: ${text}`);
+
         // Run Command
         return this.runCommand(command, message, channel, user, args);
     }
@@ -172,33 +172,29 @@ module.exports = class CommandManager {
         }
     }
 
+    getAdministrators(guild) {
+        let owners = "";
+
+        for (const member of guild.members.values()) {
+            if (member.hasPermission("ADMINISTRATOR")) {
+                owners = owners === "" ? member.user.id : `${owners},${member.user.id}`;
+            }
+        }
+
+        return owners;
+    }
+
     async handleServer(guild) {
         if (!guild) return { prefix: config.sign };
-        let db, id = guild.id;
-
-        db = await Database.Models.Config.findOne({ where: { id } });
+        const id = guild.id;
+        const owners = this.getAdministrators(guild);
+        let db = await Database.Models.Config.findOne({ where: { id } });
 
         if (!db) {
-            let owners = "";
-
-            for (const member of guild.members.values()) {
-                if (member.hasPermission("ADMINISTRATOR")) {
-                    owners = owners === "" ? member.user.id : `${owners},${member.user.id}`;
-                }
-            }
-
             db = await Database.Models.Config.create({ id, owners, prefix: "/", disabled: false, permissions: "" });
         }
 
         if (!db.owners || db.owners === "") {
-            let owners = "";
-
-            for (const member of guild.members.values()) {
-                if (member.hasPermission("ADMINISTRATOR")) {
-                    owners = owners === "" ? member.user.id : `${owners},${member.user.id}`;
-                }
-            }
-
             db = await db.update({ owners });
         }
 
