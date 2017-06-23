@@ -19,16 +19,26 @@ class DB extends Command {
         return this.delete(message);
     }
 
-    async run(message, channel, _user, args) {
+    async run(message, channel, user, args) {
         const command = message.command;
-        const mentioned = message.mentions.users;
-        const user = mentioned.size > 0 ? mentioned.first() : message.author;
+        let pung = false;
+
+        // Check for Pinged user
+        for (let index = 0; index < args.length; index++) {
+            const userMatched = /<@!?([0-9]+)>/g.exec(args[index]);
+
+            if (userMatched && userMatched.length > 1) {
+                user = message.guild.members.get(userMatched[1]);
+                args.splice(index, 1);
+                pung = true;
+            }
+        }
 
         const intention = args[0];
         const query = args.slice(1).join(" ");
-        const template = { weather: null, balance: null };
+        const template = { weather: null };
 
-        if (mentioned.size > 0 && !this.hasAdmin(message.author)) return message.reply("Insufficient Permissions");
+        if (pung && !this.hasAdmin(message.author)) return message.reply("Insufficient Permissions");
         let data = await Database.Models.Users.findOne({ where: { id: user.id } });
 
         // Check if User Exists in DB, Create if they don't
@@ -82,11 +92,6 @@ class DB extends Command {
                 return this.update(message, data, manipulate);
             }
         }
-
-        // Remove or Delete a value from the DB
-        /* if (command === "remove" || command === "delete") {
-            return this;
-        } */
 
         return false;
     }
