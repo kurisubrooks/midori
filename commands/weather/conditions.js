@@ -16,10 +16,20 @@ class Weather extends Command {
     }
 
     async run(message, channel, user, args) {
-        let geolocation, line1, found1, line2, geocode;
+        let geolocation, line1, found1, line2, geocode, ping;
+
+        // Check for Pinged user
+        for (let index = 0; index < args.length; index++) {
+            const userMatched = /<@!?([0-9]+)>/g.exec(args[index]);
+
+            if (userMatched && userMatched.length > 1) {
+                ping = message.guild.members.get(userMatched[1]);
+                args.splice(index, 1);
+            }
+        }
 
         // No Args Supplied
-        if (args.length === 0) {
+        if (args.length === 0 && !ping) {
             const userDB = await Database.Models.Users.findOne({ where: { id: user.id } });
             const err = "Please provide a query, or set your location with `/set location <location>`";
 
@@ -39,6 +49,29 @@ class Weather extends Command {
                 }
             } else {
                 return message.reply(err);
+            }
+        }
+
+        // If Pinged User
+        if (ping) {
+            const userDB = await Database.Models.Users.findOne({ where: { id: ping.id } });
+
+            // Check if User exists in DB
+            if (userDB) {
+                const data = JSON.parse(userDB.data);
+
+                // Checks if User has a set location
+                if (data.weather || data.location) {
+                    line1 = data.weather[0].long_name;
+                    line2 = data.weather[1].long_name;
+                    geocode = data.weather[2];
+                    geolocation = true;
+                    this.log(`Using Cached Geolocation (${line1}, ${line2})`, "debug");
+                } else {
+                    return message.reply("This user has not set their location.");
+                }
+            } else {
+                return message.reply("User was not found in database.");
             }
         }
 
