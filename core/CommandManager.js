@@ -188,6 +188,7 @@ module.exports = class CommandManager {
         if (!guild) return { prefix: config.sign };
         const id = guild.id;
         const owners = this.getAdministrators(guild);
+
         let db = await Database.Models.Config.findOne({ where: { id } });
 
         if (!db) {
