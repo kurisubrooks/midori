@@ -215,7 +215,7 @@ class Weather extends Command {
         // Temperature
         ctx.font = "bold 34px Rubik";
         ctx.fillStyle = "#FFFFFF";
-        ctx.fillText(`${temperature}°C`, 29, 146);
+        ctx.fillText(`${temperature}°${locale}`, 29, 146);
 
         // Local Time
         ctx.textAlign = "right";
