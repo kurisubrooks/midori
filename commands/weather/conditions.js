@@ -152,13 +152,15 @@ class Weather extends Command {
             this.log(`Geolocation Retrieved`, "debug");
         }
 
+        const murica = args.indexOf("-f") > -1;
+
         // Get Weather
         const weather = await request({
             headers: { "User-Agent": "Mozilla/5.0" },
             uri: `https://api.darksky.net/forecast/${this.keychain.darksky}/${geocode.join(",")}`,
             json: true,
             qs: {
-                units: "si",
+                units: murica ? "us" : "si",
                 excludes: "minutely,hourly,alerts"
             }
         }).catch(error => this.error(error.response.body.error, channel));
