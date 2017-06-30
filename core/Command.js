@@ -44,7 +44,8 @@ module.exports = class Command {
     }
 
     delete(message) {
-        return message.delete().catch(err => err.message);
+        return true;
+        // return message.delete().catch(err => err.message);
     }
 
     hasAdmin(user) {
