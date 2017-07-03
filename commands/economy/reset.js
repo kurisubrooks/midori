@@ -7,7 +7,8 @@ class ResetBalance extends Command {
             name: "reset",
             description: "Sets a user's balance to 0",
             aliases: [],
-            admin: true
+            admin: true,
+            disabled: true
         });
     }
 
