@@ -43,7 +43,10 @@ module.exports = class CommandManager {
         instance.location = location;
 
         if (instance.disabled) return;
-        if (this.commands.has(commandName)) throw new Error("Commands cannot have the same name");
+        if (this.commands.has(commandName)) {
+            Logger.error("Start Module", `"${commandName}" already exists!`);
+            throw new Error("Commands cannot have the same name");
+        }
 
         Logger.info(`${re ? "Reloaded" : "Loaded"} Command`, toUpper(commandName));
         this.commands.set(commandName, instance);
@@ -129,7 +132,19 @@ module.exports = class CommandManager {
         // Set Variables
         message.context = this;
         message.command = instance.commandName;
+        message.prefix = prefix;
+        message.pung = [];
         user.nickname = message.member ? message.member.displayName : message.author.username;
+
+        // Check for Pinged user
+        for (let index = 0; index < args.length; index++) {
+            const userMatched = /<@!?([0-9]+)>/g.exec(args[index]);
+
+            if (userMatched && userMatched.length > 1) {
+                message.pung.push(message.guild.members.get(userMatched[1]));
+                args.splice(index, 1);
+            }
+        }
 
         // Mentioned but command doesn't exist
         if (!command && mentioned && args.length >= 0) {
