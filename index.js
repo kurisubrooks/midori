@@ -25,8 +25,8 @@ Manager.loadCommands("./commands/");
 // Handle Discord
 client.login(Keys.discord);
 client.once("ready", onReady);
-client.on("warn", warning => error("Core", warning));
-client.on("error", error => error("Core", error));
+client.on("warn", warn => error("Core", warn));
+client.on("error", err => error("Core", err));
 client.on("guildMemberAdd", member => handleJoin(member));
 client.on("message", message => Manager.handleMessage(message));
 client.on("messageUpdate", (old, neue) => {
