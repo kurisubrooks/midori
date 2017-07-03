@@ -11,27 +11,18 @@ class Weather extends Command {
         super(client, {
             name: "Weather",
             description: "Get the Weather for your Given Location",
-            aliases: ["w", "conditions"]
+            aliases: ["w", "conditions", "temperature"]
         });
     }
 
     async run(message, channel, user, args) {
-        let geolocation, line1, found1, line2, geocode, ping;
-
-        // Check for Pinged user
-        for (let index = 0; index < args.length; index++) {
-            const userMatched = /<@!?([0-9]+)>/g.exec(args[index]);
-
-            if (userMatched && userMatched.length > 1) {
-                ping = message.guild.members.get(userMatched[1]);
-                args.splice(index, 1);
-            }
-        }
+        const murica = args.indexOf("-f") > -1;
+        let geolocation;
 
         // No Args Supplied
-        if (args.length === 0 && !ping) {
+        if (args.length === 0 && message.pung.length === 0) {
             const userDB = await Database.Models.Users.findOne({ where: { id: user.id } });
-            const err = "Please provide a query, or set your location with `/set location <location>`";
+            const error = `Please provide a query, or set your location with \`${message.prefix}set location <location>\``;
 
             // Check if User exists in DB
             if (userDB) {
@@ -39,22 +30,29 @@ class Weather extends Command {
 
                 // Checks if User has a set location
                 if (data.weather || data.location) {
-                    line1 = data.weather[0].long_name;
-                    line2 = data.weather[1].long_name;
-                    geocode = data.weather[2];
-                    geolocation = true;
-                    this.log(`Using Cached Geolocation (${line1}, ${line2})`, "debug");
+                    geolocation = data.weather || data.location;
+
+                    if (typeof geolocation === "string") return this.error(geolocation, channel);
+                    if (Array.isArray(geolocation)) {
+                        geolocation = {
+                            line1: geolocation[0].long_name,
+                            line2: geolocation[1].long_name || "",
+                            geocode: geolocation[2]
+                        };
+                    }
+
+                    this.log(`Using Cached Geolocation (${geolocation.line1}, ${geolocation.line2})`, "debug");
                 } else {
-                    return message.reply(err);
+                    return message.reply(error);
                 }
             } else {
-                return message.reply(err);
+                return message.reply(error);
             }
         }
 
         // If Pinged User
-        if (ping) {
-            const userDB = await Database.Models.Users.findOne({ where: { id: ping.id } });
+        if (message.pung.length > 0) {
+            const userDB = await Database.Models.Users.findOne({ where: { id: message.pung[0].id } });
 
             // Check if User exists in DB
             if (userDB) {
@@ -62,11 +60,18 @@ class Weather extends Command {
 
                 // Checks if User has a set location
                 if (data.weather || data.location) {
-                    line1 = data.weather[0].long_name;
-                    line2 = data.weather[1].long_name;
-                    geocode = data.weather[2];
-                    geolocation = true;
-                    this.log(`Using Cached Geolocation (${line1}, ${line2})`, "debug");
+                    geolocation = data.weather;
+
+                    if (typeof geolocation === "string") return this.error(geolocation, channel);
+                    if (Array.isArray(geolocation)) {
+                        geolocation = {
+                            line1: geolocation[0].long_name,
+                            line2: geolocation[1].long_name || "",
+                            geocode: geolocation[2]
+                        };
+                    }
+
+                    this.log(`Using Cached Geolocation (${geolocation.line1}, ${geolocation.line2})`, "debug");
                 } else {
                     return message.reply("This user has not set their location.");
                 }
@@ -77,87 +82,23 @@ class Weather extends Command {
 
         // Ignore geolocation request if User has set a location
         if (!geolocation) {
-            const geolocation = await request({
-                headers: { "User-Agent": "Mozilla/5.0" },
-                uri: "https://maps.googleapis.com/maps/api/geocode/json",
-                json: true,
-                qs: {
-                    address: args.join("+"),
-                    key: this.keychain.google.geocode
-                }
-            }).catch(error => this.error(error.response.body.error, channel));
-
-            // console.log(geolocation);
-
-            // Handle Errors
-            if (!geolocation) return false;
-            if (geolocation.status !== "OK") return this.handleNotOK(channel, geolocation);
-            if (geolocation.results.length > 1) {
-                let places = [];
-
-                this.log("Too Many Results", "debug");
-
-                for (const val of geolocation.results) {
-                    places.push(`\`${val.formatted_address}\``);
-                }
-
-                return message.reply(`Too many results were returned!\nHere's some of the returned results, please try to narrow it down for me...\n${places.join(", ")}`);
+            geolocation = await this.fetchGeolocation(args);
+            if (typeof geolocation === "string") return this.error(geolocation, channel);
+            if (Array.isArray(geolocation)) {
+                geolocation = {
+                    line1: geolocation[0].long_name,
+                    line2: geolocation[1].long_name,
+                    geocode: geolocation[2]
+                };
             }
-
-            const place = geolocation.results[0].address_components;
-            const find = locality => place.find(elem => elem.types.includes(locality));
-
-            if (find("neighborhood")) {
-                line1 = find("neighborhood").long_name;
-            } else if (find("natural_feature")) {
-                line1 = find("natural_feature").long_name;
-            } else if (find("point_of_interest")) {
-                line1 = find("point_of_interest").long_name;
-            } else if (find("locality")) {
-                line1 = find("locality").long_name;
-            } else if (find("ward")) {
-                line1 = find("ward").long_name;
-            } else if (find("administrative_area_level_3")) {
-                line1 = find("administrative_area_level_3").long_name;
-            } else if (find("administrative_area_level_2")) {
-                line1 = find("administrative_area_level_2").long_name;
-            } else if (find("administrative_area_level_1")) {
-                line1 = find("administrative_area_level_1").long_name;
-                found1 = 1;
-            } else if (find("country")) {
-                line1 = find("country").long_name;
-                found1 = 2;
-            } else if (find("continent")) {
-                line1 = find("continent").long_name;
-                found1 = 3;
-            } else {
-                line1 = "Unknown";
-            }
-
-            if (find("administrative_area_level_1") && line1 !== find("administrative_area_level_1").long_name && found1 !== 1) {
-                line2 = find("administrative_area_level_1").long_name;
-            } else if (find("country") && line1 !== find("country").long_name && found1 !== 2) {
-                line2 = find("country").long_name;
-            } else if (find("continent") && line1 !== find("continent").long_name && found1 !== 3) {
-                line2 = find("continent").long_name;
-            } else {
-                line2 = "";
-            }
-
-            if (line1.length > 25) line1 = `${line1.slice(0, 25)}...`;
-            if (line2.length > 40) line2 = `${line2.slice(0, 40)}...`;
-
-            geocode = [geolocation.results[0].geometry.location.lat, geolocation.results[0].geometry.location.lng];
-
-            this.log(`Geolocation Retrieved`, "debug");
         }
 
-        const murica = args.indexOf("-f") > -1;
+        // console.log(geolocation);
 
         // Get Weather
         const weather = await request({
             headers: { "User-Agent": "Mozilla/5.0" },
-            uri: `https://api.darksky.net/forecast/${this.keychain.darksky}/${geocode.join(",")}`,
+            uri: `https://api.darksky.net/forecast/${this.keychain.darksky}/${geolocation.geocode.join(",")}`,
             json: true,
             qs: {
                 units: murica ? "us" : "si",
@@ -170,30 +111,33 @@ class Weather extends Command {
         if (!weather) return false;
 
         const locale = weather.flags.units === "us" ? "F" : "C";
+        const speed = weather.flags.units === "us" ? "mph" : "km/h";
         const condition = weather.currently.summary;
         const icon = weather.currently.icon;
         const temperature = Math.round(weather.currently.temperature);
         const datetime = moment().tz(weather.timezone).format("h:mma");
         const forecast = weather.daily.data;
 
-        this.log(`${line1}, ${line2}: ${temperature}°${locale}, ${condition}, ${datetime}`, "debug");
+        this.log(`${geolocation.line1}, ${geolocation.line2}: ${temperature}°${locale}, ${condition}, ${datetime}`, "debug");
 
         Canvas.registerFont(path.join(__dirname, "fonts", "Roboto.ttf"), { family: "Roboto" });
         Canvas.registerFont(path.join(__dirname, "fonts", "Rubik.ttf"), { family: "Rubik" });
 
         // Generate Response Image
-        const canvas = new Canvas(400, 250);
+        const canvas = new Canvas(400, 300);
         const ctx = canvas.getContext("2d");
         const { Image } = Canvas;
         const base = new Image();
         const cond = new Image();
         const day1 = new Image();
         const day2 = new Image();
+        const day3 = new Image();
 
         base.src = path.join(__dirname, "base", `${this.getBaseImage(icon)}.png`);
         cond.src = path.join(__dirname, "icons", `${this.getConditionImage(icon)}.png`);
-        day1.src = path.join(__dirname, "icons", `${this.getConditionImage(forecast[1].icon)}.png`);
-        day2.src = path.join(__dirname, "icons", `${this.getConditionImage(forecast[2].icon)}.png`);
+        day1.src = path.join(__dirname, "icons", `${this.getConditionImage(forecast[0].icon)}.png`);
+        day2.src = path.join(__dirname, "icons", `${this.getConditionImage(forecast[1].icon)}.png`);
+        day3.src = path.join(__dirname, "icons", `${this.getConditionImage(forecast[2].icon)}.png`);
 
         // Environment Variables
         ctx.drawImage(base, 0, 0);
@@ -205,49 +149,74 @@ class Weather extends Command {
         // City Name
         ctx.font = "20px Roboto";
         ctx.fillStyle = "#FFFFFF";
-        ctx.fillText(line1, 28, 40);
+        ctx.fillText(geolocation.line1, 28, 40);
 
         // State/Prefecture Name
         ctx.font = "16px Roboto";
         ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
-        ctx.fillText(line2, 28, 63);
+        ctx.fillText(geolocation.line2, 28, 63);
 
         // Temperature
         ctx.font = "bold 34px Rubik";
         ctx.fillStyle = "#FFFFFF";
-        ctx.fillText(`${temperature}°${locale}`, 29, 146);
+        ctx.fillText(`${temperature}°${locale}`, 29, 138);
 
         // Local Time
         ctx.textAlign = "right";
         ctx.font = "16px Roboto";
         ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
-        ctx.fillText(datetime, 375, 122);
+        ctx.fillText(datetime, 375, 116);
 
         // Condition
         ctx.font = "16px Roboto";
         ctx.fillStyle = "#FFFFFF";
-        ctx.fillText(condition, 375, 145);
+        ctx.fillText(condition, 375, 138);
         ctx.drawImage(cond, 318, 20);
+
+        // Details
+        ctx.textAlign = "left";
+        ctx.font = "13px Rubik";
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillText(`${Math.round(weather.currently.humidity * 100)}%`, 50, 174);
+        ctx.fillText(`${Math.round(weather.currently.precipProbability * 100)}%`, 120, 174);
+        ctx.fillText(`${Math.round(weather.currently.windSpeed)} ${speed}`, 193, 174);
+        ctx.fillText(`${Math.round(weather.currently.apparentTemperature)}°`, 298, 175);
 
         // Forecast Day 1
         ctx.textAlign = "left";
         ctx.font = "16px Roboto";
-        ctx.fillStyle = "#FFFFFF";
-        ctx.fillText(moment.unix(forecast[1].time).format("dddd"), 28, 193);
+        ctx.fillText("Today", 28, 215);
         ctx.textAlign = "right";
         ctx.font = "16px Rubik";
-        ctx.fillText(`${Math.round(forecast[1].temperatureMax)}°${locale}`, 340, 193);
-        ctx.drawImage(day1, 350, 175, 24, 24);
+        ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+        ctx.fillText(`${Math.round(forecast[0].temperatureMin)}°`, 305, 215);
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillText(`${Math.round(forecast[0].temperatureMax)}°`, 345, 215);
+        ctx.drawImage(day1, 350, 197, 24, 24);
 
         // Forecast Day 2
         ctx.textAlign = "left";
         ctx.font = "16px Roboto";
-        ctx.fillStyle = "#FFFFFF";
-        ctx.fillText(moment.unix(forecast[2].time).format("dddd"), 28, 220);
+        ctx.fillText("Tomorrow", 28, 243);
         ctx.textAlign = "right";
         ctx.font = "16px Rubik";
-        ctx.fillText(`${Math.round(forecast[2].temperatureMax)}°${locale}`, 340, 220);
-        ctx.drawImage(day2, 350, 201, 24, 24);
+        ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+        ctx.fillText(`${Math.round(forecast[1].temperatureMin)}°`, 305, 243);
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillText(`${Math.round(forecast[1].temperatureMax)}°`, 345, 243);
+        ctx.drawImage(day2, 350, 226, 24, 24);
+
+        // Forecast Day 3
+        ctx.textAlign = "left";
+        ctx.font = "16px Roboto";
+        ctx.fillText(moment.unix(forecast[2].time).format("dddd"), 28, 271);
+        ctx.textAlign = "right";
+        ctx.font = "16px Rubik";
+        ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+        ctx.fillText(`${Math.round(forecast[2].temperatureMin)}°`, 305, 271);
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillText(`${Math.round(forecast[2].temperatureMax)}°`, 345, 271);
+        ctx.drawImage(day3, 350, 254, 24, 24);
 
         // Send
         await channel.send({ files: [{ attachment: canvas.toBuffer(), url: "weather.png" }] });
@@ -291,18 +260,102 @@ class Weather extends Command {
     }
 
     // Handle Geolocation API Errors
-    handleNotOK(channel, geolocation) {
+    handleNotOK(geolocation) {
         if (geolocation.status === "ZERO_RESULTS") {
-            return this.error("Query returned no results", channel);
+            return "Query returned no results";
         } else if (geolocation.status === "REQUEST_DENIED") {
-            return this.error("Geocode API Request was denied", channel);
+            return "Geocode API Request was denied";
         } else if (geolocation.status === "INVALID_REQUEST") {
-            return this.error("Invalid Request", channel);
+            return "Invalid Request";
         } else if (geolocation.status === "OVER_QUERY_LIMIT") {
-            return this.error("Query Limit Exceeed, try again tomorrow.", channel);
+            return "Query Limit Exceeed, try again tomorrow.";
         } else {
-            return this.error("Unknown API Error", channel);
+            return "Unknown API Error";
         }
+    }
+
+    static async geolocation(args) {
+        const inst = new Weather();
+        return await inst.fetchGeolocation(args);
+    }
+
+    // Handle Geolocation Data
+    async fetchGeolocation(args) {
+        let line1, line2, found1, geocode;
+
+        const geolocation = await request({
+            headers: { "User-Agent": "Mozilla/5.0" },
+            uri: "https://maps.googleapis.com/maps/api/geocode/json",
+            json: true,
+            qs: {
+                address: args.join("+"),
+                key: this.keychain.google.geocode
+            }
+        }).catch(error => error.response.body.error);
+
+        // Handle Errors
+        if (typeof geolocation === "string") return geolocation;
+        if (geolocation.status !== "OK") return this.handleNotOK(geolocation);
+        if (geolocation.results.length > 1) {
+            const places = [];
+
+            this.log("Too Many Results", "debug");
+
+            for (const val of geolocation.results) {
+                places.push(`\`${val.formatted_address}\``);
+            }
+
+            return `Too many results were returned!\nHere's some of the returned results, please try to narrow it down for me...\n${places.join(", ")}`;
+        }
+
+        const place = geolocation.results[0].address_components;
+        const find = locality => place.find(elem => elem.types.includes(locality));
+
+        if (find("neighborhood")) {
+            line1 = find("neighborhood").long_name;
+        } else if (find("natural_feature")) {
+            line1 = find("natural_feature").long_name;
+        } else if (find("point_of_interest")) {
+            line1 = find("point_of_interest").long_name;
+        } else if (find("locality")) {
+            line1 = find("locality").long_name;
+        } else if (find("ward")) {
+            line1 = find("ward").long_name;
+        } else if (find("administrative_area_level_3")) {
+            line1 = find("administrative_area_level_3").long_name;
+        } else if (find("administrative_area_level_2")) {
+            line1 = find("administrative_area_level_2").long_name;
+        } else if (find("administrative_area_level_1")) {
+            line1 = find("administrative_area_level_1").long_name;
+            found1 = 1;
+        } else if (find("country")) {
+            line1 = find("country").long_name;
+            found1 = 2;
+        } else if (find("continent")) {
+            line1 = find("continent").long_name;
+            found1 = 3;
+        } else {
+            line1 = "Unknown";
+        }
+
+        if (find("administrative_area_level_1") && line1 !== find("administrative_area_level_1").long_name && found1 !== 1) {
+            line2 = find("administrative_area_level_1").long_name;
+        } else if (find("country") && line1 !== find("country").long_name && found1 !== 2) {
+            line2 = find("country").long_name;
+        } else if (find("continent") && line1 !== find("continent").long_name && found1 !== 3) {
+            line2 = find("continent").long_name;
+        } else {
+            line2 = "";
+        }
+
+        if (line1.length > 25) line1 = `${line1.slice(0, 25)}...`;
+        if (line2.length > 40) line2 = `${line2.slice(0, 40)}...`;
+
+        geocode = [geolocation.results[0].geometry.location.lat, geolocation.results[0].geometry.location.lng];
+
+        this.log(`Geolocation Retrieved`, "debug");
+
+        return { line1, line2, geocode };
     }
 }
 
