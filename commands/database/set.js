@@ -14,18 +14,21 @@ class Set extends Command {
     static getTemplate() {
         return {
             location: null,
-            timezone: null
+            language: null,
+            timezone: null,
+            locale: null
         };
     }
 
     static async getUser(user) {
         let db = await Database.Models.Users.findOne({ where: { id: user.id } });
 
-        // Ensure User Object is always up to date with the latest template
+        // Preliminary Updates to DB
         if (db) {
             const data = JSON.parse(db.data);
             let update = null;
 
+            // Ensure User Template is up to date
             for (const key in Set.getTemplate()) {
                 if (!(key in data)) {
                     update = data;
@@ -33,6 +36,7 @@ class Set extends Command {
                 }
             }
 
+            // Update if needs updating
             if (update) {
                 await db.update({ data: JSON.stringify(update) });
             }
@@ -44,12 +48,12 @@ class Set extends Command {
         if (!db) {
             await Database.Models.Users.create({ id: user.id, data: JSON.stringify(Set.getTemplate()) });
             db = await Database.Models.Users.findOne({ where: { id: user.id } });
-            // Set.log(`Created User: ${user.id}`, "debug");
         }
 
         return db;
     }
 
+    // Database Update Method
     async update(model, data) {
         await model.update({ data: JSON.stringify(data) });
         this.log(JSON.stringify(data), "debug");
@@ -107,18 +111,21 @@ class Set extends Command {
             const { geolocation } = require("../weather/conditions");
             const parsed = await geolocation(data);
 
+            // Handle Error
             if (typeof parsed === "string") {
                 return this.error(parsed, channel);
             }
 
+            // Remove Old Weather Data
+            delete userdata.weather;
+
+            // Update Location
             userdata[field] = parsed;
             this.update(db, userdata);
+
+            // Done
             this.log(`Updated Entry for ${user.id}`, "debug");
             return message.reply(`successfully set your location to ${parsed.line1}, ${parsed.line2}.`);
-        }
-
-        if (field === "timezone") {
-            return message.reply("you can't change this field at present.");
         }
 
         return message.reply("sorry, that's not a valid field.");
