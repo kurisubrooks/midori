@@ -52,6 +52,7 @@ class Weather extends Command {
 
         // If Pinged User
         if (message.pung.length > 0) {
+            this.log(`Getting Weather for user ${message.pung[0].username}`, "debug");
             const userDB = await Database.Models.Users.findOne({ where: { id: message.pung[0].id } });
 
             // Check if User exists in DB
@@ -60,7 +61,7 @@ class Weather extends Command {
 
                 // Checks if User has a set location
                 if (data.weather || data.location) {
-                    geolocation = data.weather;
+                    geolocation = data.weather || data.location;
 
                     if (typeof geolocation === "string") return this.error(geolocation, channel);
                     if (Array.isArray(geolocation)) {
@@ -73,10 +74,10 @@ class Weather extends Command {
 
                     this.log(`Using Cached Geolocation (${geolocation.line1}, ${geolocation.line2})`, "debug");
                 } else {
-                    return message.reply("This user has not set their location.");
+                    return message.reply("this user has not set their location.");
                 }
             } else {
-                return message.reply("User was not found in database.");
+                return message.reply("this user does not have a database entry for their location.");
             }
         }
 
