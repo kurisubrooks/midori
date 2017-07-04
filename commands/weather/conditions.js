@@ -16,8 +16,14 @@ class Weather extends Command {
     }
 
     async run(message, channel, user, args) {
-        const murica = args.indexOf("-f") > -1;
+        const metric = args.indexOf("-f") > -1;
         let geolocation;
+
+        // Remove -f identifier
+        if (metric) {
+            const pos = args.indexOf("-f");
+            args.splice(pos, 1);
+        }
 
         // No Args Supplied
         if (args.length === 0 && message.pung.length === 0) {
@@ -102,7 +108,7 @@ class Weather extends Command {
             uri: `https://api.darksky.net/forecast/${this.keychain.darksky}/${geolocation.geocode.join(",")}`,
             json: true,
             qs: {
-                units: murica ? "us" : "si",
+                units: metric ? "us" : "si",
                 excludes: "minutely,hourly,alerts"
             }
         }).catch(error => this.error(error.response.body.error, channel));
