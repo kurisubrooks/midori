@@ -58,7 +58,7 @@ class Weather extends Command {
 
         // If Pinged User
         if (message.pung.length > 0) {
-            this.log(`Getting Weather for user ${message.pung[0].username}`, "debug");
+            this.log(`Getting Weather for user ${message.pung[0].id}`, "debug");
             const userDB = await Database.Models.Users.findOne({ where: { id: message.pung[0].id } });
 
             // Check if User exists in DB
