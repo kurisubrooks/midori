@@ -14,8 +14,10 @@ class Love extends Command {
             return message.reply("you didn't specify whom you want to send your love to!");
         }
 
+        const gay = "https://media.giphy.com/media/h4CbRI7mBVm8M/giphy.gif";
+        const les = "https://media.giphy.com/media/ESJPxkVN5gn72/giphy.gif";
+
         const images = [
-            "https://media.giphy.com/media/h4CbRI7mBVm8M/giphy.gif",
             "https://media.giphy.com/media/lZDb2PNgLXdoA/giphy.gif",
             "https://media.giphy.com/media/KH1CTZtw1iP3W/giphy.gif",
             "https://media.giphy.com/media/f82EqBTeCEgcU/giphy.gif",
@@ -34,12 +36,19 @@ class Love extends Command {
         const target = message.pung[0];
         let result = images[Math.floor(Math.random() * images.length)];
 
+        // Kurisu + Effy
         if ((user.id === "132368482120499201" && target.id === "108461461180801024")
          || (user.id === "108461461180801024" && target.id === "132368482120499201")) {
-            result = images[0];
+            result = gay;
         }
 
-        channel.send(`<@${user.id}> loves you, ${target.nickname ? target.nickname : target.user.username}!`, { files: [result] });
+        // Katie + Sammy
+        if ((user.id === "305227385979273217" && target.id === "151344471957569536")
+         || (user.id === "151344471957569536" && target.id === "305227385979273217")) {
+            result = les;
+        }
+
+        return channel.send(`<@${user.id}> loves you, ${target.nickname ? target.nickname : target.user.username}!`, { files: [result] });
     }
 }
 
