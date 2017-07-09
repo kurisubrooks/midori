@@ -12,20 +12,13 @@ class Pay extends Command {
     }
 
     async run(message, channel, user, args) {
-        for (let index = 0; index < args.length; index++) {
-            const userMatched = /<@!?([0-9]+)>/g.exec(args[index]);
-
-            if (userMatched && userMatched.length > 1) {
-                user = message.guild.members.get(userMatched[1]);
-                args.splice(index, 1);
-            }
-        }
-
         const amount = args[0];
 
-        if (!user) {
-            return message.reply("I couldn't find a user your message... Remember to ping who you want to send funds to!");
+        if (message.pung.length === 0) {
+            return message.reply("you didn't specify whom you want to pay!");
         }
+
+        user = message.pung[0];
 
         const payee = await Database.Models.Bank.findOne({ where: { id: message.author.id } });
         const recipient = await Database.Models.Bank.findOne({ where: { id: user.id } });

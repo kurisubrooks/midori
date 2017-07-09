@@ -7,18 +7,13 @@ class Balance extends Command {
         super(client, {
             name: "Balance",
             description: "Get a user's balance.",
-            aliases: ["balance", "bal", "coins"]
+            aliases: ["balance", "bal", "coins", "cheese"]
         });
     }
 
-    async run(message, channel, user, args) {
-        for (let index = 0; index < args.length; index++) {
-            const userMatched = /<@!?([0-9]+)>/g.exec(args[index]);
-
-            if (userMatched && userMatched.length > 1) {
-                user = message.guild.members.get(userMatched[1]);
-                args.splice(index, 1);
-            }
+    async run(message, channel, user) {
+        if (message.pung.length > 0) {
+            user = message.pung[0];
         }
 
         const data = await Database.Models.Bank.findOne({ where: { id: user.id } });

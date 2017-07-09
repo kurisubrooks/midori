@@ -12,17 +12,12 @@ class ResetBalance extends Command {
         });
     }
 
-    async run(message, channel, user, args) {
-        if (args.length === 0) return message.reply("Who's balance did you mean to reset? Try again...");
-
-        for (let index = 0; index < args.length; index++) {
-            const userMatched = /<@!?([0-9]+)>/g.exec(args[index]);
-
-            if (userMatched && userMatched.length > 1) {
-                user = message.guild.members.get(userMatched[1]);
-                args.splice(index, 1);
-            }
+    async run(message, channel, user) {
+        if (message.pung.length === 0) {
+            return message.reply("you didn't specify whom you want to pay!");
         }
+
+        user = message.pung[0];
 
         const recipient = await Database.Models.Bank.findOne({ where: { id: user.id } });
 

@@ -13,7 +13,10 @@ class Leaderboard extends Command {
 
     async run(message, channel) {
         const db = await Database.Models.Bank.findAll({ order: "balance DESC" }).all();
-        const embed = new RichEmbed().setTitle("Leaderboard").setColor(this.config.colours.default);
+        const embed = new RichEmbed()
+            .setTitle("Leaderboard")
+            .setColor(this.config.colours.default);
+
         let total = 0;
 
         for (let index = 0; index < db.length; index++) {
