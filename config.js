@@ -1,7 +1,6 @@
 module.exports = {
-    name: "midori",
-    sign: "/",
-    userid: "188394341708857346",
+    sign: ";",
+    selfbot: false,
     admin: ["132368482120499201"],
 
     economy: {
