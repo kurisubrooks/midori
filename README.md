@@ -38,7 +38,7 @@ Create a file called `keychain.json` in the main directory, with the following c
 
 ```js
 {
-    "discord": "", // Discord Bot Token
+    "self": "", // Discord Bot Token
     "darksky": "", // DarkSky Weather API Key
     "sherlock": "", // Sherlock API Key
     "google": {
