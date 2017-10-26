@@ -4,7 +4,7 @@
 // Core
 global.Promise = require("bluebird");
 const { Client } = require("discord.js");
-const { error, handleJoin } = require("./core/Util/Util");
+const { error } = require("./core/Util/Util");
 const keys = require("./keychain.json");
 const config = require("./config.js");
 const Logger = require("./core/Util/Logger");
@@ -24,14 +24,13 @@ const onReady = () => {
         delete client.user.email;
         delete client.user.verified;
         config.admin = [client.user.id];
-        client.user.setPresence({ status: "invisible", afk: true });
     }
 };
 
 Manager.loadCommands("./commands/");
 
 // Handle Discord
-client.login(keys.self);
+client.login(keys.discord);
 client.once("ready", onReady);
 client.on("warn", warn => error("Core", warn));
 client.on("error", err => error("Core", err));
