@@ -1,6 +1,10 @@
 const Command = require("../../core/Command");
 const Database = require("../../core/Database");
 
+function cap(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 class Set extends Command {
     constructor(client) {
         super(client, {
@@ -16,7 +20,8 @@ class Set extends Command {
             location: null,
             language: null,
             timezone: null,
-            locale: null
+            locale: null,
+            radar: null
         };
     }
 
@@ -107,6 +112,23 @@ class Set extends Command {
         db = await Set.getUser(user);
         const userdata = JSON.parse(db.data);
 
+        if (field === "radar") {
+            const valid = ["sydney", "canberra", "adelaide"];
+            const place = data.join(" ").toLowerCase();
+
+            if (!(valid.indexOf(place) >= 0)) {
+                return message.reply(`it doesn't look like "${cap(data)}" is a valid radar location.. Available locations include ${valid.join(", ")}`);
+            }
+
+            // Set Field
+            userdata[field] = place;
+            this.update(db, userdata);
+
+            // Done
+            this.log(`Updated Entry for ${user.id}`, "debug");
+            return message.reply(`successfully set your local radar to ${cap(place)}!`);
+        }
+
         if (field === "location") {
             const { geolocation } = require("../weather/conditions");
             const parsed = await geolocation(data);
@@ -116,19 +138,19 @@ class Set extends Command {
                 return this.error(parsed, channel);
             }
 
-            // Remove Old Weather Data
+            // Remove Deprecated Weather Field
             delete userdata.weather;
 
-            // Update Location
+            // Set Location
             userdata[field] = parsed;
             this.update(db, userdata);
 
             // Done
             this.log(`Updated Entry for ${user.id}`, "debug");
-            return message.reply(`successfully set your location to ${parsed.line1}, ${parsed.line2}.`);
+            return message.reply(`successfully set your location to ${parsed.line1}, ${parsed.line2}!`);
         }
 
-        return message.reply("sorry, that's not a valid field.");
+        return message.reply("unfortunately it doesn't look like that's a valid field.");
     }
 }
 
