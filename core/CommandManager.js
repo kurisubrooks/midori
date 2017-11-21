@@ -91,7 +91,6 @@ module.exports = class CommandManager {
     async handleMessage(message) {
         // Don't Parse Bot Messages
         if (message.author.bot) return false;
-
         if (config.selfbot && this.client.user.id !== message.author.id) return false;
 
         // Handle Server Configuration
@@ -171,7 +170,7 @@ module.exports = class CommandManager {
         if (!command) return false;
 
         // Check if Command requires Admin
-        if ((command.admin && !config.admin.includes(user.id)) || (command.admin && !config.selfbot)) return false;
+        if (!config.selfbot && (command.admin && !config.admin.includes(user.id))) return false;
 
         // Log Message
         Logger.warn("Chat Log", `<${user.username}#${user.discriminator}>: ${text}`);
