@@ -35,8 +35,8 @@ client.once("ready", onReady);
 client.on("warn", warn => error("Core", warn));
 client.on("error", err => error("Core", err));
 client.on("message", message => Manager.handleMessage(message));
-client.on("messageUpdate", (old, neue) => {
-    if (old.content !== neue.content) Manager.handleMessage(neue);
+client.on("messageUpdate", (old, _new) => {
+    if (old.content !== _new.content) Manager.handleMessage(_new);
 });
 
 module.exports = client;
