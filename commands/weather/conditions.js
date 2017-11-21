@@ -131,7 +131,7 @@ class Weather extends Command {
         Canvas.registerFont(path.join(__dirname, "fonts", "Rubik.ttf"), { family: "Rubik" });
 
         // Generate Response Image
-        const canvas = new Canvas(400, 300);
+        const canvas = Canvas.createCanvas(400, 300);
         const ctx = canvas.getContext("2d");
         const { Image } = Canvas;
         const base = new Image();
