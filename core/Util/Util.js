@@ -22,10 +22,10 @@ class Util {
             .addField("Time", Logger.time(), true)
             .addField("Message", message);
 
-        channel = channel || client.channels.get("212917108445544449");
+        channel = channel || null;
         Logger.error(name, message);
 
-        channel.send({ embed });
+        if (channel) channel.send({ embed });
         return false;
     }
 }
