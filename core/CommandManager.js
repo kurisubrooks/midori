@@ -182,6 +182,12 @@ module.exports = class CommandManager {
     async handleBlacklist(message) {
         if (config.selfbot) return false;
 
+        if (message.guild) {
+            if (!message.guild.me.permissions.has("MANAGE_MESSAGES")) {
+                return false;
+            }
+        }
+
         const guild = message.guild ? message.guild.name : "DM";
         const embed = new RichEmbed()
             .setDescription("Your message was removed because it contains a word that has been blacklisted.")
