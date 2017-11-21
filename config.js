@@ -1,5 +1,5 @@
 module.exports = {
-    sign: ";",
+    sign: "!",
     selfbot: false,
     admin: ["132368482120499201"],
 
