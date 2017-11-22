@@ -1,6 +1,5 @@
 module.exports = {
     sign: "!",
-    selfbot: false,
     admin: ["132368482120499201"],
 
     economy: {

@@ -91,7 +91,6 @@ module.exports = class CommandManager {
     async handleMessage(message) {
         // Don't Parse Bot Messages
         if (message.author.bot) return false;
-        if (config.selfbot && this.client.user.id !== message.author.id) return false;
 
         // Handle Server Configuration
         const { prefix } = await this.handleServer(message.guild);
@@ -109,27 +108,20 @@ module.exports = class CommandManager {
         const matched = new RegExp(blacklist.join("|")).test(message.content);
 
         // Perform Various Checks
-        if (!config.selfbot) {
-            if (server !== "DM" && matched) return this.handleBlacklist(message);
-            if (!config.selfbot) this.giveCoins(user);
-            if (text.length < 1 && !attachments) return false;
-            if (attachments) text += attachments && text.length < 1 ? "<file>" : " <file>";
-            if (!triggered && !mentioned) return false;
+        if (server !== "DM" && matched) return this.handleBlacklist(message);
+        this.giveCoins(user);
+        if (text.length < 1 && !attachments) return false;
+        if (attachments) text += attachments && text.length < 1 ? "<file>" : " <file>";
+        if (!triggered && !mentioned) return false;
 
-            // Bot was mentioned but no command supplied, await command
-            if (mentioned && args.length === 1) {
-                await message.reply("How may I help? Respond with the command you want to use. Expires in 60s");
-                const filter = msg => msg.author.id === user.id;
-                const res = await channel.awaitMessages(filter, { max: 1, time: 60000 });
-                message = res.first();
-                text += ` ${message.content}`;
-                args = [args[0], ...message.content.split(" ")];
-            }
-        }
-
-        // Selfbot Specific Checks
-        if (config.selfbot) {
-            if (!triggered) return false;
+        // Bot was mentioned but no command supplied, await command
+        if (mentioned && args.length === 1) {
+            await message.reply("How may I help? Respond with the command you want to use. Expires in 60s");
+            const filter = msg => msg.author.id === user.id;
+            const res = await channel.awaitMessages(filter, { max: 1, time: 60000 });
+            message = res.first();
+            text += ` ${message.content}`;
+            args = [args[0], ...message.content.split(" ")];
         }
 
         // Find Command
@@ -154,23 +146,21 @@ module.exports = class CommandManager {
         }
 
         // Mentioned but command doesn't exist
-        if (!config.selfbot) {
-            if (!command && mentioned && args.length >= 0) {
-                // Easter Egg for certain users
-                if (user.id === "169842543410937856" || user.id === "268963316200767488") {
-                    return message.reply("I'm not sure what you mean... but please don't drink me!");
-                }
-
-                // Generic response for less awesome users
-                return message.reply("Sorry, I don't understand... Try `help` to see what I know!");
+        if (!command && mentioned && args.length >= 0) {
+            // Easter Egg for certain users
+            if (user.id === "169842543410937856" || user.id === "268963316200767488") {
+                return message.reply("I'm not sure what you mean... but please don't drink me!");
             }
+
+            // Generic response for less awesome users
+            return message.reply("Sorry, I don't understand... Try `help` to see what I know!");
         }
 
         // Command doesn't exist
         if (!command) return false;
 
         // Check if Command requires Admin
-        if (!config.selfbot && (command.admin && !config.admin.includes(user.id))) return false;
+        if (command.admin && !config.admin.includes(user.id)) return false;
 
         // Log Message
         Logger.warn("Chat Log", `<${user.username}#${user.discriminator}>: ${text}`);
@@ -180,8 +170,6 @@ module.exports = class CommandManager {
     }
 
     async handleBlacklist(message) {
-        if (config.selfbot) return false;
-
         if (message.guild) {
             if (!message.guild.me.permissions.has("MANAGE_MESSAGES")) {
                 return false;
@@ -217,7 +205,7 @@ module.exports = class CommandManager {
     }
 
     async handleServer(guild) {
-        if (!guild || config.selfbot) return { prefix: config.sign };
+        if (!guild) return { prefix: config.sign };
 
         const id = guild.id;
         const owners = this.getAdministrators(guild);
@@ -238,8 +226,6 @@ module.exports = class CommandManager {
     }
 
     async giveCoins(user) {
-        if (config.selfbot) return false;
-
         const db = Database.Models.Bank;
         const person = await db.findOne({ where: { id: user.id } });
 
