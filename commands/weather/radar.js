@@ -11,23 +11,36 @@ class Radar extends Command {
     }
 
     async run(message, channel, user, args) {
-        if (message.pung.length > 0) {
-            this.log(`Getting Radar for user ${message.pung[0].id}`, "debug");
-            const userDB = await Database.Models.Users.findOne({ where: { id: message.pung[0].id } });
+        const locations = ["sydney", "canberra", "adelaide"];
 
-            // Check if User exists in DB
-            if (userDB) {
-                const data = JSON.parse(userDB.data);
+        // Check if user was pung, or didn't provide any args
+        if (message.pung.length > 0 || (args.length === 0 && message.pung.length === 0)) {
+            if (message.pung.length > 0) user = message.pung[0];
 
-                // Checks if User has a set location
-                if (data.radar) {
-                    args[0] = data.radar;
-                } else {
-                    return message.reply("this user has not set their radar location.");
-                }
-            } else {
-                return message.reply("this user does not have a database entry for their local radar.");
+            const userDB = await Database.Models.Users.findOne({ where: { id: user.id } });
+            let error = "this user does not have a set radar location.";
+
+            if (message.author.id === user.id) {
+                error = `please provide a query or set your location with \`${message.prefix}set radar <location>\``;
             }
+
+            // Checks for User in DB
+            if (!userDB) {
+                return message.reply(error);
+            }
+
+            const data = JSON.parse(userDB.data);
+
+            // Checks for Radar in DB
+            if (!data.radar) {
+                return message.reply(error);
+            }
+
+            args[0] = data.radar;
+        }
+
+        if (locations.indexOf(args[0]) === -1) {
+            return message.reply(`Sorry! It doesn't look like that location is supported. Supported locations include: \`${locations.join(", ")}\``);
         }
 
         const place = args[0] || "sydney";
