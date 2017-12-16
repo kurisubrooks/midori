@@ -12,7 +12,7 @@ class Stop extends Command {
 
     async run(message, channel, user) {
         await this.error(`Restart Triggered by ${user.nickname}`, channel);
-        return setTimeout(() => process.exit(0), 100);
+        return setTimeout(() => process.exit(0), 500);
     }
 }
 
