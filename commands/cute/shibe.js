@@ -25,6 +25,7 @@ class Shibe extends Command {
         if (!response) return false;
 
         const embed = new RichEmbed()
+            .setColor(this.config.colours.default)
             .setAuthor(user.nickname, user.avatarURL)
             .setImage(response[0]);
 

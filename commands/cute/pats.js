@@ -17,6 +17,11 @@ class Pats extends Command {
         }
 
         const target = message.pung[0];
+
+        if (target.id === user.id) {
+            user = this.client.user;
+        }
+
         const response = await request({
             headers: { "User-Agent": "Mozilla/5.0" },
             uri: "https://rra.ram.moe/i/r",
@@ -27,9 +32,11 @@ class Pats extends Command {
         if (!response) return false;
 
         const embed = new RichEmbed()
-            .setImage(`https://rra.ram.moe${response.path}`);
+            .setColor(this.config.colours.default)
+            .setDescription(`**${user.tag}** pat **${target.user.tag}**`)
+            .setImage(`https://cdn.ram.moe${response.path.replace("i/", "")}`);
 
-        await channel.send(`*<@${user.id}> pats ${target.nickname || target.username || target.user.username}*`, { embed });
+        await channel.send({ embed });
         return this.delete(message);
     }
 }

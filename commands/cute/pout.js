@@ -1,37 +1,34 @@
+const Command = require("../../core/Command");
 const request = require("request-promise");
 const { RichEmbed } = require("discord.js");
-const Command = require("../../core/Command");
 
-class Cate extends Command {
+class Pout extends Command {
     constructor(client) {
         super(client, {
-            name: "Cats",
-            description: "Post a randomly selected image of a cat",
-            aliases: ["cat", "cate", "cats", "kat", "kitty", "kitteh", "neko"]
+            name: "Pout",
+            description: "Pout!",
+            aliases: []
         });
     }
 
     async run(message, channel, user) {
         const response = await request({
             headers: { "User-Agent": "Mozilla/5.0" },
-            uri: "http://shibe.online/api/cats",
-            json: true,
-            qs: {
-                count: 1
-                // httpsurls: true
-            }
+            uri: "https://rra.ram.moe/i/r",
+            qs: { type: "pout", nsfw: false },
+            json: true
         }).catch(error => this.error(error.response.body.error, channel));
 
         if (!response) return false;
 
         const embed = new RichEmbed()
             .setColor(this.config.colours.default)
-            .setAuthor(user.nickname, user.avatarURL)
-            .setImage(response[0]);
+            .setDescription(`**${user.tag}** pouted`)
+            .setImage(`https://cdn.ram.moe${response.path.replace("i/", "")}`);
 
         await channel.send({ embed });
         return this.delete(message);
     }
 }
 
-module.exports = Cate;
+module.exports = Pout;
