@@ -33,7 +33,7 @@ class Cuddle extends Command {
 
         const embed = new RichEmbed()
             .setColor(this.config.colours.default)
-            .setDescription(`**${user.tag}** cuddles **${target.user.tag}**`)
+            .setDescription(`**${user.tag}** cuddled **${target.user.tag}**`)
             .setImage(`https://cdn.ram.moe${response.path.replace("i/", "")}`);
 
         await channel.send({ embed });

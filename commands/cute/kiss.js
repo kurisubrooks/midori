@@ -7,7 +7,7 @@ class Kiss extends Command {
         super(client, {
             name: "Kiss",
             description: "Kiss someone!",
-            aliases: []
+            aliases: ["kissu"]
         });
     }
 
@@ -33,7 +33,7 @@ class Kiss extends Command {
 
         const embed = new RichEmbed()
             .setColor(this.config.colours.default)
-            .setDescription(`**${user.tag}** kiss **${target.user.tag}**`)
+            .setDescription(`**${user.tag}** kissed **${target.user.tag}**`)
             .setImage(`https://cdn.ram.moe${response.path.replace("i/", "")}`);
 
         await channel.send({ embed });

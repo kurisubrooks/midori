@@ -33,7 +33,7 @@ class Pats extends Command {
 
         const embed = new RichEmbed()
             .setColor(this.config.colours.default)
-            .setDescription(`**${user.tag}** pat **${target.user.tag}**`)
+            .setDescription(`**${user.tag}** pet **${target.user.tag}**`)
             .setImage(`https://cdn.ram.moe${response.path.replace("i/", "")}`);
 
         await channel.send({ embed });
