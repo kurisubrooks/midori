@@ -14,7 +14,8 @@ module.exports = class ShakeProcess extends Subprocess {
         super(client, {
             name: "Shake",
             description: "Earthquake Early Warnings Poster",
-            config: "shake"
+            config: "shake",
+            disabled: true
         });
 
         this.postChannel = this.client.channels.get(this.config.channels.post);
