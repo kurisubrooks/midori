@@ -28,7 +28,6 @@ class Help extends Command {
         if (!args[0]) {
             const text = commands.map(command => {
                 const aliases = [command.name, ...command.aliases].map(name => name.toLowerCase());
-
                 return `**${command.name}** — ${command.description}\nMatches: ${aliases.map(alias => `\`${alias}\``).join(", ")}\n`;
             });
 
@@ -36,7 +35,7 @@ class Help extends Command {
             text.unshift("__**List of available commands**__\n");
 
             if (channel.type !== "dm") await message.reply("Sent you a DM with information!");
-            await user.send(text.join("\n"));
+            await user.send(text.join("\n"), { split: true });
             return this.delete(message);
         }
 
