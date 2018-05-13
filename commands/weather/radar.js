@@ -11,7 +11,7 @@ class Radar extends Command {
     }
 
     async run(message, channel, user, args) {
-        const locations = ["sydney", "canberra", "adelaide"];
+        const locations = ["sydney", "canberra", "adelaide", "melbourne"];
 
         // Check if user was pung, or didn't provide any args
         if (message.pung.length > 0 || (args.length === 0 && message.pung.length === 0)) {
