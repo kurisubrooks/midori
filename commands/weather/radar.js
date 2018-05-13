@@ -36,15 +36,15 @@ class Radar extends Command {
                 return message.reply(error);
             }
 
-            args[0] = data.radar;
+            args[0] = data.radar.toLowerCase();
         }
 
-        if (locations.indexOf(args[0]) === -1) {
+        if (locations.indexOf(args[0].toLowerCase()) === -1) {
             return message.reply(`Sorry! It doesn't look like that location is supported. Supported locations include: \`${locations.join(", ")}\``);
         }
 
-        const place = args[0] || "sydney";
-        const type = args[1] || "animated";
+        const place = args[0] ? args[0].toLowerCase() : "sydney";
+        const type = args[1] ? args[1].toLowerCase() : "animated";
         const ext = type === "animated" ? "gif" : "png";
         const url = `https://api.kurisubrooks.com/api/radar?id=${place}&type=${type}`;
 
