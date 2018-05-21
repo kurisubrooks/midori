@@ -116,10 +116,18 @@ module.exports = class CommandManager {
 
         // Bot was mentioned but no command supplied, await command
         if (mentioned && args.length === 1) {
-            await message.reply("How may I help? Respond with the command you want to use. Expires in 60s");
+            await message.reply("Hi, how can I help? Respond with the command you want to use. Expires in 60s, otherwise use `cancel` to close this prompt.");
             const filter = msg => msg.author.id === user.id;
             const res = await channel.awaitMessages(filter, { max: 1, time: 60000 });
             message = res.first();
+
+            if (message.content === "cancel") {
+                channel.send("Oh, ok.");
+                return false;
+            }
+
+            // check if they responded with a command
+
             text += ` ${message.content}`;
             args = [args[0], ...message.content.split(" ")];
         }
@@ -149,11 +157,12 @@ module.exports = class CommandManager {
         if (!command && mentioned && args.length >= 0) {
             // Easter Egg for certain users
             if (user.id === "169842543410937856" || user.id === "268963316200767488") {
-                return message.reply("I'm not sure what you mean... but please don't drink me!");
+                return message.reply("i-i'm not sure what you mean but... p-please don't drink me!!!");
             }
 
             // Generic response for less awesome users
-            return message.reply("Sorry, I don't understand... Try `help` to see what I know!");
+            // return message.reply("Sorry, I don't understand... Try `help` to see what I know!");
+            return channel.send(`Sorry <@${user.id}>, i'm not artificially intelligent as of yet, but you can try \`help\` to see what I know!`);
         }
 
         // Command doesn't exist
