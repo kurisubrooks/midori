@@ -1,6 +1,7 @@
 module.exports = {
     sign: "!",
     admin: ["132368482120499201"],
+    server: "82:dc:73:5d:a9:f1",
 
     economy: {
         range: [1, 3],

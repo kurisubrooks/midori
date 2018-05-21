@@ -15,6 +15,16 @@ class Status extends Command {
 
     async run(message, channel) {
         const npmv = await worker.process("npm -v").death();
+        const etho = require("os").networkInterfaces().eth0;
+
+        if (!etho || !etho[0] || etho[0].mac !== this.config.server) {
+            const embed = new RichEmbed()
+                .setColor(this.config.colours.warn)
+                .setTitle("Warning")
+                .setDescription("Midori doesn't seem to be running from it's usual server, this usually means it's running in Development Mode, which may add extra latency to command response time.");
+
+            channel.send({ embed });
+        }
 
         const embed = new RichEmbed()
             .setColor(this.config.colours.default)
