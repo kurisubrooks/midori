@@ -5,6 +5,7 @@ const moment = require("moment-timezone");
 const request = require("request-promise");
 const Command = require("../../core/Command");
 const Database = require("../../core/Database");
+// const Discord = require("discord.js");
 
 class Weather extends Command {
     constructor(client) {
@@ -118,33 +119,33 @@ class Weather extends Command {
         if (!weather) return false;
 
         const locale = weather.flags.units === "us" ? "F" : "C";
-        const speed = weather.flags.units === "us" ? "mph" : "km/h";
         const condition = weather.currently.summary;
         const icon = weather.currently.icon;
         const temperature = Math.round(weather.currently.temperature);
-        const datetime = moment().tz(weather.timezone).format("h:mma");
+        const datetime = moment().tz(weather.timezone).format("h:mm A");
         const forecast = weather.daily.data;
 
         this.log(`${geolocation.line1}, ${geolocation.line2}: ${temperature}°${locale}, ${condition}, ${datetime}`, "debug");
 
-        Canvas.registerFont(path.join(__dirname, "fonts", "Roboto.ttf"), { family: "Roboto" });
-        Canvas.registerFont(path.join(__dirname, "fonts", "Rubik.ttf"), { family: "Rubik" });
+        Canvas.registerFont(path.join(__dirname, "fonts", "Inter-UI-Medium.ttf"), { family: "InterUI" });
 
         // Generate Response Image
-        const canvas = Canvas.createCanvas(400, 300);
+        const canvas = Canvas.createCanvas(800, 430);
         const ctx = canvas.getContext("2d");
         const { Image } = Canvas;
         const base = new Image();
         const cond = new Image();
         const day1 = new Image();
         const day2 = new Image();
-        const day3 = new Image();
+        const high = new Image();
+        const low = new Image();
 
         base.src = path.join(__dirname, "base", `${this.getBaseImage(icon)}.png`);
         cond.src = path.join(__dirname, "icons", `${this.getConditionImage(icon)}.png`);
         day1.src = path.join(__dirname, "icons", `${this.getConditionImage(forecast[0].icon)}.png`);
         day2.src = path.join(__dirname, "icons", `${this.getConditionImage(forecast[1].icon)}.png`);
-        day3.src = path.join(__dirname, "icons", `${this.getConditionImage(forecast[2].icon)}.png`);
+        high.src = path.join(__dirname, "icons", "high.png");
+        low.src = path.join(__dirname, "icons", "low.png");
 
         // Environment Variables
         ctx.drawImage(base, 0, 0);
@@ -153,77 +154,95 @@ class Weather extends Command {
         ctx.filter = "bilinear";
         ctx.antialias = "subpixel";
 
-        // City Name
-        ctx.font = "20px Roboto";
-        ctx.fillStyle = "#FFFFFF";
-        ctx.fillText(geolocation.line1, 28, 40);
+        // Town/City/District
+        ctx.font = "40px InterUI";
+        ctx.fillStyle = "rgba(255, 255, 255, 1)";
+        ctx.fillText(geolocation.line1, 60, 70);
 
-        // State/Prefecture Name
-        ctx.font = "16px Roboto";
+        // State/Region/Country
+        ctx.font = "28px InterUI";
         ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
-        ctx.fillText(geolocation.line2, 28, 63);
-
-        // Temperature
-        ctx.font = "bold 34px Rubik";
-        ctx.fillStyle = "#FFFFFF";
-        ctx.fillText(`${temperature}°${locale}`, 29, 138);
-
-        // Local Time
-        ctx.textAlign = "right";
-        ctx.font = "16px Roboto";
-        ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
-        ctx.fillText(datetime, 375, 116);
+        ctx.fillText(geolocation.line2, 60, 115);
 
         // Condition
-        ctx.font = "16px Roboto";
-        ctx.fillStyle = "#FFFFFF";
-        ctx.fillText(condition, 375, 138);
-        ctx.drawImage(cond, 318, 20);
+        ctx.drawImage(cond, 643, 30);
+
+        // Temperature
+        ctx.font = "56px InterUI";
+        ctx.fillStyle = "rgba(255, 255, 255, 1)";
+        ctx.fillText(`${temperature}°${locale}`, 60, 240);
+
+        // Daily Forecast
+        const width = 200 + (temperature.toString().length - 1) * 28; // eslint-disable-line no-mixed-operators
+        ctx.font = "28px InterUI";
+        ctx.fillStyle = "rgba(255, 255, 255, 1)";
+        ctx.fillText(`${Math.round(forecast[0].temperatureMax)}°`, width + 40, 210);
+        ctx.drawImage(high, width, 188);
+        ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+        ctx.fillText(`${Math.round(forecast[0].temperatureMin)}°`, width + 40, 247);
+        ctx.drawImage(low, width, 226);
+
+        // Time
+        ctx.textAlign = "right";
+        ctx.font = "32px InterUI";
+        ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+        ctx.fillText(datetime, 740, 231);
 
         // Details
         ctx.textAlign = "left";
-        ctx.font = "13px Rubik";
-        ctx.fillStyle = "#FFFFFF";
-        ctx.fillText(`${Math.round(weather.currently.humidity * 100)}%`, 50, 174);
-        ctx.fillText(`${Math.round(weather.currently.precipProbability * 100)}%`, 120, 174);
-        ctx.fillText(`${Math.round(weather.currently.windSpeed)} ${speed}`, 193, 174);
-        ctx.fillText(`${Math.round(weather.currently.apparentTemperature)}°`, 298, 175);
+        ctx.font = "28px InterUI";
+        ctx.fillStyle = "rgba(255, 255, 255, 1)";
+        ctx.fillText(`${Math.round(weather.currently.humidity * 100)}%`, 112, 341);
+        ctx.fillText(`${Math.round(weather.currently.precipProbability * 100)}%`, 112, 391);
 
+        // Forecast
+        ctx.textAlign = "right";
+        ctx.font = "28px InterUI";
+        ctx.fillText("Forecast Unavailable", 740, 341);
+
+        /*
         // Forecast Day 1
         ctx.textAlign = "left";
-        ctx.font = "16px Roboto";
+        ctx.font = "16px InterUI";
         ctx.fillText("Today", 28, 215);
         ctx.textAlign = "right";
         ctx.font = "16px Rubik";
         ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
         ctx.fillText(`${Math.round(forecast[0].temperatureMin)}°`, 305, 215);
-        ctx.fillStyle = "#FFFFFF";
+        ctx.fillStyle = "rgba(255, 255, 255, 1)";
         ctx.fillText(`${Math.round(forecast[0].temperatureMax)}°`, 345, 215);
         ctx.drawImage(day1, 350, 197, 24, 24);
 
         // Forecast Day 2
         ctx.textAlign = "left";
-        ctx.font = "16px Roboto";
+        ctx.font = "16px InterUI";
         ctx.fillText("Tomorrow", 28, 243);
         ctx.textAlign = "right";
         ctx.font = "16px Rubik";
         ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
         ctx.fillText(`${Math.round(forecast[1].temperatureMin)}°`, 305, 243);
-        ctx.fillStyle = "#FFFFFF";
+        ctx.fillStyle = "rgba(255, 255, 255, 1)";
         ctx.fillText(`${Math.round(forecast[1].temperatureMax)}°`, 345, 243);
         ctx.drawImage(day2, 350, 226, 24, 24);
+        */
 
-        // Forecast Day 3
-        ctx.textAlign = "left";
-        ctx.font = "16px Roboto";
-        ctx.fillText(moment.unix(forecast[2].time).format("dddd"), 28, 271);
-        ctx.textAlign = "right";
-        ctx.font = "16px Rubik";
-        ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
-        ctx.fillText(`${Math.round(forecast[2].temperatureMin)}°`, 305, 271);
-        ctx.fillStyle = "#FFFFFF";
-        ctx.fillText(`${Math.round(forecast[2].temperatureMax)}°`, 345, 271);
-        ctx.drawImage(day3, 350, 254, 24, 24);
+        //
+        // REMOVE AFTER COMPLETION
+        //
+        /*
+        const etho = require("os").networkInterfaces().eth0;
+        if (!etho || !etho[0] || etho[0].mac !== "82:dc:73:5d:a9:f1") {
+            const embed = new Discord.RichEmbed()
+                .setColor(this.config.colours.warn)
+                .setTitle("Notice")
+                .setDescription("This command is currently under active redevelopment. As such, you may experience unexpected results when running this command. Feel free to ping me (Kurisu#7700) if you have any questions.");
+
+            channel.send({ embed });
+        }
+        */
+        //
+        //
+        //
 
         // Send
         await channel.send({ files: [{ attachment: canvas.toBuffer(), url: "weather.png" }] });
@@ -233,19 +252,19 @@ class Weather extends Command {
     // Get Image
     getConditionImage(input) {
         const icons = {
-            "clear-day": "Day",
-            "clear-night": "Night",
-            "cloudy": "Cloudy",
-            "flurries": "Snow",
-            "fog": "Particles",
-            "partly-cloudy-day": "Day_Partly_Cloudy",
-            "partly-cloudy-night": "Night_Partly_Cloudy",
-            "rain": "Rain",
-            "sleet": "Snow",
-            "snow": "Snow",
-            "thunderstorm": "Thunderstorm",
-            "unknown": "Unknown",
-            "wind": "Windy"
+            "clear-day": "day",
+            "clear-night": "night",
+            "cloudy": "cloudy",
+            "flurries": "snow",
+            "fog": "particles",
+            "partly-cloudy-day": "day_partlycloudy",
+            "partly-cloudy-night": "night_partlycloudy",
+            "rain": "rain",
+            "sleet": "snow",
+            "snow": "snow",
+            "thunderstorm": "storm",
+            "unknown": "unknown",
+            "wind": "Wind"
         };
 
         return icons[input] || "Unknown";
