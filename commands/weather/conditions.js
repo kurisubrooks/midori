@@ -255,7 +255,7 @@ class Weather extends Command {
             "snow": "snow",
             "thunderstorm": "storm",
             "unknown": "unknown",
-            "wind": "Wind"
+            "wind": "wind"
         };
 
         return icons[input] || "Unknown";
