@@ -142,8 +142,8 @@ class Weather extends Command {
 
         base.src = path.join(__dirname, "base", `${this.getBaseImage(icon)}.png`);
         cond.src = path.join(__dirname, "icons", `${this.getConditionImage(icon)}.png`);
-        day1.src = path.join(__dirname, "icons", `${this.getConditionImage(forecast[0].icon)}.png`);
-        day2.src = path.join(__dirname, "icons", `${this.getConditionImage(forecast[1].icon)}.png`);
+        day1.src = path.join(__dirname, "icons", `${this.getConditionImage(forecast[1].icon)}.png`);
+        day2.src = path.join(__dirname, "icons", `${this.getConditionImage(forecast[2].icon)}.png`);
         high.src = path.join(__dirname, "icons", "high.png");
         low.src = path.join(__dirname, "icons", "low.png");
 
@@ -198,33 +198,23 @@ class Weather extends Command {
         // Forecast
         ctx.textAlign = "right";
         ctx.font = "28px InterUI";
-        ctx.fillText("Forecast Unavailable", 740, 341);
-
-        /*
-        // Forecast Day 1
-        ctx.textAlign = "left";
-        ctx.font = "16px InterUI";
-        ctx.fillText("Today", 28, 215);
-        ctx.textAlign = "right";
-        ctx.font = "16px Rubik";
-        ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
-        ctx.fillText(`${Math.round(forecast[0].temperatureMin)}°`, 305, 215);
         ctx.fillStyle = "rgba(255, 255, 255, 1)";
-        ctx.fillText(`${Math.round(forecast[0].temperatureMax)}°`, 345, 215);
-        ctx.drawImage(day1, 350, 197, 24, 24);
 
-        // Forecast Day 2
-        ctx.textAlign = "left";
-        ctx.font = "16px InterUI";
-        ctx.fillText("Tomorrow", 28, 243);
-        ctx.textAlign = "right";
-        ctx.font = "16px Rubik";
+        // tomorrow
+        ctx.fillText("Tomorrow", 530, 341);
         ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
-        ctx.fillText(`${Math.round(forecast[1].temperatureMin)}°`, 305, 243);
+        ctx.fillText(`${Math.round(forecast[1].temperatureMin)}°`, 530, 391);
         ctx.fillStyle = "rgba(255, 255, 255, 1)";
-        ctx.fillText(`${Math.round(forecast[1].temperatureMax)}°`, 345, 243);
-        ctx.drawImage(day2, 350, 226, 24, 24);
-        */
+        ctx.fillText(`${Math.round(forecast[1].temperatureMax)}°`, 465, 391);
+        ctx.drawImage(day1, 360, 364, 36, 36);
+
+        // day after
+        ctx.fillText(moment.unix(forecast[2].time).format("dddd"), 740, 341);
+        ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+        ctx.fillText(`${Math.round(forecast[2].temperatureMin)}°`, 740, 391);
+        ctx.fillStyle = "rgba(255, 255, 255, 1)";
+        ctx.fillText(`${Math.round(forecast[2].temperatureMax)}°`, 675, 391);
+        ctx.drawImage(day2, 570, 364, 36, 36);
 
         //
         // REMOVE AFTER COMPLETION
@@ -232,7 +222,8 @@ class Weather extends Command {
         /*
         const etho = require("os").networkInterfaces().eth0;
         if (!etho || !etho[0] || etho[0].mac !== "82:dc:73:5d:a9:f1") {
-            const embed = new Discord.RichEmbed()
+            const { RichEmbed } = require("discord.js");
+            const embed = new RichEmbed()
                 .setColor(this.config.colours.warn)
                 .setTitle("Notice")
                 .setDescription("This command is currently under active redevelopment. As such, you may experience unexpected results when running this command. Feel free to ping me (Kurisu#7700) if you have any questions.");
