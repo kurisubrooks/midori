@@ -1,4 +1,3 @@
-const client = require("../../index");
 const config = require("../../config");
 const Logger = require("./Logger");
 const { RichEmbed } = require("discord.js");

@@ -27,7 +27,7 @@ class Logger {
         // Log Stacktrace
         } else if (stacktrace) {
             console.log(style.bold(`[${Logger.time()} ${toUpper(name)}]`), style(message));
-            return console.trace(message);
+            return console.trace(require("util").format(message));
         // Log Normally
         } else {
             message = typeof message === "string" ? message.replace(/\r?\n|\r/g, " ") : message;
@@ -58,7 +58,6 @@ class Logger {
     static fatal(name, message, stacktrace) {
         throw Logger.log(chalk.bgRed.white, name, message, stacktrace);
     }
-
 }
 
 module.exports = Logger;
