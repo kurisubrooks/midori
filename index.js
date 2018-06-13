@@ -27,7 +27,7 @@ const onReady = () => {
     }
 };
 
-Manager.loadCommands("./commands/");
+Manager.loadCommands(config.directory);
 
 // Handle Discord
 client.login(keys.discord);

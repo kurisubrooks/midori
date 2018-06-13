@@ -1,5 +1,6 @@
 module.exports = {
     sign: "!",
+    directory: "./commands/",
     admin: ["132368482120499201"],
     server: "82:dc:73:5d:a9:f1",
 

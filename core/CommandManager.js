@@ -36,7 +36,7 @@ module.exports = class CommandManager {
         }
     }
 
-    startModule(location, re) {
+    startModule(location, reloaded) {
         const Command = require(location);
         const instance = new Command(this.client);
         const commandName = instance.name.toLowerCase();
@@ -48,7 +48,7 @@ module.exports = class CommandManager {
             throw new Error("Commands cannot have the same name");
         }
 
-        Logger.info(`${re ? "Reloaded" : "Loaded"} Command`, toUpper(commandName));
+        Logger.info(`${reloaded ? "Reloaded" : "Loaded"} Command`, toUpper(commandName));
         this.commands.set(commandName, instance);
 
         for (const alias of instance.aliases) {
@@ -58,6 +58,18 @@ module.exports = class CommandManager {
                 this.aliases.set(alias, instance);
             }
         }
+    }
+
+    reloadCommands() {
+        Logger.warn("Reload Manager", "Clearing Module Cache");
+        this.commands = new Collection();
+        this.aliases = new Collection();
+
+        Logger.warn("Reload Manager", "Reinitialising Modules");
+        this.loadCommands(config.directory);
+
+        Logger.success("Reload Commands", "Success");
+        return true;
     }
 
     reloadCommand(commandName) {

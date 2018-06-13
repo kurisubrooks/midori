@@ -5,14 +5,22 @@ class Reload extends Command {
         super(client, {
             name: "Reload",
             description: "Reloads Commands",
-            aliases: [],
+            aliases: ["reset", "flush"],
             admin: true
         });
     }
 
     async run(message, channel, user, args) {
         const module = args[0];
-        const run = message.context.reloadCommand(module);
+
+        if (!module) {
+            const msg = await channel.send("Reloading all modules...");
+            await message.context.reloadCommands();
+            await msg.edit("Reloading all modules... done!");
+            return false;
+        }
+
+        const run = await message.context.reloadCommand(module);
 
         if (run) {
             return channel.send(`Reloaded '${module}'`);
