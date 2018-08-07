@@ -134,7 +134,7 @@ module.exports = class CommandManager {
             message = res.first();
 
             if (message.content === "cancel") {
-                channel.send("Oh, ok.");
+                channel.send("Got it.");
                 return false;
             }
 
