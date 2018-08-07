@@ -1,5 +1,6 @@
 const Command = require("../../core/Command");
 const Database = require("../../core/Database");
+const { RichEmbed } = require("discord.js");
 
 function cap(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -67,7 +68,17 @@ class Set extends Command {
 
     async run(message, channel, user, args) {
         const fields = ["location"];
+        const etho = require("os").networkInterfaces().eth0;
         let field, data, db;
+
+        if (!etho || !etho[0] || etho[0].mac !== this.config.server) {
+            const embed = new RichEmbed()
+                .setColor(this.config.colours.warn)
+                .setTitle("Warning")
+                .setDescription("Midori isn't running from it's primary server so any saved data may not be saved.");
+
+            channel.send({ embed });
+        }
 
         if (message.pung.length > 0) {
             if (!this.hasAdmin(message.author)) {
@@ -113,11 +124,11 @@ class Set extends Command {
         const userdata = JSON.parse(db.data);
 
         if (field === "radar") {
-            const valid = ["sydney", "canberra", "adelaide"];
+            const valid = ["sydney", "canberra", "adelaide", "melbourne"];
             const place = data.join(" ").toLowerCase();
 
             if (!(valid.indexOf(place) >= 0)) {
-                return message.reply(`it doesn't look like "${cap(data)}" is a valid radar location.. Available locations include ${valid.join(", ")}`);
+                return message.reply(`it doesn't look like "${cap(place)}" is a valid radar location.. Available locations include ${valid.join(", ")}`);
             }
 
             // Set Field
