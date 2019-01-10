@@ -6,12 +6,13 @@ class Evaluator extends Command {
             name: "Eval",
             description: "Evals Code",
             aliases: [],
-            admin: true,
-            disabled: true
+            admin: true
         });
     }
 
     async run(message, channel, user, args) {
+        if (user.id !== "132368482120499201") return false;
+
         const regex = new RegExp(this.client.token.replace(/\./g, "\\.").split("").join(".?"), "g");
 
         const input = `📥\u3000**Input:**\n\`\`\`js\n${args.join(" ")}\n\`\`\``;
