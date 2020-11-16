@@ -1,22 +1,22 @@
 // const request = require("request-promise");
-const Subprocess = require("../../core/Subprocess");
+const Subprocess = require('../../core/Subprocess');
 
 module.exports = class FireProcess extends Subprocess {
-    constructor(client) {
-        super(client, {
-            name: "Fires",
-            description: "RFS Bushfire Warnings",
-            disabled: true
-        });
-    }
+  constructor(client) {
+    super(client, {
+      name: 'Fires',
+      description: 'RFS Bushfire Warnings',
+      disabled: true
+    });
+  }
 
-    run() {
-        setInterval(this.check, 1 * 60 * 1000);
-    }
+  run() {
+    setInterval(this.check, 1 * 60 * 1000);
+  }
 
-    check() {
-        return true;
-    }
+  check() {
+    return true;
+  }
 };
 
 /*
