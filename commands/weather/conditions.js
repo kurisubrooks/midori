@@ -216,20 +216,6 @@ class Weather extends Command {
     ctx.fillText(`${Math.round(forecast[2].temperatureMax)}°`, 675, 391);
     ctx.drawImage(day2, 570, 364, 36, 36);
 
-    // Send
-    /*
-        const etho = require("os").networkInterfaces().eth0;
-        if (!etho || !etho[0] || etho[0].mac !== this.config.server) {
-            const { MessageEmbed } = require("discord.js");
-            const embed = new MessageEmbed()
-                .setColor(this.config.colours.warn)
-                .setTitle("Notice")
-                .setDescription("This command is currently under active redevelopment. As such, you may experience unexpected results when running this command. Feel free to ping me (Kurisu#7700) if you have any questions.");
-
-            channel.send({ embed });
-        }
-        */
-
     await channel.send({ files: [{ attachment: canvas.toBuffer(), url: 'weather.png' }] });
     return this.delete(message);
   }
