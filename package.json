@@ -1,35 +1,32 @@
 {
-    "name": "midori",
-    "version": "5.0.0",
-    "description": "advanced modular discord.js bot/framework",
-    "main": "index.js",
-    "author": "kurisubrooks",
-    "license": "SEE LICENSE IN LICENSE.md",
-    "repository": "kurisubrooks/midori",
-    "scripts": {
-        "start": "node --harmony index",
-        "lint": "./node_modules/.bin/gulp lint"
-    },
-    "dependencies": {
-        "bbcode-to-markdown": "^1.0.1",
-        "canvas": "^2.6.1",
-        "chalk": "^4.1.0",
-        "cheerio": "^1.0.0-rc.5",
-        "core-worker": "^0.3.5",
-        "discord.js": "^12.5.1",
-        "moment": "^2.29.1",
-        "moment-duration-format": "^2.3.2",
-        "moment-timezone": "^0.5.32",
-        "request-promise": "^4.1.1",
-        "sequelize": "^6.3.5",
-        "socket.io-client": "^3.0.5",
-        "sqlite3": "^5.0.1"
-    },
-    "devDependencies": {
-        "@babel/core": "^7.12.10",
-        "@babel/eslint-parser": "^7.12.1",
-        "eslint": "^7.17.0",
-        "gulp": "^4.0.2",
-        "gulp-eslint": "^6.0.0"
-    }
+  "name": "midori",
+  "version": "5.0.0",
+  "description": "advanced modular discord.js bot/framework",
+  "main": "index.js",
+  "author": "kurisubrooks",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "repository": "kurisubrooks/midori",
+  "scripts": {
+    "start": "node index"
+  },
+  "dependencies": {
+    "bbcode-to-markdown": "^1.0.1",
+    "canvas": "^2.6.1",
+    "chalk": "^4.1.0",
+    "cheerio": "^1.0.0-rc.5",
+    "core-worker": "^0.3.5",
+    "discord.js": "^12.5.1",
+    "moment": "^2.29.1",
+    "moment-duration-format": "^2.3.2",
+    "moment-timezone": "^0.5.32",
+    "request-promise": "^4.1.1",
+    "sequelize": "^6.3.5",
+    "socket.io-client": "^3.0.5",
+    "sqlite3": "^5.0.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/eslint-parser": "^7.12.1",
+    "eslint": "^7.17.0"
+  }
 }
