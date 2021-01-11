@@ -31,17 +31,17 @@ class Translate extends Command {
     }
 
     const langs = args[0].split(',');
-    let to = this.validate(langs[0].toLowerCase()).code;
+    let to = this.validate(langs[0].toLowerCase())?.code;
     let from = langs.length > 1 ? this.validate(langs[1]).code : null;
     let query = args.slice(1).join(' ');
 
     if (!this.validate(to)) {
-      return message.reply(`the value in the 'from' field (${to}), is not a valid language, or is unsupported.`);
+      return message.reply(`the value in the 'from' field is not a valid language, or is not supported at this time.`);
     }
 
     if (from !== null) {
       if (!this.validate(from)) {
-        return message.reply(`the value in the 'from' field (${from}), is not a valid language, or is unsupported.`);
+        return message.reply(`the value in the 'from' field is not a valid language, or is not supported at this time`);
       }
     }
 
