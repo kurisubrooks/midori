@@ -2,7 +2,6 @@
 // by @kurisubrooks
 
 // Core
-global.Promise = require('bluebird');
 const { Client } = require('discord.js');
 const { error } = require('./core/Util/Util');
 const keys = require('./keychain.json');
