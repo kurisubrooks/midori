@@ -43,7 +43,7 @@ module.exports = class Command {
     return error(this.name, message, channel);
   }
 
-  delete(message) {
+  delete() {
     return true;
     // return message.delete().catch(err => err.message);
   }
