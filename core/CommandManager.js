@@ -114,7 +114,7 @@ module.exports = class CommandManager {
     const user = message.author;
     const attachments = message.attachments.size > 0;
     const pattern = new RegExp(`<@!?${this.client.user.id}>`, 'i');
-    const mentioned = message.mentions.has(this.client.user) && pattern.test(args[0]);
+    const mentioned = message.mentions.users.has(this.client.user) && pattern.test(args[0]);
     const triggered = message.content.startsWith(prefix);
 
     // Perform Various Checks
