@@ -84,7 +84,6 @@ module.exports = class CommandManager {
 
   runCommand(command, message, channel, user, args) {
     try {
-      Logger.warn('Command Parser', `Matched ${command.name}, Running...`);
       return command.run(message, channel, user, args);
     } catch(err) {
       return error('Command', err);
@@ -105,7 +104,6 @@ module.exports = class CommandManager {
 
     // Handle Server Configuration
     const { prefix } = await this.handleServer(message.guild);
-
     // Create Helper Variables
     let text = message.cleanContent;
     let args = message.content.split(' ');
@@ -150,7 +148,7 @@ module.exports = class CommandManager {
     message.command = instance.commandName;
     message.prefix = prefix;
     message.pung = [];
-    user.nickname = message.member ? message.member.displayName : message.author.username;
+    user.nickname = message.member?.displayName || message.author.username
 
     // Check for Pinged user
     for (let index = 0; index < args.length; index++) {
@@ -181,7 +179,7 @@ module.exports = class CommandManager {
     if (command.admin && !config.admin.includes(user.id)) return false;
 
     // Log Message
-    Logger.warn('Chat Log', `<${user.username}#${user.discriminator}>: ${text}`);
+    Logger.warn('Ran Command', `<${user.tag}}>: ${text}`);
 
     // Run Command
     return this.runCommand(command, message, channel, user, args);
@@ -208,7 +206,7 @@ module.exports = class CommandManager {
     let db = await Database.Models.Config.findOne({ where: { id } });
 
     if (!db) {
-      db = await Database.Models.Config.create({ id, owners, prefix: '/', disabled: false, permissions: '' });
+      db = await Database.Models.Config.create({ id, owners, prefix: config.sign, disabled: false, permissions: '' });
     }
 
     if (!db.owners || db.owners === '') {

@@ -19,12 +19,6 @@ const Manager = new CommandManager(client);
 const onReady = () => {
   Logger.success('Discord', `Ready, Logged in as ${client.user.username}`);
   // Subprocesses.loadModules("./subprocesses/");
-
-  if (config.selfbot) {
-    delete client.user.email;
-    delete client.user.verified;
-    config.admin = [client.user.id];
-  }
 };
 
 Manager.loadCommands(config.directory);
