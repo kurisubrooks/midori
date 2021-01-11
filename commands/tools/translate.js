@@ -1,6 +1,7 @@
-const request = require('request-promise');
 const { MessageEmbed } = require('discord.js');
+const { translate } = require('googletrans');
 const Command = require('../../core/Command');
+const langs = require('./languages.json');
 
 class Translate extends Command {
   constructor(client) {
@@ -11,15 +12,38 @@ class Translate extends Command {
     });
   }
 
+  validate(query) {
+    if (!query) return null;
+
+    for (const obj of langs) {
+      const input = query.toLowerCase();
+      const item = Object.values(obj).map(val => val.toLowerCase());
+      if (!item.includes(input)) continue;
+      return obj;
+    }
+
+    return null;
+  }
+
   async run(message, channel, user, args) {
     if (args.length < 1) {
       return message.reply('Please provide a query');
     }
 
     const langs = args[0].split(',');
-    const to = langs[0].toLowerCase();
-    const from = langs.length > 1 ? langs[1] : null;
-    let query = to === langs[0].toLowerCase() ? args.slice(1).join(' ') : args.join(' ');
+    let to = this.validate(langs[0].toLowerCase()).code;
+    let from = langs.length > 1 ? this.validate(langs[1]).code : null;
+    let query = args.slice(1).join(' ');
+
+    if (!this.validate(to)) {
+      return message.reply(`the value in the 'from' field (${to}), is not a valid language, or is unsupported.`);
+    }
+
+    if (from !== null) {
+      if (!this.validate(from)) {
+        return message.reply(`the value in the 'from' field (${from}), is not a valid language, or is unsupported.`);
+      }
+    }
 
     if (query === '^') {
       this.log('Using Previous Message as Query', 'debug');
@@ -28,27 +52,20 @@ class Translate extends Command {
     } else if (Number(query)) {
       this.log('Using Given Message (from ID) as Query', 'debug');
       const res = await channel.messages.fetch(query);
+      if (!res) return message.reply('please provide a valid message ID.');
       query = res.content;
     }
 
-    const response = await request({
-      method: 'POST',
-      headers: {
-        'User-Agent': 'Mozilla/5.0',
-        'Authorization': this.keychain.sherlock
-      },
-      uri: 'https://api.kurisubrooks.com/api/translate',
-      body: { to, from, query },
-      json: true
-    }).catch(error => this.error(error.response.body.error, channel));
+    const response = await translate(query, { to, from })
+      .catch(error => this.error(error, channel));
 
     if (!response) return false;
 
     const embed = new MessageEmbed()
       .setColor(this.config.colours.default)
-      .setAuthor(user.nickname, user.avatarURL())
-      .addField(response.from.name, response.query)
-      .addField(response.to.name, response.result);
+      .setAuthor(user.nickname, user.displayAvatarURL())
+      .addField(this.validate(from || response.src).name, query)
+      .addField(this.validate(to).name, response.text);
 
     await channel.send({ embed });
     return this.delete(message);
