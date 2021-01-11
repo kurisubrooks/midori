@@ -29,7 +29,7 @@ class Weather extends Command {
     // No Args Supplied
     if (args.length === 0 && message.pung.length === 0) {
       const userDB = await Database.Models.Users.findOne({ where: { id: user.id } });
-      const error = `Please provide a query, or set your location with \`${message.prefix}set location <location>\``;
+      const error = `Please provide a query, or set your location with \`${message.prefix}set location <location>\` and run the command again.`;
 
       // Check if User exists in DB
       if (userDB) {
