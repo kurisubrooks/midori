@@ -112,7 +112,7 @@ module.exports = class CommandManager {
     const user = message.author;
     const attachments = message.attachments.size > 0;
     const pattern = new RegExp(`<@!?${this.client.user.id}>`, 'i');
-    const mentioned = message.mentions.users.has(this.client.user) && pattern.test(args[0]);
+    const mentioned = message.mentions.has(this.client.user) && pattern.test(args[0]);
     const triggered = message.content.startsWith(prefix);
 
     // Perform Various Checks
@@ -148,7 +148,7 @@ module.exports = class CommandManager {
     message.command = instance.commandName;
     message.prefix = prefix;
     message.pung = [];
-    user.nickname = message.member?.displayName || message.author.username
+    user.nickname = message.member?.displayName || message.author.username;
 
     // Check for Pinged user
     for (let index = 0; index < args.length; index++) {
@@ -167,9 +167,8 @@ module.exports = class CommandManager {
         return message.reply("i-i'm not sure what you mean but... p-please don't drink me!!!");
       }
 
-      // Generic response for less awesome users
-      // return message.reply("Sorry, I don't understand... Try `help` to see what I know!");
-      return channel.send(`Sorry <@${user.id}>, i'm not artificially intelligent as of yet, but you can try \`help\` to see what I know!`);
+      // Generic response
+      return channel.send(`Sorry <@${user.id}>, i'm not sure I understand. Try \`help\` to see what I know!`);
     }
 
     // Command doesn't exist
