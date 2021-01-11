@@ -43,8 +43,8 @@ class Help extends Command {
     if (!command) return message.reply('That command does not exist!');
 
     const embed = new MessageEmbed()
-      .setAuthor(`${message.author.username}#${message.author.discriminator}`, message.author.displayavatarURL())
-      .setThumbnail(this.client.user.displayavatarURL())
+      .setAuthor(`${message.author.username}#${message.author.discriminator}`, message.author.displayAvatarURL())
+      .setThumbnail(this.client.user.displayAvatarURL())
       .addField('Usage', `\`${config.sign}${command.name.toLowerCase()}\``, true)
       .addField('Aliases', [command.name, ...command.aliases].map(name => name.toLowerCase()).join(', '), true)
       .addField('Description', command.description);
