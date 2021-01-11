@@ -29,7 +29,7 @@ sudo apt install libcairo2-dev libjpeg8-dev libpango1.0-dev libgif-dev build-ess
 ### Installation
 ```bash
 git clone https://github.com/kurisubrooks/midori.git
-cd midori/
+cd midori
 npm install
 ```
 
@@ -38,14 +38,14 @@ Create a file called `keychain.json` in the main directory, with the following c
 
 ```js
 {
-    "self": "", // Discord Bot Token
-    "darksky": "", // DarkSky Weather API Key
-    "sherlock": "", // Sherlock API Key
-    "google": {
-        "cx": "", // Google Search API CX
-        "search": "", // Google Search API Key
-        "geocode": "" // Google Geolocation API Key
-    }
+  "self": "", // Discord Bot Token
+  "darksky": "", // DarkSky Weather API Key
+  "sherlock": "", // Sherlock API Key
+  "google": {
+    "cx": "", // Google Search API CX
+    "search": "", // Google Search API Key
+    "geocode": "" // Google Geolocation API Key
+  }
 }
 ```
 
@@ -59,27 +59,7 @@ npm start
 If you wish to run Midori under Production, you can start her with pm2 by using
 
 ```bash
-pm2 start index.js --name "midori" --node-args="--harmony" -- --color
-```
-
-### Run with Docker (optional)
-If you want to deploy Midori with docker by using the ``Dockerfile`` provided, in the directory run
-
-```bash
-docker build -t midori .
-```
-
-To start simply execute
-
-```bash
-docker run -d midori
-```
-
-The ``-d`` flag means she will be running in the background.
-If you want to automatically restart her after a crash, docker has the ``restart always`` flag which you can use like so:
-
-```bash
-docker run --restart=always -d midori
+pm2 start index.js --name "midori" -- --color
 ```
 
 ### Development
