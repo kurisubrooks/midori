@@ -22,7 +22,8 @@ class Translate extends Command {
       return obj;
     }
 
-    return null;
+    console.log('Unknown Lang', query);
+    return { name: 'Unknown', local: 'Unknown' };
   }
 
   async run(message, channel, user, args) {
@@ -55,6 +56,9 @@ class Translate extends Command {
       if (!res) return message.reply('please provide a valid message ID.');
       query = res.content;
     }
+
+    // Strip mentions and emotes
+    query = query.replace(/<(@(&|!)?|#)[0-9]{17,19}>|[<a(?=:):[A-Za-z]+:[0-9]*>?/g, '');
 
     const response = await translate(query, { to, from })
       .catch(error => this.error(error, channel));
