@@ -128,6 +128,8 @@ class Weather extends Command {
     this.log(`${geolocation.line1}, ${geolocation.line2}: ${temperature}°${locale}, ${condition}, ${datetime}`, 'debug');
 
     Canvas.registerFont(path.join(__dirname, 'fonts', 'Inter-UI-Medium.ttf'), { family: 'InterUI' });
+    // Fallback Japanese font
+    Canvas.registerFont(path.join(__dirname, 'fonts', 'NotoSansJP-Medium.otf'), { family: 'InterUI' });
 
     // Generate Response Image
     const canvas = Canvas.createCanvas(800, 430);
