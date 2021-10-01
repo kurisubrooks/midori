@@ -11,7 +11,7 @@ const CommandManager = require('./core/CommandManager');
 // const SubprocessManager = require("./core/SubprocessManager");
 
 // Initialise
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_INVITES] });
 const Manager = new CommandManager(client);
 // const Subprocesses = new SubprocessManager(client);
 
