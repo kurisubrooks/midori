@@ -1,5 +1,5 @@
 const Command = require('../../core/Command');
-const { MessageEmbed } = require('discord.js');
+const { Permissions, MessageEmbed } = require('discord.js');
 
 class Invite extends Command {
   constructor(client) {
@@ -11,7 +11,10 @@ class Invite extends Command {
   }
 
   async run(message, channel) {
-    const invite = await this.client.generateInvite(['MANAGE_MESSAGES']);
+    const invite = await this.client.generateInvite({
+      scopes: ['bot'], permissions: [Permissions.FLAGS.SEND_MESSAGES, Permissions.FLAGS.MANAGE_MESSAGES]
+    });
+
     const embed = new MessageEmbed()
       .setColor(this.config.colours.default)
       .setTitle('Midori')
