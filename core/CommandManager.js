@@ -4,7 +4,7 @@ const config = require('../config');
 const Logger = require('./Util/Logger');
 const Database = require('./Database');
 const { error, toUpper } = require('./Util/Util');
-const { Collection, Client } = require('discord.js');
+const { Collection, Permissions, Client } = require('discord.js');
 
 module.exports = class CommandManager {
   constructor(client) {
@@ -122,6 +122,7 @@ module.exports = class CommandManager {
     if (!triggered && !mentioned) return false;
 
     // Bot was mentioned but no command supplied, await command
+    /*
     if (mentioned && args.length === 1) {
       await message.reply('Hi, how can I help? Respond with the command you want to use. Expires in 60s, otherwise use `cancel` to close this prompt.');
       const filter = msg => msg.author.id === user.id;
@@ -138,6 +139,7 @@ module.exports = class CommandManager {
       text += ` ${message.content}`;
       args = [args[0], ...message.content.split(' ')];
     }
+    */
 
     // Find Command
     const instance = this.findCommand(mentioned, args);
@@ -164,11 +166,11 @@ module.exports = class CommandManager {
     if (!command && mentioned && args.length >= 0) {
       // Easter Egg for certain users
       if (user.id === '169842543410937856' || user.id === '268963316200767488') {
-        return message.reply("i-i'm not sure what you mean but... p-please don't drink me!!!");
+        return message.reply({ content: 'I-i\'m not sure I understand, but... p-please don\'t drink me!!!', allowedMentions: { repliedUser: false } });
       }
 
       // Generic response
-      return channel.send(`Sorry <@${user.id}>, i'm not sure I understand. Try \`help\` to see what I know!`);
+      return message.reply({ content: 'I\'m not sure I understand... Try `help` to see what I know!', allowedMentions: { repliedUser: false } });
     }
 
     // Command doesn't exist
@@ -188,7 +190,7 @@ module.exports = class CommandManager {
     let owners = '';
 
     for (const member of guild.members.cache.values()) {
-      if (member.hasPermission('ADMINISTRATOR')) {
+      if (member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) {
         owners = owners === '' ? member.user.id : `${owners},${member.user.id}`;
       }
     }

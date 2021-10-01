@@ -26,7 +26,7 @@ class Pout extends Command {
       .setDescription(`**${user.tag}** pouted`)
       .setImage(`https://cdn.ram.moe${response.path.replace('i/', '')}`);
 
-    await channel.send({ embed });
+    await channel.send({ embeds: [embed] });
     return this.delete(message);
   }
 }

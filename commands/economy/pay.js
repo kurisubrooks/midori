@@ -16,7 +16,7 @@ class Pay extends Command {
     const amount = args[0];
 
     if (message.pung.length === 0) {
-      return message.reply("you didn't specify whom you want to pay!");
+      return message.reply("You didn't specify whom you want to pay!");
     }
 
     user = message.pung[0];
@@ -25,7 +25,7 @@ class Pay extends Command {
     const recipient = await Database.Models.Bank.findOne({ where: { id: user.id } });
 
     if (amount < 1) {
-      return message.reply('amount must be greater than 0!');
+      return message.reply('Amount must be greater than 0!');
     } else if (payee.balance < amount) {
       return message.reply('You have insufficient funds to complete this transaction.');
     } else if (user.user.bot) {
@@ -44,7 +44,7 @@ class Pay extends Command {
       .addField('Paid', `${this.config.economy.emoji} ${amount}`)
       .addField('Balance', `${this.config.economy.emoji} ${balance}`);
 
-    await channel.send({ embed });
+    await channel.send({ embeds: [embed] });
     return this.delete(message);
   }
 }

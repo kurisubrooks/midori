@@ -29,7 +29,7 @@ class Cat extends Command {
       .setAuthor(user.nickname, user.avatarURL())
       .setImage(response[0]);
 
-    await channel.send({ embed });
+    await channel.send({ embeds: [embed] });
     return this.delete(message);
   }
 }

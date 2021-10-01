@@ -13,7 +13,7 @@ class Hug extends Command {
 
   async run(message, channel, user) {
     if (message.pung.length === 0) {
-      return message.reply("you didn't specify whom you want to hug!");
+      return message.reply("You didn't specify whom you want to hug!");
     }
 
     const target = message.pung[0];
@@ -36,7 +36,7 @@ class Hug extends Command {
       .setDescription(`**${user.tag}** hugs **${target.user.tag}**`)
       .setImage(`https://cdn.ram.moe${response.path.replace('i/', '')}`);
 
-    await channel.send({ embed });
+    await channel.send({ embeds: [embed] });
     return this.delete(message);
   }
 }

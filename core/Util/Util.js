@@ -24,7 +24,7 @@ class Util {
     channel = channel || null;
     Logger.error(name, message);
 
-    if (channel) channel.send({ embed });
+    if (channel) channel.send({ embeds: [embed] });
     return false;
   }
 }

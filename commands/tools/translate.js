@@ -37,12 +37,12 @@ class Translate extends Command {
     let query = args.slice(1).join(' ');
 
     if (!this.validate(to)) {
-      return message.reply(`the value in the 'from' field is not a valid language, or is not supported at this time.`);
+      return message.reply(`The value in the 'from' field is not a valid language, or is not supported at this time.`);
     }
 
     if (from !== null) {
       if (!this.validate(from)) {
-        return message.reply(`the value in the 'from' field is not a valid language, or is not supported at this time`);
+        return message.reply(`The value in the 'from' field is not a valid language, or is not supported at this time`);
       }
     }
 
@@ -53,7 +53,7 @@ class Translate extends Command {
     } else if (Number(query)) {
       this.log('Using Given Message (from ID) as Query', 'debug');
       const res = await channel.messages.fetch(query);
-      if (!res) return message.reply('please provide a valid message ID.');
+      if (!res) return message.reply('Please provide a valid message ID.');
       query = res.content;
     }
 
@@ -71,7 +71,7 @@ class Translate extends Command {
       .addField(this.validate(from || response.src).name, query)
       .addField(this.validate(to).name, response.text);
 
-    await channel.send({ embed });
+    await channel.send({ embeds: [embed] });
     return this.delete(message);
   }
 }

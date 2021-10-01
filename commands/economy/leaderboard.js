@@ -34,7 +34,7 @@ class Leaderboard extends Command {
       total += 1;
     }
 
-    await channel.send({ embed });
+    await channel.send({ embeds: [embed] });
     return this.delete(message);
   }
 }

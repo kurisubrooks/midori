@@ -14,7 +14,7 @@ class Reset extends Command {
     const db = await Database.getUser(user);
     await db.update({ data: JSON.stringify(Database.getTemplate()) });
     this.log(`${user.username} deleted their db entry`, 'debug');
-    return message.reply('your database entry has been reset.');
+    return message.reply('Your database entry has been reset.');
   }
 }
 

@@ -17,7 +17,7 @@ class Dictionary extends Command {
     }
 
     let res = (await search(args.join(' '), 'en').catch(() => false))[0];
-    if (!res) return message.reply('sorry but I couldn\'t find the word you were looking for.');
+    if (!res) return message.reply('Sorry but I couldn\'t find the word you were looking for.');
     const { word } = res;
 
     let fields = [];
@@ -41,7 +41,7 @@ class Dictionary extends Command {
       .setTitle(`${word}`)
       .addFields(fields);
 
-    return channel.send(embed);
+    return channel.send({ embeds: [embed] });
   }
 }
 

@@ -23,7 +23,7 @@ class Status extends Command {
         .setTitle('Warning')
         .setDescription("Midori doesn't seem to be running from it's usual server, this usually means it's running in Development Mode, which may add extra latency to command response time.");
 
-      channel.send({ embed });
+      channel.send({ embeds: [embed] });
     }
 
     const embed = new MessageEmbed()
@@ -35,7 +35,7 @@ class Status extends Command {
       .addField('Node Version', process.version.replace('v', ''), true)
       .addField('NPM Version', npmv.data.replace('\n', ''), true);
 
-    return channel.send({ embed });
+    return channel.send({ embeds: [embed] });
   }
 }
 

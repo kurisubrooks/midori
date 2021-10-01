@@ -77,7 +77,7 @@ class Set extends Command {
         .setTitle('Warning')
         .setDescription("Midori isn't running from it's primary server so any saved data may not be saved.");
 
-      channel.send({ embed });
+      channel.send({ embeds: [embed] });
     }
 
     if (message.pung.length > 0) {
@@ -85,18 +85,19 @@ class Set extends Command {
         return message.reply('Insufficient Permissions');
       }
 
-      return message.reply('unable to modify other users, feature unimplemented.');
+      return message.reply('Unable to modify other users, feature unimplemented.');
     }
 
     // No Command Supplied
+    /*
     if (args.length === 0) {
-      await message.reply(`what field would you like to update? Available fields:\`${fields.join(', ')}\`. Expires in 30s.`);
+      await message.reply(`What field would you like to update? Available fields:\`${fields.join(', ')}\`. Expires in 30s.`);
       const filter = msg => msg.author.id === user.id;
       const res = await channel.awaitMessages(filter, { max: 1, time: 30 * 1000 });
       const text = res.first().content;
 
       if (text.split(' ').length > 1) {
-        return message.reply('only expected 1 argument. Cancelling...');
+        return message.reply('Only expected 1 argument. Cancelling...');
       }
 
       field = text.split(' ')[0];
@@ -112,12 +113,13 @@ class Set extends Command {
         data = res.first().content;
       }
     }
+    */
 
     if (!field && args.length >= 1) field = args[0];
     if (!data && args.length >= 2) data = args.slice(1);
 
     if (!field || !data) {
-      return message.reply('required fields are missing! Try running this command without any arguments for a walkthrough.');
+      return message.reply('Required fields are missing! Try running this command without any arguments for a walkthrough.');
     }
 
     db = await Set.getUser(user);
@@ -128,7 +130,7 @@ class Set extends Command {
       const place = data.join(' ').toLowerCase();
 
       if (!(valid.indexOf(place) >= 0)) {
-        return message.reply(`it doesn't look like "${cap(place)}" is a valid radar location.. Available locations include ${valid.join(', ')}`);
+        return message.reply(`It doesn't look like "${cap(place)}" is a valid radar location.. Available locations include ${valid.join(', ')}`);
       }
 
       // Set Field
@@ -137,7 +139,7 @@ class Set extends Command {
 
       // Done
       this.log(`Updated Entry for ${user.id}`, 'debug');
-      return message.reply(`successfully set your local radar to ${cap(place)}!`);
+      return message.reply(`Successfully set your local radar to ${cap(place)}!`);
     }
 
     if (field === 'location') {
@@ -158,10 +160,10 @@ class Set extends Command {
 
       // Done
       this.log(`Updated Entry for ${user.id}`, 'debug');
-      return message.reply(`successfully set your location to ${parsed.line1}, ${parsed.line2}!`);
+      return message.reply(`Successfully set your location to ${parsed.line1}, ${parsed.line2}!`);
     }
 
-    return message.reply("unfortunately it doesn't look like that's a valid field.");
+    return message.reply("Unfortunately it doesn't look like that's a valid field.");
   }
 }
 

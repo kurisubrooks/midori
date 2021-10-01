@@ -14,7 +14,7 @@ class ResetBalance extends Command {
 
   async run(message, channel, user) {
     if (message.pung.length === 0) {
-      return message.reply("you didn't specify whom you want to pay!");
+      return message.reply("You didn't specify whom you want to pay!");
     }
 
     user = message.pung[0];

@@ -49,7 +49,7 @@ class Help extends Command {
       .addField('Aliases', [command.name, ...command.aliases].map(name => name.toLowerCase()).join(', '), true)
       .addField('Description', command.description);
 
-    await message.channel.send({ embed });
+    await channel.send({ embeds: [embed] });
     return this.delete(message);
   }
 }

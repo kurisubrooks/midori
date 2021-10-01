@@ -35,7 +35,7 @@ class Compute extends Command {
       .addField('Query', response.query)
       .addField('Result', response.output.display);
 
-    await channel.send({ embed });
+    await channel.send({ embeds: [embed] });
     return this.delete(message);
   }
 }

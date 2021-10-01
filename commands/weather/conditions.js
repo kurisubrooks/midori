@@ -81,10 +81,10 @@ class Weather extends Command {
 
           this.log(`Using Cached Geolocation (${geolocation.line1}, ${geolocation.line2})`, 'debug');
         } else {
-          return message.reply('this user has not set their location.');
+          return message.reply('This user has not set their location.');
         }
       } else {
-        return message.reply('this user does not have a database entry for their location.');
+        return message.reply('This user does not have a database entry for their location.');
       }
     }
 

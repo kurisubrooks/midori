@@ -13,7 +13,7 @@ class Pats extends Command {
 
   async run(message, channel, user) {
     if (message.pung.length === 0) {
-      return message.reply("you didn't specify whom you want to pat!");
+      return message.reply("You didn't specify whom you want to pat!");
     }
 
     const target = message.pung[0];
@@ -36,7 +36,7 @@ class Pats extends Command {
       .setDescription(`**${user.tag}** pet **${target.user.tag}**`)
       .setImage(`https://cdn.ram.moe${response.path.replace('i/', '')}`);
 
-    await channel.send({ embed });
+    await channel.send({ embeds: [embed] });
     return this.delete(message);
   }
 }
