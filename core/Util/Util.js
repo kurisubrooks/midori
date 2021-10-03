@@ -1,11 +1,6 @@
 import { MessageEmbed } from 'discord.js';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
 import config from '../../config';
 import Logger from './Logger';
-
-export const __filename = fileURLToPath(import.meta.url);
-export const __dirname = dirname(__filename);
 
 export const toUpper = str => {
   return str.charAt(0).toUpperCase() + str.slice(1);

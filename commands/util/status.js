@@ -4,6 +4,7 @@ import moment from 'moment';
 import 'moment-duration-format';
 import worker from 'core-worker';
 import os from 'os';
+
 import Command from '../../core/Command';
 
 export default class Status extends Command {

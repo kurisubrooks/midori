@@ -1,5 +1,6 @@
-import os from 'os';
 import { MessageEmbed } from 'discord.js';
+import os from 'os';
+
 import Command from '../../core/Command';
 import Database from '../../core/Database';
 import { geolocation } from '../weather/conditions';

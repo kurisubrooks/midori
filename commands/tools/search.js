@@ -1,5 +1,5 @@
-import request from 'request-promise';
 import { MessageEmbed } from 'discord.js';
+import request from 'request-promise';
 import Command from '../../core/Command';
 
 export default class Search extends Command {

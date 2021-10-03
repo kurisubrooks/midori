@@ -1,5 +1,6 @@
 import { MessageEmbed } from 'discord.js';
 import { translate } from 'googletrans';
+
 import Command from '../../core/Command';
 import langs from './languages.json';
 

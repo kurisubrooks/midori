@@ -5,11 +5,6 @@ import util from 'util';
 const toUpper = string => string.charAt(0).toUpperCase() + string.slice(1);
 
 export default class Logger {
-  // Throw error if someone tries to create an instance
-  constructor() {
-    throw new Error(`${this.constructor.name} class cannot be instantiated`);
-  }
-
   // Logging Time Format
   static time() {
     return moment().format('HH:mm:ss');

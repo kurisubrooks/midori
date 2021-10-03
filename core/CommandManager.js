@@ -1,7 +1,7 @@
+import { Collection, Permissions, Client } from 'discord.js';
 import fs from 'fs';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { Collection, Permissions, Client } from 'discord.js';
 
 import config from '../config';
 import Logger from './Util/Logger';
