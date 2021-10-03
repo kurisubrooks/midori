@@ -207,11 +207,12 @@ export default class CommandManager {
 
     const id = guild.id;
     const owners = this.getAdministrators(guild);
+    const Config = (await Database.Models.Config).default;
 
-    let db = await Database.Models.Config.findOne({ where: { id } });
+    let db = await Config.findOne({ where: { id } });
 
     if (!db) {
-      db = await Database.Models.Config.create({ id, owners, prefix: config.sign, disabled: false, permissions: '' });
+      db = await Config.create({ id, owners, prefix: config.sign, disabled: false, permissions: '' });
     }
 
     if (!db.owners || db.owners === '') {
@@ -224,13 +225,13 @@ export default class CommandManager {
   }
 
   async giveCoins(user) {
-    const db = Database.Models.Bank;
-    const person = await db.findOne({ where: { id: user.id } });
+    const Bank = (await Database.Models.Bank).default;
+    const person = await Bank.findOne({ where: { id: user.id } });
 
     if (person) {
       return person.update({ balance: person.balance + 1 });
     } else {
-      return db.create({ id: user.id, balance: 1 });
+      return Bank.create({ id: user.id, balance: 1 });
     }
   }
 }

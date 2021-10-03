@@ -17,7 +17,8 @@ export default class Balance extends Command {
       user = message.pung[0];
     }
 
-    const data = await Database.Models.Bank.findOne({ where: { id: user.id } });
+    const Bank = (await Database.Models.Bank).default;
+    const data = await Bank.findOne({ where: { id: user.id } });
     const balance = data === null ? 0 : data.balance;
 
     const embed = new MessageEmbed()

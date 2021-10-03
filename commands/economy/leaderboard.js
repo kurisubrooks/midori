@@ -7,16 +7,18 @@ export default class Leaderboard extends Command {
     super(client, {
       name: 'Leaderboard',
       description: 'Get the richest users.',
-      aliases: ['top', 'richest', 'list'],
-      disabled: true
+      aliases: ['top', 'richest', 'list']
     });
   }
 
   async run(message, channel) {
-    const db = await Database.Models.Bank.findAll({ order: [['balance', 'DESC']] });
+    const Bank = (await Database.Models.Bank).default;
+    const db = await Bank.findAll({ order: [['balance', 'DESC']] });
     const embed = new MessageEmbed()
       .setTitle('Leaderboard')
       .setColor(this.config.colours.default);
+
+    console.log(db, message.guild.members.cache);
 
     let total = 0;
 

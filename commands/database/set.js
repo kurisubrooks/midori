@@ -30,7 +30,8 @@ export default class Set extends Command {
   }
 
   static async getUser(user) {
-    let db = await Database.Models.Users.findOne({ where: { id: user.id } });
+    const Users = (await Database.Models.Users).default;
+    let db = await Users.findOne({ where: { id: user.id } });
 
     // Preliminary Updates to DB
     if (db) {
@@ -50,13 +51,13 @@ export default class Set extends Command {
         await db.update({ data: JSON.stringify(update) });
       }
 
-      db = await Database.Models.Users.findOne({ where: { id: user.id } });
+      db = await Users.findOne({ where: { id: user.id } });
     }
 
     // Create User if not exists
     if (!db) {
-      await Database.Models.Users.create({ id: user.id, data: JSON.stringify(Set.getTemplate()) });
-      db = await Database.Models.Users.findOne({ where: { id: user.id } });
+      await Users.create({ id: user.id, data: JSON.stringify(Set.getTemplate()) });
+      db = await Users.findOne({ where: { id: user.id } });
     }
 
     return db;
@@ -70,7 +71,6 @@ export default class Set extends Command {
   }
 
   async run(message, channel, user, args) {
-    const fields = ['location'];
     const etho = os.networkInterfaces().eth0;
     let field, data, db;
 
@@ -94,6 +94,7 @@ export default class Set extends Command {
     // No Command Supplied
     /*
     if (args.length === 0) {
+      const fields = ['location'];
       await message.reply(`What field would you like to update? Available fields:\`${fields.join(', ')}\`. Expires in 30s.`);
       const filter = msg => msg.author.id === user.id;
       const res = await channel.awaitMessages(filter, { max: 1, time: 30 * 1000 });

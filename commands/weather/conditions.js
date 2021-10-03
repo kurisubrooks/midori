@@ -36,7 +36,8 @@ export default class Weather extends Command {
 
     // No Args Supplied
     if (args.length === 0 && message.pung.length === 0) {
-      const userDB = await Database.Models.Users.findOne({ where: { id: user.id } });
+      const Users = (await Database.Models.Users).default;
+      const userDB = await Users.findOne({ where: { id: user.id } });
       const error = `Please provide a query, or set your location with \`${message.prefix}set location <location>\` and run the command again.`;
 
       // Check if User exists in DB
@@ -68,7 +69,8 @@ export default class Weather extends Command {
     // If Pinged User
     if (message.pung.length > 0) {
       this.log(`Getting Weather for user ${message.pung[0].id}`, 'debug');
-      const userDB = await Database.Models.Users.findOne({ where: { id: message.pung[0].id } });
+      const Users = (await Database.Models.Bank).default;
+      const userDB = await Users.findOne({ where: { id: message.pung[0].id } });
 
       // Check if User exists in DB
       if (userDB) {

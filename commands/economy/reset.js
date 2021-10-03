@@ -19,7 +19,8 @@ export default class ResetBalance extends Command {
 
     user = message.pung[0];
 
-    const recipient = await Database.Models.Bank.findOne({ where: { id: user.id } });
+    const Bank = (await Database.Models.Bank).default;
+    const recipient = await Bank.findOne({ where: { id: user.id } });
 
     if (user.bot || user.user.bot) {
       return message.reply('Bots are not enabled for use with Economy.');

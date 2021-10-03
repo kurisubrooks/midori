@@ -26,7 +26,8 @@ export default class Radar extends Command {
     if (message.pung.length > 0 || (args.length === 0 && message.pung.length === 0)) {
       if (message.pung.length > 0) user = message.pung[0];
 
-      const userDB = await Database.Models.Users.findOne({ where: { id: user.id } });
+      const Users = (await Database.Models.Users).default;
+      const userDB = await Users.findOne({ where: { id: user.id } });
       let error = 'this user does not have a set radar location.';
 
       if (message.author.id === user.id) {

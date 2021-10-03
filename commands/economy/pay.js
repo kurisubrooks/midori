@@ -21,8 +21,9 @@ export default class Pay extends Command {
 
     user = message.pung[0];
 
-    const payee = await Database.Models.Bank.findOne({ where: { id: message.author.id } });
-    const recipient = await Database.Models.Bank.findOne({ where: { id: user.id } });
+    const Bank = (await Database.Models.Bank).default;
+    const payee = await Bank.findOne({ where: { id: message.author.id } });
+    const recipient = await Bank.findOne({ where: { id: user.id } });
 
     if (amount < 1) {
       return message.reply('Amount must be greater than 0!');
