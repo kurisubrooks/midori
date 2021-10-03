@@ -1,19 +1,26 @@
 import { Collection, Permissions, Client } from 'discord.js';
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { REST } from '@discordjs/rest';
+import { Routes } from 'discord-api-types/v9';
+
 import fs from 'fs';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 import config from '../config';
+import keys from '../keychain.json';
 import Logger from './Util/Logger';
 import Database from './Database';
 import { error, toUpper } from './Util/Util';
 
+const rest = new REST({ version: '9' }).setToken(keys.discord);
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default class CommandManager {
   constructor(client) {
     this.client = client;
     this.commands = new Collection();
+    this.slashCommands = new Collection();
     this.aliases = new Collection();
 
     if (!this.client || !(this.client instanceof Client)) {
@@ -33,15 +40,16 @@ export default class CommandManager {
         if (path.extname(file) !== '.js') continue;
 
         const location = path.join(__dirname, '..', directory, folder, file);
-
         await this.startModule(location);
       }
     }
+
+    this.registerCommands(this.slashCommands);
   }
 
   async startModule(location, reloaded) {
-    const Command = await import(location);
-    const instance = new Command.default(this.client); // eslint-disable-line new-cap
+    const Command = (await import(location)).default;
+    const instance = new Command(this.client); // eslint-disable-line new-cap
     const commandName = instance.name.toLowerCase();
     instance.location = location;
 
@@ -53,6 +61,7 @@ export default class CommandManager {
 
     Logger.info(`${reloaded ? 'Reloaded' : 'Loaded'} Command`, toUpper(commandName));
     this.commands.set(commandName, instance);
+    this.createInteraction(instance);
 
     for (const alias of instance.aliases) {
       if (this.aliases.has(alias)) {
@@ -61,6 +70,48 @@ export default class CommandManager {
         this.aliases.set(alias, instance);
       }
     }
+  }
+
+  createInteraction(command) {
+    const slashCommand = new SlashCommandBuilder()
+      .setName(command.name.toLowerCase())
+      .setDescription(command.description);
+
+    if (command.args) {
+      const handle = (opt, i) => {
+        const option = opt.setName(i.name)
+          .setDescription(i.desc)
+          .setRequired(i.required || false);
+
+        if (i.choices) {
+          i.choices.forEach(v => option.addChoice(v.name, v.value));
+        }
+
+        return option;
+      };
+
+      command.args.forEach(i => {
+        switch(i.takes) {
+          case 'string':
+            slashCommand.addStringOption(opt => handle(opt, i));
+            break;
+          case 'boolean':
+            slashCommand.addBooleanOption(opt => handle(opt, i));
+            break;
+        }
+      });
+    }
+
+    this.slashCommands.set(command.name.toLowerCase(), slashCommand.toJSON());
+  }
+
+  async registerCommands(commands) {
+    const botId = this.client.user.id;
+    const guildId = '824959087724068884';
+    commands = Array.from(commands, ([, v]) => v);
+    await rest.put(Routes.applicationGuildCommands(botId, guildId), { body: commands })
+      .then(() => console.log('Successfully registered application commands.'))
+      .catch(console.error);
   }
 
   reloadCommands() {
@@ -81,7 +132,7 @@ export default class CommandManager {
     const location = existingCommand.location;
     for (const alias of existingCommand.aliases) this.aliases.delete(alias);
     this.commands.delete(commandName);
-    delete require.cache[require.resolve(location)];
+    // delete require.cache[require.resolve(location)];
     this.startModule(location, true);
     return true;
   }
@@ -102,6 +153,19 @@ export default class CommandManager {
     return { command, commandName };
   }
 
+  async handleInteraction(interaction) {
+    if (!interaction.isCommand()) return;
+    console.log(interaction);
+
+    const { commandName } = interaction;
+
+    if (commandName === 'ping') {
+      await interaction.reply('Pong!');
+    } else if (commandName === 'beep') {
+      await interaction.reply('Boop!');
+    }
+  }
+
   async handleMessage(message) {
     // Don't Parse Bot Messages
     if (message.author.bot) return false;
@@ -112,8 +176,7 @@ export default class CommandManager {
     let text = message.cleanContent;
     let args = message.content.split(' ');
     const channel = message.channel;
-    // const server = message.guild ? message.guild.name : "DM";
-    const user = message.author;
+    const user = message.member || message.guild.members.cache.get(message.author.id);
     const attachments = message.attachments.size > 0;
     const pattern = new RegExp(`<@!?${this.client.user.id}>`, 'i');
     const mentioned = message.mentions.has(this.client.user) && pattern.test(args[0]);
@@ -125,26 +188,6 @@ export default class CommandManager {
     if (attachments) text += attachments && text.length < 1 ? '<file>' : ' <file>';
     if (!triggered && !mentioned) return false;
 
-    // Bot was mentioned but no command supplied, await command
-    /*
-    if (mentioned && args.length === 1) {
-      await message.reply('Hi, how can I help? Respond with the command you want to use. Expires in 60s, otherwise use `cancel` to close this prompt.');
-      const filter = msg => msg.author.id === user.id;
-      const res = await channel.awaitMessages(filter, { max: 1, time: 60000 });
-      message = res.first();
-
-      if (message.content === 'cancel') {
-        channel.send('Got it.');
-        return false;
-      }
-
-      // check if they responded with a command
-
-      text += ` ${message.content}`;
-      args = [args[0], ...message.content.split(' ')];
-    }
-    */
-
     // Find Command
     const instance = this.findCommand(mentioned, args);
     const command = instance.command;
@@ -153,15 +196,15 @@ export default class CommandManager {
     message.context = this;
     message.command = instance.commandName;
     message.prefix = prefix;
-    message.pung = [];
-    user.nickname = message.member?.displayName || message.author.username;
+    message.pingedUsers = [];
+    if (!user.nickname) user.nickname = message.member?.displayName || message.author.username;
 
     // Check for Pinged user
     for (let index = 0; index < args.length; index++) {
       const userMatched = /<@!?([0-9]+)>/g.exec(args[index]);
 
       if (userMatched && userMatched.length > 1) {
-        message.pung.push(message.guild.members.cache.get(userMatched[1]));
+        message.pingedUsers.push(message.guild.members.cache.get(userMatched[1]));
         args.splice(index, 1);
       }
     }
@@ -184,7 +227,7 @@ export default class CommandManager {
     if (command.admin && !config.admin.includes(user.id)) return false;
 
     // Log Message
-    Logger.warn('Ran Command', `<${user.tag}}>: ${text}`);
+    Logger.warn('Ran Command', `<${message.author.tag}>: ${text}`);
 
     // Run Command
     return this.runCommand(command, message, channel, user, args);
