@@ -12,13 +12,17 @@ export default class Invite extends Command {
 
   async run(message, channel) {
     const invite = await this.client.generateInvite({
-      scopes: ['bot'], permissions: [Permissions.FLAGS.SEND_MESSAGES, Permissions.FLAGS.MANAGE_MESSAGES]
+      scopes: ['bot', 'applications.commands'], permissions: [
+        Permissions.FLAGS.SEND_MESSAGES,
+        Permissions.FLAGS.MANAGE_MESSAGES,
+        Permissions.FLAGS.USE_APPLICATION_COMMANDS
+      ]
     });
 
     const embed = new MessageEmbed()
       .setColor(this.config.colours.default)
-      .setTitle('Midori')
-      .setDescription('Thanks for showing interest in Midori! Click the\nlink below to invite her to your server.')
+      .setTitle(this.client.user.username)
+      .setDescription(`Thanks for showing interest in ${this.client.user.username}! Click the\nlink below to invite her to your server.`)
       .setThumbnail(this.client.user.avatarURL())
       .addField('\u200b', `[Click Here](${invite})`);
 
