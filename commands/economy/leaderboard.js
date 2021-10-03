@@ -7,7 +7,7 @@ export default class Leaderboard extends Command {
     super(client, {
       name: 'Leaderboard',
       description: 'Get the richest users.',
-      aliases: ['top', 'richest', 'list']
+      aliases: []
     });
   }
 
@@ -18,23 +18,14 @@ export default class Leaderboard extends Command {
       .setTitle('Leaderboard')
       .setColor(this.config.colours.default);
 
-    console.log(db, message.guild.members.cache);
-
-    let total = 0;
-
-    for (const index of db) {
-      if (total > 9) break;
-
-      const user = message.guild.members.cache.get(db[index].id);
-      console.log(total, user);
-      if (!user || user.user.bot) continue;
-
-      embed.addField(
-        `${total + 1}. ${user.nickname || user.user.username}`,
-        `${this.config.economy.emoji} ${db[index].balance}`, true);
-
-      total += 1;
-    }
+    db.slice(0, 9).map(i => i.id).forEach((value, index) => {
+      const user = message.guild.members.cache.get(value);
+      if (user && !user.user.bot) {
+        embed.addField(
+          `${index + 1}. ${user.nickname || user.user.username}`,
+          `${this.config.economy.emoji} ${db.find(i => i.id === value).balance}`, true);
+      }
+    });
 
     await channel.send({ embeds: [embed] });
     return this.delete(message);
