@@ -10,9 +10,10 @@ const Database = require('../../core/Database');
 class Weather extends Command {
   constructor(client) {
     super(client, {
-      name: 'Weather',
-      description: 'Get the Weather for your Given Location',
-      aliases: ['w', 'conditions', 'temperature']
+      name: 'weather',
+      description: 'Gets the weather for a given location',
+      aliases: ['w'],
+      options: ['']
     });
   }
 

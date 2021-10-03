@@ -11,10 +11,12 @@
     "lint": "./node_modules/.bin/eslint ."
   },
   "dependencies": {
+    "@discordjs/rest": "^0.1.0-canary.0",
     "canvas": "^2.8.0",
     "chalk": "^4.1.2",
     "cheerio": "^1.0.0-rc.10",
     "core-worker": "^0.3.5",
+    "discord-api-types": "^0.23.1",
     "discord.js": "^13.1.0",
     "google-dictionary-api": "^1.0.8",
     "googletrans": "^1.0.3",

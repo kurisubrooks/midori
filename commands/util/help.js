@@ -7,7 +7,7 @@ class Help extends Command {
     super(client, {
       name: 'Help',
       description: 'Gets Help On Commands',
-      aliases: ['halp']
+      aliases: ['commands']
     });
   }
 
