@@ -1,10 +1,10 @@
-const moment = require('moment');
-const cheerio = require('cheerio');
-const request = require('request-promise');
-const { MessageEmbed } = require('discord.js');
-const Command = require('../../core/Command');
+import { MessageEmbed } from 'discord.js';
+import request from 'request-promise';
+import moment from 'moment';
+import cheerio from 'cheerio';
+import Command from '../../core/Command';
 
-class Time extends Command {
+export default class Time extends Command {
   constructor(client) {
     super(client, {
       name: 'Time',
@@ -49,5 +49,3 @@ class Time extends Command {
     return this.delete(message);
   }
 }
-
-module.exports = Time;

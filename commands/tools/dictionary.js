@@ -1,8 +1,8 @@
-const { search } = require('google-dictionary-api');
-const { MessageEmbed } = require('discord.js');
-const Command = require('../../core/Command');
+import { MessageEmbed } from 'discord.js';
+import { search } from 'google-dictionary-api';
+import Command from '../../core/Command';
 
-class Dictionary extends Command {
+export default class Dictionary extends Command {
   constructor(client) {
     super(client, {
       name: 'Dictionary',
@@ -44,5 +44,3 @@ class Dictionary extends Command {
     return channel.send({ embeds: [embed] });
   }
 }
-
-module.exports = Dictionary;

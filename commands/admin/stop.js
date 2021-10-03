@@ -1,6 +1,6 @@
-const Command = require('../../core/Command');
+import Command from '../../core/Command';
 
-class Stop extends Command {
+export default class Stop extends Command {
   constructor(client) {
     super(client, {
       name: 'Stop',
@@ -15,5 +15,3 @@ class Stop extends Command {
     return setTimeout(() => process.exit(0), 500);
   }
 }
-
-module.exports = Stop;

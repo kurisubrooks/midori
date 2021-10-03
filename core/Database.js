@@ -1,5 +1,8 @@
-const Sequelize = require('sequelize');
-const path = require('path');
+import Sequelize from 'sequelize';
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const database = new Sequelize({
   logging: false,
@@ -7,18 +10,16 @@ const database = new Sequelize({
   storage: path.join(__dirname, '..', 'db.sqlite')
 });
 
-class Database {
+export default class Database {
   static get db() {
     return database;
   }
 
   static get Models() {
     return {
-      Users: require('./Structures/User'),
-      Config: require('./Structures/Config'),
-      Bank: require('./Structures/Bank')
+      Users: import('./Structures/User'),
+      Config: import('./Structures/Config'),
+      Bank: import('./Structures/Bank')
     };
   }
 }
-
-module.exports = Database;

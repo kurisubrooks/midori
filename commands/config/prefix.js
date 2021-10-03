@@ -1,7 +1,7 @@
-const Command = require('../../core/Command');
-const Database = require('../../core/Database');
+import Command from '../../core/Command';
+import Database from '../../core/Database';
 
-class Prefix extends Command {
+export default class Prefix extends Command {
   constructor(client) {
     super(client, {
       name: 'Prefix',
@@ -33,5 +33,3 @@ class Prefix extends Command {
     return message.reply(`Prefix successfully changed to \`${args[0]}\``);
   }
 }
-
-module.exports = Prefix;

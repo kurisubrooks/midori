@@ -1,6 +1,6 @@
-const Command = require('../../core/Command');
+import Command from '../../core/Command';
 
-class Error extends Command {
+export default class Error extends Command {
   constructor(client) {
     super(client, {
       name: 'Error',
@@ -14,5 +14,3 @@ class Error extends Command {
     return this.error('Error Triggered by Admin', channel);
   }
 }
-
-module.exports = Error;

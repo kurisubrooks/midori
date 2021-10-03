@@ -1,8 +1,8 @@
-const Command = require('../../core/Command');
-const config = require('../../config.js');
-const { MessageEmbed } = require('discord.js');
+import { MessageEmbed } from 'discord.js';
+import Command from '../../core/Command';
+import config from '../../config.js';
 
-class Help extends Command {
+export default class Help extends Command {
   constructor(client) {
     super(client, {
       name: 'Help',
@@ -53,5 +53,3 @@ class Help extends Command {
     return this.delete(message);
   }
 }
-
-module.exports = Help;

@@ -1,6 +1,6 @@
-const Command = require('../../core/Command');
+import Command from '../../core/Command';
 
-class Purge extends Command {
+export default class Purge extends Command {
   constructor(client) {
     super(client, {
       name: 'Purge',
@@ -11,5 +11,3 @@ class Purge extends Command {
     });
   }
 }
-
-module.exports = Purge;

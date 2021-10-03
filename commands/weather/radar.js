@@ -1,12 +1,21 @@
-const Command = require('../../core/Command');
-const Database = require('../../core/Database');
+import Command from '../../core/Command';
+import Database from '../../core/Database';
 
-class Radar extends Command {
+export default class Radar extends Command {
   constructor(client) {
     super(client, {
       name: 'Radar',
       description: 'Get the latest Weather Radar',
-      aliases: ['rain']
+      aliases: [],
+      args: [
+        { name: 'location', desc: 'Location to grab the weather for', choices: [
+          { name: 'Sydney', value: 'loc_sydney' },
+          { name: 'Melbourne', value: 'loc_melbourne' },
+          { name: 'Canberra', value: 'loc_canberra' },
+          { name: 'Adelaide', value: 'loc_adelaide' }
+        ] },
+        { name: 'animated', desc: 'Animated', type: 'BOOLEAN' }
+      ]
     });
   }
 
@@ -52,5 +61,3 @@ class Radar extends Command {
     return this.delete(message);
   }
 }
-
-module.exports = Radar;

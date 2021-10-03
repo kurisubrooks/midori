@@ -1,12 +1,16 @@
-const fs = require('fs');
-const path = require('path');
-const config = require('../config');
-const Logger = require('./Util/Logger');
-const Database = require('./Database');
-const { error, toUpper } = require('./Util/Util');
-const { Collection, Permissions, Client } = require('discord.js');
+import fs from 'fs';
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { Collection, Permissions, Client } from 'discord.js';
 
-module.exports = class CommandManager {
+import config from '../config';
+import Logger from './Util/Logger';
+import Database from './Database';
+import { error, toUpper } from './Util/Util';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+export default class CommandManager {
   constructor(client) {
     this.client = client;
     this.commands = new Collection();
@@ -17,7 +21,7 @@ module.exports = class CommandManager {
     }
   }
 
-  loadCommands(directory) {
+  async loadCommands(directory) {
     const folders = fs.readdirSync(path.join(__dirname, '..', directory));
 
     for (const folder of folders) {
@@ -30,14 +34,14 @@ module.exports = class CommandManager {
 
         const location = path.join(__dirname, '..', directory, folder, file);
 
-        this.startModule(location);
+        await this.startModule(location);
       }
     }
   }
 
-  startModule(location, reloaded) {
-    const Command = require(location);
-    const instance = new Command(this.client);
+  async startModule(location, reloaded) {
+    const Command = await import(location);
+    const instance = new Command.default(this.client); // eslint-disable-line new-cap
     const commandName = instance.name.toLowerCase();
     instance.location = location;
 
@@ -229,4 +233,4 @@ module.exports = class CommandManager {
       return db.create({ id: user.id, balance: 1 });
     }
   }
-};
+}

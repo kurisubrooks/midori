@@ -1,9 +1,10 @@
-const chalk = require('chalk');
-const moment = require('moment');
+import chalk from 'chalk';
+import moment from 'moment';
+import util from 'util';
 
 const toUpper = string => string.charAt(0).toUpperCase() + string.slice(1);
 
-class Logger {
+export default class Logger {
   // Throw error if someone tries to create an instance
   constructor() {
     throw new Error(`${this.constructor.name} class cannot be instantiated`);
@@ -27,7 +28,7 @@ class Logger {
       // Log Stacktrace
     } else if (stacktrace) {
       console.log(style.bold(`[${Logger.time()} ${toUpper(name)}]`), style(message));
-      return console.trace(require('util').format(message));
+      return console.trace(util.format(message));
       // Log Normally
     } else {
       message = typeof message === 'string' ? message.replace(/\r?\n|\r/g, ' ') : message;
@@ -59,5 +60,3 @@ class Logger {
     throw Logger.log(chalk.bgRed.white, name, message, stacktrace);
   }
 }
-
-module.exports = Logger;

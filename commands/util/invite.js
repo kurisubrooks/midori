@@ -1,7 +1,7 @@
-const Command = require('../../core/Command');
-const { Permissions, MessageEmbed } = require('discord.js');
+import { Permissions, MessageEmbed } from 'discord.js';
+import Command from '../../core/Command';
 
-class Invite extends Command {
+export default class Invite extends Command {
   constructor(client) {
     super(client, {
       name: 'Invite',
@@ -25,5 +25,3 @@ class Invite extends Command {
     return channel.send({ embeds: [embed] });
   }
 }
-
-module.exports = Invite;

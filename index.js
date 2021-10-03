@@ -2,12 +2,12 @@
 // by @kurisubrooks
 
 // Core
-const { Client, Intents } = require('discord.js');
-const { error } = require('./core/Util/Util');
-const keys = require('./keychain.json');
-const config = require('./config.js');
-const Logger = require('./core/Util/Logger');
-const CommandManager = require('./core/CommandManager');
+import { Client, Intents } from 'discord.js';
+import { error } from './core/Util/Util';
+import keys from './keychain.json';
+import config from './config.js';
+import Logger from './core/Util/Logger';
+import CommandManager from './core/CommandManager';
 // const SubprocessManager = require("./core/SubprocessManager");
 
 // Initialise
@@ -32,4 +32,4 @@ client.on('messageUpdate', (old, _new) => {
   if (old.content !== _new.content) Manager.handleMessage(_new);
 });
 
-module.exports = client;
+export default client;

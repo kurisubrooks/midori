@@ -1,10 +1,12 @@
-const Command = require('../../core/Command');
-const moment = require('moment');
-require('moment-duration-format');
-const worker = require('core-worker');
-const { MessageEmbed } = require('discord.js');
 
-class Status extends Command {
+import { MessageEmbed } from 'discord.js';
+import moment from 'moment';
+import 'moment-duration-format';
+import worker from 'core-worker';
+import os from 'os';
+import Command from '../../core/Command';
+
+export default class Status extends Command {
   constructor(client) {
     super(client, {
       name: 'Status',
@@ -15,7 +17,7 @@ class Status extends Command {
 
   async run(message, channel) {
     const npmv = await worker.process('npm -v').death();
-    const etho = require('os').networkInterfaces().eth0;
+    const etho = os.networkInterfaces().eth0;
 
     if (!etho || !etho[0] || etho[0].mac !== this.config.server) {
       const embed = new MessageEmbed()
@@ -38,5 +40,3 @@ class Status extends Command {
     return channel.send({ embeds: [embed] });
   }
 }
-
-module.exports = Status;

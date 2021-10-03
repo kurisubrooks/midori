@@ -1,33 +1,29 @@
-const config = require('../../config');
-const Logger = require('./Logger');
-const { MessageEmbed } = require('discord.js');
+import { MessageEmbed } from 'discord.js';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import config from '../../config';
+import Logger from './Logger';
 
-class Util {
-  // Throw error if someone tries to create an instance
-  constructor() {
-    throw new Error(`${this.constructor.name} class cannot be instantiated`);
-  }
+export const __filename = fileURLToPath(import.meta.url);
+export const __dirname = dirname(__filename);
 
-  // String First Letter Upper Case
-  static toUpper(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  }
+export const toUpper = str => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
 
-  // Global Error Function
-  static error(name, message, channel) {
-    const embed = new MessageEmbed()
-      .setColor(config.colours.error)
-      .addField('Module', name, true)
-      .addField('Time', Logger.time(), true)
-      .addField('Message', message);
+export const error = (name, message, channel) => {
+  const embed = new MessageEmbed()
+    .setColor(config.colours.error)
+    .addField('Module', name, true)
+    .addField('Time', Logger.time(), true)
+    .addField('Message', message);
 
-    channel = channel || null;
-    Logger.error(name, message);
+  channel = channel || null;
+  Logger.error(name, message);
 
-    if (channel) channel.send({ embeds: [embed] });
-    return false;
-  }
-}
+  if (channel) channel.send({ embeds: [embed] });
+  return false;
+};
 
 // Unhandled Promise Rejections
 process.on('unhandledRejection', reason =>
@@ -39,5 +35,3 @@ process.on('uncaughtException', error =>
 
 // Log Start
 Logger.info('Process', 'Started');
-
-module.exports = Util;

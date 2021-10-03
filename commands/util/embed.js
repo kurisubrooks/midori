@@ -1,6 +1,6 @@
-const Command = require('../../core/Command');
+import Command from '../../core/Command';
 
-class Embed extends Command {
+export default class Embed extends Command {
   constructor(client) {
     super(client, {
       name: 'Embed',
@@ -28,5 +28,3 @@ class Embed extends Command {
     return this.delete(message);
   }
 }
-
-module.exports = Embed;

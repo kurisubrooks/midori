@@ -1,9 +1,9 @@
-const { MessageEmbed } = require('discord.js');
-const { translate } = require('googletrans');
-const Command = require('../../core/Command');
-const langs = require('./languages.json');
+import { MessageEmbed } from 'discord.js';
+import { translate } from 'googletrans';
+import Command from '../../core/Command';
+import langs from './languages.json';
 
-class Translate extends Command {
+export default class Translate extends Command {
   constructor(client) {
     super(client, {
       name: 'Translate',
@@ -75,5 +75,3 @@ class Translate extends Command {
     return this.delete(message);
   }
 }
-
-module.exports = Translate;

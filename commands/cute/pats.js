@@ -1,8 +1,8 @@
-const Command = require('../../core/Command');
-const request = require('request-promise');
-const { MessageEmbed } = require('discord.js');
+import Command from '../../core/Command';
+import request from 'request-promise';
+import { MessageEmbed } from 'discord.js';
 
-class Pats extends Command {
+export default class Pats extends Command {
   constructor(client) {
     super(client, {
       name: 'Pats',
@@ -40,5 +40,3 @@ class Pats extends Command {
     return this.delete(message);
   }
 }
-
-module.exports = Pats;

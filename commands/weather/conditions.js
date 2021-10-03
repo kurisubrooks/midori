@@ -1,19 +1,26 @@
-/* eslint-disable complexity */
-const path = require('path');
-const Canvas = require('canvas');
-const moment = require('moment-timezone');
-const request = require('request-promise');
-const Command = require('../../core/Command');
-const Database = require('../../core/Database');
-// const Discord = require("discord.js");
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
+import Canvas from 'canvas';
+import moment from 'moment-timezone';
+import request from 'request-promise';
 
-class Weather extends Command {
+import Command from '../../core/Command';
+import Database from '../../core/Database';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+export default class Weather extends Command {
   constructor(client) {
     super(client, {
       name: 'weather',
       description: 'Gets the weather for a given location',
       aliases: ['w'],
-      options: ['']
+      args: [
+        { name: 'location', desc: 'Location to grab the weather for' },
+        { name: 'unit', desc: 'Choose your weather unit', choices: [
+          { name: 'celsius', value: 'unit_celsius' }, { name: 'fahrenheit', value: 'unit_fahrenheit' }
+        ] }
+      ]
     });
   }
 
@@ -81,12 +88,12 @@ class Weather extends Command {
           }
 
           this.log(`Using Cached Geolocation (${geolocation.line1}, ${geolocation.line2})`, 'debug');
-        } else {
-          return message.reply('This user has not set their location.');
         }
-      } else {
-        return message.reply('This user does not have a database entry for their location.');
+
+        return message.reply('This user has not set their location.');
       }
+
+      return message.reply('This user does not have a database entry for their location.');
     }
 
     // Ignore geolocation request if User has set a location
@@ -123,10 +130,10 @@ class Weather extends Command {
     const condition = weather.currently.summary;
     const icon = weather.currently.icon;
     const temperature = Math.round(weather.currently.temperature);
-    const datetime = moment().tz(weather.timezone).format('h:mm A');
+    const dateTime = moment().tz(weather.timezone).format('h:mm A');
     const forecast = weather.daily.data;
 
-    this.log(`${geolocation.line1}, ${geolocation.line2}: ${temperature}°${locale}, ${condition}, ${datetime}`, 'debug');
+    this.log(`${geolocation.line1}, ${geolocation.line2}: ${temperature}°${locale}, ${condition}, ${dateTime}`, 'debug');
 
     Canvas.registerFont(path.join(__dirname, 'fonts', 'Inter-UI-Medium.ttf'), { family: 'InterUI' });
     // Fallback Japanese font
@@ -189,7 +196,7 @@ class Weather extends Command {
     ctx.textAlign = 'right';
     ctx.font = '32px InterUI';
     ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-    ctx.fillText(datetime, 740, 231);
+    ctx.fillText(dateTime, 740, 231);
 
     // Details
     ctx.textAlign = 'left';
@@ -274,11 +281,6 @@ class Weather extends Command {
     }
   }
 
-  static async geolocation(args) {
-    const inst = new Weather();
-    return await inst.fetchGeolocation(args);
-  }
-
   // Handle Geolocation Data
   async fetchGeolocation(args) {
     let line1, line2, found1, geocode;
@@ -359,4 +361,7 @@ class Weather extends Command {
   }
 }
 
-module.exports = Weather;
+export const geolocation = async args => {
+  const inst = new Weather();
+  return await inst.fetchGeolocation(args);
+};

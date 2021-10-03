@@ -1,12 +1,14 @@
-const Command = require('../../core/Command');
-const Database = require('../../core/Database');
-const { MessageEmbed } = require('discord.js');
+import os from 'os';
+import { MessageEmbed } from 'discord.js';
+import Command from '../../core/Command';
+import Database from '../../core/Database';
+import { geolocation } from '../weather/conditions';
 
 function cap(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-class Set extends Command {
+export default class Set extends Command {
   constructor(client) {
     super(client, {
       name: 'Set',
@@ -68,7 +70,7 @@ class Set extends Command {
 
   async run(message, channel, user, args) {
     const fields = ['location'];
-    const etho = require('os').networkInterfaces().eth0;
+    const etho = os.networkInterfaces().eth0;
     let field, data, db;
 
     if (!etho || !etho[0] || etho[0].mac !== this.config.server) {
@@ -143,7 +145,6 @@ class Set extends Command {
     }
 
     if (field === 'location') {
-      const { geolocation } = require('../weather/conditions');
       const parsed = await geolocation(data);
 
       // Handle Error
@@ -166,5 +167,3 @@ class Set extends Command {
     return message.reply("Unfortunately it doesn't look like that's a valid field.");
   }
 }
-
-module.exports = Set;

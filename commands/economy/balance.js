@@ -1,8 +1,8 @@
-const Command = require('../../core/Command');
-const Database = require('../../core/Database');
-const { MessageEmbed } = require('discord.js');
+import { MessageEmbed } from 'discord.js';
+import Command from '../../core/Command';
+import Database from '../../core/Database';
 
-class Balance extends Command {
+export default class Balance extends Command {
   constructor(client) {
     super(client, {
       name: 'Balance',
@@ -29,5 +29,3 @@ class Balance extends Command {
     return this.delete(message);
   }
 }
-
-module.exports = Balance;

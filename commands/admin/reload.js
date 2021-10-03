@@ -1,6 +1,6 @@
-const Command = require('../../core/Command');
+import Command from '../../core/Command';
 
-class Reload extends Command {
+export default class Reload extends Command {
   constructor(client) {
     super(client, {
       name: 'Reload',
@@ -29,5 +29,3 @@ class Reload extends Command {
     return channel.send(`Module ${module} doesn't exist!`);
   }
 }
-
-module.exports = Reload;

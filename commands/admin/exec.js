@@ -1,6 +1,8 @@
-const Command = require('../../core/Command');
+import child from 'child_process';
+import util from 'util';
+import Command from '../../core/Command';
 
-class Executor extends Command {
+export default class Executor extends Command {
   constructor(client) {
     super(client, {
       name: 'Exec',
@@ -17,11 +19,11 @@ class Executor extends Command {
     const input = `📥\u3000**Input:**\n\`\`\`sh\n${args.join(' ')}\n\`\`\``;
     const error = err => `🚫\u3000**Error:**\n\`\`\`sh\n${err.toString().replace(regex, '[Token]')}\n\`\`\``;
 
-    require('child_process').exec(args.join(' '), (stderr, stdout) => {
+    child.exec(args.join(' '), (stderr, stdout) => {
       if (stderr) {
         channel.send(`${input}\n${error(stderr)}`).catch(err => channel.send(`${input}\n${error(err)}`));
       } else {
-        if (typeof output !== 'string') stdout = require('util').inspect(stdout, { depth: 1 });
+        if (typeof output !== 'string') stdout = util.inspect(stdout, { depth: 1 });
         const response = `📤\u3000**Output:**\n\`\`\`sh\n${stdout.replace(regex, '[Token]')}\n\`\`\``;
         if (input.length + response.length > 1900) throw new Error('Output too long!');
         channel.send(`${input}\n${response}`).catch(err => channel.send(`${input}\n${error(err)}`));
@@ -29,5 +31,3 @@ class Executor extends Command {
     });
   }
 }
-
-module.exports = Executor;

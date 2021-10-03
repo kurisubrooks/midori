@@ -1,8 +1,8 @@
-const { MessageEmbed } = require('discord.js');
-const request = require('request-promise');
-const Command = require('../../core/Command');
+import { MessageEmbed } from 'discord.js';
+import request from 'request-promise';
+import Command from '../../core/Command';
 
-class Currency extends Command {
+export default class Currency extends Command {
   constructor(client) {
     super(client, {
       name: 'Currency',
@@ -39,5 +39,3 @@ class Currency extends Command {
     return this.delete(message);
   }
 }
-
-module.exports = Currency;

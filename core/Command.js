@@ -1,9 +1,9 @@
-const config = require('../config');
-const keychain = require('../keychain.json');
-const Logger = require('./Util/Logger');
-const { error, toUpper } = require('./Util/Util');
+import config from '../config';
+import keychain from '../keychain.json';
+import Logger from './Util/Logger';
+import { error, toUpper } from './Util/Util';
 
-module.exports = class Command {
+export default class Command {
   constructor(client, data = {}) {
     if (typeof data !== 'object') throw new TypeError('Client data parameter must be an object');
 
@@ -51,4 +51,4 @@ module.exports = class Command {
   hasAdmin(user) {
     return config.admin.includes(user.id);
   }
-};
+}

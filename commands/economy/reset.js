@@ -1,7 +1,7 @@
-const Command = require('../../core/Command');
-const Database = require('../../core/Database');
+import Command from '../../core/Command';
+import Database from '../../core/Database';
 
-class ResetBalance extends Command {
+export default class ResetBalance extends Command {
   constructor(client) {
     super(client, {
       name: 'reset',
@@ -31,5 +31,3 @@ class ResetBalance extends Command {
     return message.reply('Balance Reset.');
   }
 }
-
-module.exports = ResetBalance;
