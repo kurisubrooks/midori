@@ -68,7 +68,7 @@ export default class Translate extends Command {
 
     const embed = new MessageEmbed()
       .setColor(this.config.colours.default)
-      .setAuthor(user.nickname, user.displayAvatarURL())
+      .setAuthor(user.nickname || user.user.username, user.user.avatarURL())
       .addField(this.validate(from || response.src).name, query)
       .addField(this.validate(to).name, response.text);
 

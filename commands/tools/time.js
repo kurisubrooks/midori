@@ -40,7 +40,7 @@ export default class Time extends Command {
 
     const embed = new MessageEmbed()
       .setColor(this.config.colours.default)
-      .setAuthor(user.nickname, user.avatarURL())
+      .setAuthor(user.nickname || user.user.username, user.user.avatarURL())
       .addField('Location', place.replace('Time in ', '').replace(' now', ''))
       .addField('Time', moment(`${time}`, 'HH:mm:ssA').format('h:mm a'), true)
       .addField('Date', date, true);

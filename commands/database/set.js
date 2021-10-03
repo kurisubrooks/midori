@@ -78,12 +78,12 @@ export default class Set extends Command {
       const embed = new MessageEmbed()
         .setColor(this.config.colours.warn)
         .setTitle('Warning')
-        .setDescription("Midori isn't running from it's primary server so any saved data may not be saved.");
+        .setDescription(`${this.client.user.username} isn't running from it's primary server so any saved data may not be saved.`);
 
       channel.send({ embeds: [embed] });
     }
 
-    if (message.pung.length > 0) {
+    if (message.pingedUsers.length > 0) {
       if (!this.hasAdmin(message.author)) {
         return message.reply('Insufficient Permissions');
       }

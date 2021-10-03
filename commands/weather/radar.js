@@ -22,9 +22,9 @@ export default class Radar extends Command {
   async run(message, channel, user, args) {
     const locations = ['sydney', 'canberra', 'adelaide', 'melbourne'];
 
-    // Check if user was pung, or didn't provide any args
-    if (message.pung.length > 0 || (args.length === 0 && message.pung.length === 0)) {
-      if (message.pung.length > 0) user = message.pung[0];
+    // Check if user was pinged, or didn't provide any args
+    if (message.pingedUsers.length > 0 || (args.length === 0 && message.pingedUsers.length === 0)) {
+      if (message.pingedUsers.length > 0) user = message.pingedUsers[0];
 
       const Users = (await Database.Models.Users).default;
       const userDB = await Users.findOne({ where: { id: user.id } });

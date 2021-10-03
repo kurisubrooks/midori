@@ -15,11 +15,11 @@ export default class Pay extends Command {
   async run(message, channel, user, args) {
     const amount = args[0];
 
-    if (message.pung.length === 0) {
+    if (message.pingedUsers.length === 0) {
       return message.reply("You didn't specify whom you want to pay!");
     }
 
-    user = message.pung[0];
+    user = message.pingedUsers[0];
 
     const Bank = (await Database.Models.Bank).default;
     const payee = await Bank.findOne({ where: { id: message.author.id } });
@@ -41,7 +41,7 @@ export default class Pay extends Command {
 
     const embed = new MessageEmbed()
       .setColor(this.config.colours.default)
-      .setAuthor(user.nickname || user.user.username, user.avatarURL() || user.user.avatarURL())
+      .setAuthor(user.nickname || user.user.username, user.user.avatarURL())
       .addField('Paid', `${this.config.economy.emoji} ${amount}`)
       .addField('Balance', `${this.config.economy.emoji} ${balance}`);
 

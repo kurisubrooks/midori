@@ -12,11 +12,11 @@ export default class Slap extends Command {
   }
 
   async run(message, channel, user) {
-    if (message.pung.length === 0) {
+    if (message.pingedUsers.length === 0) {
       return message.reply("You didn't specify whom you want to slap!");
     }
 
-    const target = message.pung[0];
+    const target = message.pingedUsers[0];
 
     if (target.id === user.id) {
       user = this.client.user;

@@ -36,7 +36,7 @@ export default class Search extends Command {
 
       const embed = new MessageEmbed()
         .setColor(this.config.colours.default)
-        .setAuthor(user.nickname, user.avatarURL())
+        .setAuthor(user.nickname || user.user.username, user.user.avatarURL())
         .setURL(link)
         .setTitle(result.title)
         .setDescription(result.snippet)

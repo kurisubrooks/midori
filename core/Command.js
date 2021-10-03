@@ -14,6 +14,7 @@ export default class Command {
     this.name = data.name;
     this.description = data.description;
     this.aliases = data.aliases || [];
+    this.args = data.args || [];
     this.process = data.process || false;
     this.usage = data.usage || '';
     this.guild = data.guild || false;

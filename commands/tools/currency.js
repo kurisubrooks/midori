@@ -31,7 +31,7 @@ export default class Currency extends Command {
 
     const embed = new MessageEmbed()
       .setColor(this.config.colours.default)
-      .setAuthor(user.nickname, user.avatarURL())
+      .setAuthor(user.nickname || user.user.username, user.user.avatarURL())
       .addField('Query', response.query)
       .addField('Result', response.output.display);
 
