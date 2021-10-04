@@ -1,7 +1,6 @@
 import { Collection, Permissions, Client } from 'discord.js';
-import { SlashCommandBuilder } from '@discordjs/builders';
-import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
+import { REST } from '@discordjs/rest';
 
 import fs from 'fs';
 import path, { dirname } from 'path';
@@ -48,7 +47,7 @@ export default class CommandManager {
   }
 
   async startModule(location, reloaded) {
-    const Command = (await import(location)).default;
+    const Command = (await import(`${location}?t=${new Date().getTime()}`)).default;
     const instance = new Command(this.client); // eslint-disable-line new-cap
     const commandName = instance.name.toLowerCase();
     instance.location = location;
@@ -61,7 +60,7 @@ export default class CommandManager {
 
     Logger.info(`${reloaded ? 'Reloaded' : 'Loaded'} Command`, toUpper(commandName));
     this.commands.set(commandName, instance);
-    this.createInteraction(instance);
+    this.slashCommands.set(commandName, instance.generateSlashCommand().toJSON());
 
     for (const alias of instance.aliases) {
       if (this.aliases.has(alias)) {
@@ -70,39 +69,6 @@ export default class CommandManager {
         this.aliases.set(alias, instance);
       }
     }
-  }
-
-  createInteraction(command) {
-    const slashCommand = new SlashCommandBuilder()
-      .setName(command.name.toLowerCase())
-      .setDescription(command.description);
-
-    if (command.args) {
-      const handle = (opt, i) => {
-        const option = opt.setName(i.name)
-          .setDescription(i.desc)
-          .setRequired(i.required || false);
-
-        if (i.choices) {
-          i.choices.forEach(v => option.addChoice(v.name, v.value));
-        }
-
-        return option;
-      };
-
-      command.args.forEach(i => {
-        switch(i.takes) {
-          case 'string':
-            slashCommand.addStringOption(opt => handle(opt, i));
-            break;
-          case 'boolean':
-            slashCommand.addBooleanOption(opt => handle(opt, i));
-            break;
-        }
-      });
-    }
-
-    this.slashCommands.set(command.name.toLowerCase(), slashCommand.toJSON());
   }
 
   async registerCommands(commands) {
@@ -117,6 +83,7 @@ export default class CommandManager {
   reloadCommands() {
     Logger.warn('Reload Manager', 'Clearing Module Cache');
     this.commands = new Collection();
+    this.slashCommands = new Collection();
     this.aliases = new Collection();
 
     Logger.warn('Reload Manager', 'Reinitialising Modules');
@@ -132,7 +99,6 @@ export default class CommandManager {
     const location = existingCommand.location;
     for (const alias of existingCommand.aliases) this.aliases.delete(alias);
     this.commands.delete(commandName);
-    // delete require.cache[require.resolve(location)];
     this.startModule(location, true);
     return true;
   }

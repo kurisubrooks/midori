@@ -1,7 +1,8 @@
-import config from '../config';
-import keychain from '../keychain.json';
-import Logger from './Util/Logger';
+import { SlashCommandBuilder } from '@discordjs/builders';
 import { error, toUpper } from './Util/Util';
+import Logger from './Util/Logger';
+import keychain from '../keychain.json';
+import config from '../config';
 
 export default class Command {
   constructor(client, data = {}) {
@@ -44,9 +45,37 @@ export default class Command {
     return error(this.name, message, channel);
   }
 
-  delete() {
-    return true;
-    // return message.delete().catch(err => err.message);
+  generateSlashCommand() {
+    const slashCommand = new SlashCommandBuilder()
+      .setName(this.name.toLowerCase())
+      .setDescription(this.description);
+
+    if (this.args) {
+      const handle = (opt, i) => {
+        const option = opt.setName(i.name)
+          .setDescription(i.desc)
+          .setRequired(i.required || false);
+
+        if (i.choices) {
+          i.choices.forEach(v => option.addChoice(v.name, v.value));
+        }
+
+        return option;
+      };
+
+      this.args.forEach(i => {
+        switch(i.takes) {
+          case 'string':
+            slashCommand.addStringOption(opt => handle(opt, i));
+            break;
+          case 'boolean':
+            slashCommand.addBooleanOption(opt => handle(opt, i));
+            break;
+        }
+      });
+    }
+
+    return slashCommand;
   }
 
   hasAdmin(user) {
