@@ -107,7 +107,8 @@ export default class CommandManager {
     try {
       return command.run(message, channel, user, args);
     } catch(err) {
-      return error('Command', err);
+      Logger.error('Command', err);
+      return error('Command', 'An error occurred while executing this command. Please try again later.', channel);
     }
   }
 
@@ -120,16 +121,30 @@ export default class CommandManager {
   }
 
   async handleInteraction(interaction) {
-    if (!interaction.isCommand()) return;
-    console.log(interaction);
-
+    if (!interaction.isCommand()) return false;
     const { commandName } = interaction;
 
-    if (commandName === 'ping') {
-      await interaction.reply('Pong!');
-    } else if (commandName === 'beep') {
-      await interaction.reply('Boop!');
+    // Find Command
+    const command = this.commands.get(commandName) || this.aliases.get(commandName);
+    if (!command) return false;
+
+    // Helper Variables
+    const channel = interaction.channel;
+    const user = interaction.member;
+    interaction.type = 'interaction';
+    this.giveCoins(user);
+
+    // Check if Command requires Admin
+    if (command.admin && !config.admin.includes(user.user.id)) {
+      interaction.reply({ content: 'You don\'t have access to this command.', ephemeral: true });
+      return false;
     }
+
+    // Log Message
+    Logger.warn('Ran Command', `<${user.user.username}#${user.user.discriminator}>: ${interaction.commandName} ${JSON.stringify(interaction.options._hoistedOptions)}`);
+
+    // Run Command
+    return this.runCommand(command, interaction, channel, user, interaction.options);
   }
 
   async handleMessage(message) {
@@ -159,6 +174,7 @@ export default class CommandManager {
     const command = instance.command;
 
     // Set Variables
+    message.type = 'message';
     message.context = this;
     message.command = instance.commandName;
     message.prefix = prefix;
