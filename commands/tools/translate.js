@@ -8,8 +8,14 @@ export default class Translate extends Command {
   constructor(client) {
     super(client, {
       name: 'Translate',
-      description: 'Translate a Query with Google Translate',
-      aliases: ['t']
+      description: 'Translate text with Google Translate',
+      aliases: ['t'],
+      args: [
+        { name: 'to', desc: 'Language to convert the text *to*', takes: 'string', required: true },
+        { name: 'query', desc: 'Choose your weather unit', takes: 'string', required: true },
+        { name: 'from', desc: 'Language to convert the text *from*', takes: 'string' }
+        // choices: langs.map(i => { return { name: i.name, value: i.code }; })
+      ]
     });
   }
 
@@ -27,34 +33,52 @@ export default class Translate extends Command {
     return { name: 'Unknown', local: 'Unknown' };
   }
 
-  async run(message, channel, user, args) {
-    if (args.length < 1) {
-      return message.reply('Please provide a query');
+  async run(interaction, channel, user, args) {
+    let to, from, query, deferred;
+
+    // Handle args by type
+    if (interaction.type === 'interaction') {
+      to = this.validate(args.getString('to'))?.code;
+      from = args.getString('from');
+      query = args.getString('query');
+    } else {
+      if (args.length < 1) {
+        return interaction.reply('Please provide a query');
+      }
+
+      const langs = args[0].split(',');
+      to = this.validate(langs[0])?.code;
+      from = langs.length > 1 ? this.validate(langs[1]).code : null;
+      query = args.slice(1).join(' ');
     }
 
-    const langs = args[0].split(',');
-    let to = this.validate(langs[0].toLowerCase())?.code;
-    let from = langs.length > 1 ? this.validate(langs[1]).code : null;
-    let query = args.slice(1).join(' ');
-
-    if (!this.validate(to)) {
-      return message.reply(`The value in the 'from' field is not a valid language, or is not supported at this time.`);
+    // Validate `to` lang
+    if (!this.validate(to) || this.validate(to).name === 'Unknown') {
+      return interaction.reply({ content: `The value in the 'to' field (\`${to}\`) is not a valid language, or is not supported at this time.`, ephemeral: true });
     }
 
+    // Validate `from` lang
     if (from !== null) {
       if (!this.validate(from)) {
-        return message.reply(`The value in the 'from' field is not a valid language, or is not supported at this time`);
+        return interaction.reply({ content: `The value in the 'from' field is not a valid language, or is not supported at this time`, ephemeral: true });
       }
     }
 
+    // Get last message for `^` query
     if (query === '^') {
       this.log('Using Previous Message as Query', 'debug');
-      const res = await channel.messages.fetch({ before: message.id, limit: 1 });
+      await interaction.deferReply();
+      deferred = true;
+      const res = await channel.messages.fetch({ before: interaction.id, limit: 1 });
       query = res.first().content;
+
+    // Get message by ID for number query
     } else if (Number(query)) {
       this.log('Using Given Message (from ID) as Query', 'debug');
+      await interaction.deferReply();
+      deferred = true;
       const res = await channel.messages.fetch(query);
-      if (!res) return message.reply('Please provide a valid message ID.');
+      if (!res) return interaction.editReply({ content: 'Please provide a valid message ID', ephemeral: true });
       query = res.content;
     }
 
@@ -64,7 +88,10 @@ export default class Translate extends Command {
     const response = await translate(query, { to, from })
       .catch(error => this.error(error, channel));
 
-    if (!response) return false;
+    if (!response) {
+      if (deferred) return interaction.editReply({ content: 'Unknown Error', ephemeral: true });
+      return interaction.reply({ content: 'Unknown Error', ephemeral: true });
+    }
 
     const embed = new MessageEmbed()
       .setColor(this.config.colours.default)
@@ -72,6 +99,7 @@ export default class Translate extends Command {
       .addField(this.validate(from || response.src).name, query)
       .addField(this.validate(to).name, response.text);
 
-    return channel.send({ embeds: [embed] });
+    if (deferred) return interaction.editReply({ embeds: [embed] });
+    return interaction.reply({ embeds: [embed] });
   }
 }
