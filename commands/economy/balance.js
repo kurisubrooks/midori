@@ -27,7 +27,6 @@ export default class Balance extends Command {
       .setAuthor(user.nickname || user.user.username, user.user.avatarURL())
       .addField('Balance', `${this.config.economy.emoji} ${balance}`);
 
-    await channel.send({ embeds: [embed] });
-    return this.delete(message);
+    return channel.send({ embeds: [embed] });
   }
 }

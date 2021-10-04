@@ -228,8 +228,7 @@ export default class Weather extends Command {
     ctx.fillText(`${Math.round(forecast[2].temperatureMax)}°`, 675, 391);
     ctx.drawImage(day2, 570, 364, 36, 36);
 
-    await channel.send({ files: [{ attachment: canvas.toBuffer(), url: 'weather.png' }] });
-    return this.delete(message);
+    return channel.send({ files: [{ attachment: canvas.toBuffer(), url: 'weather.png' }] });
   }
 
   // Get Image

@@ -36,7 +36,6 @@ export default class Hug extends Command {
       .setDescription(`**${user.tag}** hugs **${target.user.tag}**`)
       .setImage(`https://cdn.ram.moe${response.path.replace('i/', '')}`);
 
-    await channel.send({ embeds: [embed] });
-    return this.delete(message);
+    return channel.send({ embeds: [embed] });
   }
 }

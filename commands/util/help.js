@@ -35,8 +35,7 @@ export default class Help extends Command {
       text.unshift('__**List of available commands**__\n');
 
       if (channel.type !== 'dm') await message.reply('Sent you a DM with information!');
-      await user.send(text.join('\n'), { split: true });
-      return this.delete(message);
+      return user.send(text.join('\n'), { split: true });
     }
 
     const command = this.findCommand(commands, args[0]);
@@ -49,7 +48,6 @@ export default class Help extends Command {
       .addField('Aliases', [command.name, ...command.aliases].map(name => name.toLowerCase()).join(', '), true)
       .addField('Description', command.description);
 
-    await channel.send({ embeds: [embed] });
-    return this.delete(message);
+    return channel.send({ embeds: [embed] });
   }
 }

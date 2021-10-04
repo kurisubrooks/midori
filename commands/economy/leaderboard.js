@@ -27,7 +27,6 @@ export default class Leaderboard extends Command {
       }
     });
 
-    await channel.send({ embeds: [embed] });
-    return this.delete(message);
+    return channel.send({ embeds: [embed] });
   }
 }

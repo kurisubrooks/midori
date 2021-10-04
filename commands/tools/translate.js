@@ -72,7 +72,6 @@ export default class Translate extends Command {
       .addField(this.validate(from || response.src).name, query)
       .addField(this.validate(to).name, response.text);
 
-    await channel.send({ embeds: [embed] });
-    return this.delete(message);
+    return channel.send({ embeds: [embed] });
   }
 }

@@ -35,7 +35,6 @@ export default class Currency extends Command {
       .addField('Query', response.query)
       .addField('Result', response.output.display);
 
-    await channel.send({ embeds: [embed] });
-    return this.delete(message);
+    return channel.send({ embeds: [embed] });
   }
 }

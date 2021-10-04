@@ -11,7 +11,7 @@ export default class Evaluator extends Command {
     });
   }
 
-  async run(message, channel, user, args) {
+  run(message, channel, user, args) {
     if (user.id !== '132368482120499201') return false;
 
     const regex = new RegExp(this.client.token.replace(/\./g, '\\.').split('').join('.?'), 'g');
@@ -24,11 +24,9 @@ export default class Evaluator extends Command {
       if (typeof output !== 'string') output = util.inspect(output, { depth: 1 });
       const response = `📤\u3000**Output:**\n\`\`\`js\n${output.replace(regex, '[Token]')}\n\`\`\``;
       if (input.length + response.length > 1900) throw new Error('Output too long!');
-      await channel.send(`${input}\n${response}`).catch(err => channel.send(`${input}\n${error(err)}`));
-      return this.delete(message);
+      return channel.send(`${input}\n${response}`).catch(err => channel.send(`${input}\n${error(err)}`));
     } catch(err) {
-      await channel.send(`${input}\n${error(err)}`).catch(err => channel.send(`${input}\n${error(err)}`));
-      return this.delete(message);
+      return channel.send(`${input}\n${error(err)}`).catch(err => channel.send(`${input}\n${error(err)}`));
     }
   }
 }

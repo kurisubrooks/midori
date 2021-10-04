@@ -44,8 +44,7 @@ export default class Search extends Command {
 
       if (result.pagemap && result.pagemap.cse_thumbnail) embed.setThumbnail(result.pagemap.cse_thumbnail[0].src);
 
-      await channel.send({ embeds: [embed] });
-      return this.delete(message);
+      return channel.send({ embeds: [embed] });
     }
 
     return false;

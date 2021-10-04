@@ -36,7 +36,6 @@ export default class Pats extends Command {
       .setDescription(`**${user.tag}** pet **${target.user.tag}**`)
       .setImage(`https://cdn.ram.moe${response.path.replace('i/', '')}`);
 
-    await channel.send({ embeds: [embed] });
-    return this.delete(message);
+    return channel.send({ embeds: [embed] });
   }
 }

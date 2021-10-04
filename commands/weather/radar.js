@@ -58,7 +58,6 @@ export default class Radar extends Command {
     const ext = type === 'animated' ? 'gif' : 'png';
     const url = `https://api.kurisubrooks.com/api/radar?id=${place}&type=${type}`;
 
-    await channel.send({ files: [{ name: `radar.${ext}`, attachment: url }] });
-    return this.delete(message);
+    return channel.send({ files: [{ name: `radar.${ext}`, attachment: url }] });
   }
 }

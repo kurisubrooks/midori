@@ -45,7 +45,6 @@ export default class Pay extends Command {
       .addField('Paid', `${this.config.economy.emoji} ${amount}`)
       .addField('Balance', `${this.config.economy.emoji} ${balance}`);
 
-    await channel.send({ embeds: [embed] });
-    return this.delete(message);
+    return channel.send({ embeds: [embed] });
   }
 }
