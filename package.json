@@ -18,7 +18,7 @@
     "discord.js": "^13.1.0",
     "google-dictionary-api": "^1.0.8",
     "googletrans": "^1.0.3",
-    "moment": "^2.29.1",
+    "moment": "^2.29.2",
     "moment-duration-format": "^2.3.2",
     "moment-timezone": "^0.5.33",
     "request-promise": "^4.2.6",
