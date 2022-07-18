@@ -12,11 +12,12 @@ export const error = (name, message, channel) => {
     .addFields([
       { name: 'Module', value: name, inline: true },
       { name: 'Time', value: Logger.time(), inline: true },
-      { name: 'Message', value: message }
+      { name: 'Message', value: message.toString() }
     ]);
 
   channel = channel || null;
   Logger.error(name, message);
+  console.trace(message);
 
   if (channel) channel.send({ embeds: [embed] });
   return false;
