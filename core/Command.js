@@ -57,7 +57,7 @@ export default class Command {
           .setRequired(i.required || false);
 
         if (i.choices) {
-          i.choices.forEach(v => option.addChoice(v.name, v.value));
+          option.addChoices(i.choices);
         }
 
         return option;
@@ -70,6 +70,9 @@ export default class Command {
             break;
           case 'boolean':
             slashCommand.addBooleanOption(opt => handle(opt, i));
+            break;
+          case 'user':
+            slashCommand.addUserOption(opt => handle(opt, i));
             break;
         }
       });
