@@ -2,7 +2,7 @@
 // by @kurisubrooks
 
 // Core
-import { Client, Intents } from 'discord.js';
+import { Client, GatewayIntentBits } from 'discord.js';
 import { error } from './core/Util/Util';
 import keys from './keychain.json';
 import config from './config.js';
@@ -11,7 +11,7 @@ import CommandManager from './core/CommandManager';
 // const SubprocessManager = require("./core/SubprocessManager");
 
 // Initialise
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_INVITES] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildInvites] });
 const Manager = new CommandManager(client);
 // const Subprocesses = new SubprocessManager(client);
 
@@ -26,7 +26,7 @@ client.login(keys.discord);
 client.once('ready', onReady);
 client.on('warn', warn => error('Core', warn));
 client.on('error', err => error('Core', err));
-client.on('interactionCreate', interaction => Manager.handleInteraction(interaction));
+// client.on('interactionCreate', interaction => Manager.handleInteraction(interaction));
 client.on('messageCreate', message => Manager.handleMessage(message));
 client.on('messageUpdate', (old, _new) => {
   if (old.content !== _new.content) Manager.handleMessage(_new);
