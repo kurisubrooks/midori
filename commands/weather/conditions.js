@@ -17,6 +17,7 @@ export default class Weather extends Command {
       aliases: ['w'],
       args: [
         { name: 'location', desc: 'Location to grab the weather for', takes: 'string' },
+        // { name: 'user', desc: 'Get the weather from this user\'s cached location', takes: 'user' },
         { name: 'unit', desc: 'Choose your weather unit', takes: 'string', choices: [
           { name: 'celsius', value: 'unit_celsius' }, { name: 'fahrenheit', value: 'unit_fahrenheit' }
         ] }
@@ -25,82 +26,37 @@ export default class Weather extends Command {
   }
 
   async run(message, channel, user, args) {
-    const metric = args.indexOf('-f') > -1;
-    let geolocation;
+    let metric, location, mentionedUser, geolocation;
+    // await message.deferReply();
 
-    // Remove -f identifier
-    if (metric) {
-      const pos = args.indexOf('-f');
-      args.splice(pos, 1);
+    // Handle args by type
+    if (message.type === 'interaction') {
+      location = args.getString('location');
+      metric = args.getString('unit');
+      mentionedUser = args.getUser('user');
+    } else {
+      metric = args.indexOf('-f') > -1;
+      if (metric) args.splice(args.indexOf('-f'), 1); // Remove -f
+      location = args;
+      mentionedUser = message.pingedUsers.length > 0 ? message.pingedUsers[0] : null;
     }
 
-    // No Args Supplied
-    if (args.length === 0 && message.pingedUsers.length === 0) {
-      const Users = (await Database.Models.Users).default;
-      const userDB = await Users.findOne({ where: { id: user.id } });
-      const error = `Please provide a query, or set your location with \`${message.prefix}set location <location>\` and run the command again.`;
+    console.log(location, metric);
 
-      // Check if User exists in DB
-      if (userDB) {
-        const data = JSON.parse(userDB.data);
-
-        // Checks if User has a set location
-        if (data.weather || data.location) {
-          geolocation = data.weather || data.location;
-
-          if (typeof geolocation === 'string') return this.error(geolocation, channel);
-          if (Array.isArray(geolocation)) {
-            geolocation = {
-              line1: geolocation[0].long_name,
-              line2: geolocation[1].long_name || '',
-              geocode: geolocation[2]
-            };
-          }
-
-          this.log(`Using Cached Geolocation (${geolocation.line1}, ${geolocation.line2})`, 'debug');
-        } else {
-          return message.reply(error);
-        }
-      } else {
-        return message.reply(error);
-      }
+    // Get stored location from database
+    if ((!location || location === '' || (Array.isArray(location) && location.length === 0)) && !mentionedUser) {
+      geolocation = await this.getUserGeolocation(message, channel, user.user);
     }
 
-    // If Pinged User
-    if (message.pingedUsers.length > 0) {
-      this.log(`Getting Weather for user ${message.pingedUsers[0].id}`, 'debug');
-      const Users = (await Database.Models.Bank).default;
-      const userDB = await Users.findOne({ where: { id: message.pingedUsers[0].id } });
-
-      // Check if User exists in DB
-      if (userDB) {
-        const data = JSON.parse(userDB.data);
-
-        // Checks if User has a set location
-        if (data.weather || data.location) {
-          geolocation = data.weather || data.location;
-
-          if (typeof geolocation === 'string') return this.error(geolocation, channel);
-          if (Array.isArray(geolocation)) {
-            geolocation = {
-              line1: geolocation[0].long_name,
-              line2: geolocation[1].long_name || '',
-              geocode: geolocation[2]
-            };
-          }
-
-          this.log(`Using Cached Geolocation (${geolocation.line1}, ${geolocation.line2})`, 'debug');
-        }
-
-        return message.reply('This user has not set their location.');
-      }
-
-      return message.reply('This user does not have a database entry for their location.');
+    // Get location for mentioned user
+    if (mentionedUser) {
+      this.log(`Getting Weather for user ${mentionedUser.id}`, 'debug');
+      geolocation = await this.getUserGeolocation(message, channel, mentionedUser);
     }
 
-    // Ignore geolocation request if User has set a location
+    // Get location from query
     if (!geolocation) {
-      geolocation = await this.fetchGeolocation(args);
+      geolocation = await this.fetchGeolocation(location);
       if (typeof geolocation === 'string') return this.error(geolocation, channel);
       if (Array.isArray(geolocation)) {
         geolocation = {
@@ -111,7 +67,7 @@ export default class Weather extends Command {
       }
     }
 
-    // console.log(geolocation);
+    console.log(geolocation);
 
     // Get Weather
     const weather = await request({
@@ -123,8 +79,6 @@ export default class Weather extends Command {
         excludes: 'minutely,hourly,alerts'
       }
     }).catch(error => this.error(error.response.body.error, channel));
-
-    // console.log(weather);
 
     if (!weather) return false;
 
@@ -185,7 +139,7 @@ export default class Weather extends Command {
     ctx.fillText(`${temperature}°${locale}`, 60, 240);
 
     // Daily Forecast
-    const width = 200 + (temperature.toString().length - 1) * 28; // eslint-disable-line no-mixed-operators
+    const width = (200 + (temperature.toString().length - 1)) * 28;
     ctx.font = '28px InterUI';
     ctx.fillStyle = 'rgba(255, 255, 255, 1)';
     ctx.fillText(`${Math.round(forecast[0].temperatureMax)}°`, width + 40, 210);
@@ -229,6 +183,55 @@ export default class Weather extends Command {
     ctx.drawImage(day2, 570, 364, 36, 36);
 
     return channel.send({ files: [{ attachment: canvas.toBuffer(), url: 'weather.png' }] });
+    /*
+    return message.editReply({
+      files: [{ attachment: canvas.toBuffer(), url: 'weather.png' }],
+      ephemeral: false
+    });
+    */
+  }
+
+  async getUserGeolocation(message, channel, user) {
+    const Users = (await Database.Models.Users).default;
+    const userDB = await Users.findOne({ where: { id: user.id } });
+    let error = `Please provide a query, or set your location with \`${message.prefix}set location <location>\` and run the command again.`;
+    let geolocation;
+
+    // Check if User exists in DB
+    if (userDB) {
+      const data = JSON.parse(userDB.data);
+
+      // Checks if User has a set location
+      if (data.weather || data.location) {
+        geolocation = data.weather || data.location;
+
+        if (typeof geolocation === 'string') {
+          await this.error(geolocation, channel);
+          return false;
+        }
+
+        if (Array.isArray(geolocation)) {
+          geolocation = {
+            line1: geolocation[0].long_name,
+            line2: geolocation[1].long_name || '',
+            geocode: geolocation[2]
+          };
+        }
+
+        this.log(`Using Cached Geolocation (${geolocation.line1}, ${geolocation.line2})`, 'debug');
+        return geolocation;
+      }
+
+      if (message.user.id !== user.id) {
+        error = `This user hasn't set their location.`;
+      }
+
+      await message.reply(error);
+      return false;
+    }
+
+    await message.reply(error);
+    return false;
   }
 
   // Get Image
