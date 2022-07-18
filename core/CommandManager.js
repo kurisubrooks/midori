@@ -1,4 +1,4 @@
-import { Collection, Permissions, Client } from 'discord.js';
+import { Collection, PermissionsBitField, Client } from 'discord.js';
 import { Routes } from 'discord-api-types/v9';
 import { REST } from '@discordjs/rest';
 
@@ -220,7 +220,7 @@ export default class CommandManager {
     let owners = '';
 
     for (const member of guild.members.cache.values()) {
-      if (member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) {
+      if (member.permissions.has(PermissionsBitField.Administrator)) {
         owners = owners === '' ? member.user.id : `${owners},${member.user.id}`;
       }
     }

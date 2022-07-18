@@ -1,4 +1,4 @@
-import { MessageEmbed } from 'discord.js';
+import { EmbedBuilder } from 'discord.js';
 import Command from '../../core/Command';
 import config from '../../config.js';
 
@@ -41,12 +41,14 @@ export default class Help extends Command {
     const command = this.findCommand(commands, args[0]);
     if (!command) return message.reply('That command does not exist!');
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setAuthor(`${message.author.username}#${message.author.discriminator}`, message.author.displayAvatarURL())
       .setThumbnail(this.client.user.displayAvatarURL())
-      .addField('Usage', `\`${config.sign}${command.name.toLowerCase()}\``, true)
-      .addField('Aliases', [command.name, ...command.aliases].map(name => name.toLowerCase()).join(', '), true)
-      .addField('Description', command.description);
+      .addFields([
+        { name: 'Usage', value: `\`${config.sign}${command.name.toLowerCase()}\``, inline: true },
+        { name: 'Aliases', value: [command.name, ...command.aliases].map(name => name.toLowerCase()).join(', '), inline: true },
+        { name: 'Description', value: command.description }
+      ]);
 
     return channel.send({ embeds: [embed] });
   }

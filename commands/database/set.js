@@ -1,4 +1,4 @@
-import { MessageEmbed } from 'discord.js';
+import { EmbedBuilder } from 'discord.js';
 import os from 'os';
 
 import Command from '../../core/Command';
@@ -75,7 +75,7 @@ export default class Set extends Command {
     let field, data, db;
 
     if (!etho || !etho[0] || etho[0].mac !== this.config.server) {
-      const embed = new MessageEmbed()
+      const embed = new EmbedBuilder()
         .setColor(this.config.colours.warn)
         .setTitle('Warning')
         .setDescription(`${this.client.user.username} isn't running from it's primary server so any saved data may not be saved.`);

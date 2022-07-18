@@ -1,4 +1,4 @@
-import { MessageEmbed } from 'discord.js';
+import { EmbedBuilder } from 'discord.js';
 import { search } from 'google-dictionary-api';
 import Command from '../../core/Command';
 
@@ -36,7 +36,7 @@ export default class Dictionary extends Command {
       fields.push({ name: type, value: typeArray.join('\n\n') });
     }
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setAuthor(message.author.tag, message.author.displayAvatarURL())
       .setTitle(`${word}`)
       .addFields(fields);

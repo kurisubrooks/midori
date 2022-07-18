@@ -1,4 +1,4 @@
-import { MessageEmbed } from 'discord.js';
+import { EmbedBuilder } from 'discord.js';
 import Command from '../../core/Command';
 import Database from '../../core/Database';
 
@@ -22,10 +22,10 @@ export default class Balance extends Command {
 
     console.log(user);
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setColor(this.config.colours.default)
       .setAuthor(user.nickname || user.user.username, user.user.avatarURL())
-      .addField('Balance', `${this.config.economy.emoji} ${balance}`);
+      .addFields([{ name: 'Balance', value: `${this.config.economy.emoji} ${balance}` }]);
 
     return channel.send({ embeds: [embed] });
   }

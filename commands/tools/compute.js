@@ -1,4 +1,4 @@
-import { MessageEmbed } from 'discord.js';
+import { EmbedBuilder } from 'discord.js';
 import request from 'request-promise';
 import Command from '../../core/Command';
 
@@ -29,11 +29,13 @@ export default class Compute extends Command {
 
     if (!response) return false;
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setColor(this.config.colours.default)
       .setAuthor(user.nickname || user.user.username, user.user.avatarURL())
-      .addField('Query', response.query)
-      .addField('Result', response.output.display);
+      .addFields([
+        { name: 'Query', value: response.query },
+        { name: 'Result', value: response.output.display }
+      ]);
 
     return channel.send({ embeds: [embed] });
   }

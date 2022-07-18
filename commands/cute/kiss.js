@@ -1,4 +1,4 @@
-import { MessageEmbed } from 'discord.js';
+import { EmbedBuilder } from 'discord.js';
 import request from 'request-promise';
 import Command from '../../core/Command';
 
@@ -31,7 +31,7 @@ export default class Kiss extends Command {
 
     if (!response) return false;
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setColor(this.config.colours.default)
       .setDescription(`**${user.tag}** kissed **${target.user.tag}**`)
       .setImage(`https://cdn.ram.moe${response.path.replace('i/', '')}`);

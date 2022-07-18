@@ -1,4 +1,4 @@
-import { MessageEmbed } from 'discord.js';
+import { EmbedBuilder } from 'discord.js';
 import request from 'request-promise';
 import moment from 'moment';
 import cheerio from 'cheerio';
@@ -38,12 +38,14 @@ export default class Time extends Command {
       return this.error('No Results', channel);
     }
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setColor(this.config.colours.default)
       .setAuthor(user.nickname || user.user.username, user.user.avatarURL())
-      .addField('Location', place.replace('Time in ', '').replace(' now', ''))
-      .addField('Time', moment(`${time}`, 'HH:mm:ssA').format('h:mm a'), true)
-      .addField('Date', date, true);
+      .addFields([
+        { name: 'Location', value: place.replace('Time in ', '').replace(' now', '') },
+        { name: 'Time', value: moment(`${time}`, 'HH:mm:ssA').format('h:mm a'), inline: true },
+        { name: 'Date', value: date, inline: true }
+      ]);
 
     return channel.send({ embeds: [embed] });
   }

@@ -1,4 +1,4 @@
-import { MessageEmbed } from 'discord.js';
+import { EmbedBuilder } from 'discord.js';
 import config from '../../config';
 import Logger from './Logger';
 
@@ -7,11 +7,13 @@ export const toUpper = str => {
 };
 
 export const error = (name, message, channel) => {
-  const embed = new MessageEmbed()
+  const embed = new EmbedBuilder()
     .setColor(config.colours.error)
-    .addField('Module', name, true)
-    .addField('Time', Logger.time(), true)
-    .addField('Message', message);
+    .addFields([
+      { name: 'Module', value: name, inline: true },
+      { name: 'Time', value: Logger.time(), inline: true },
+      { name: 'Message', value: message }
+    ]);
 
   channel = channel || null;
   Logger.error(name, message);

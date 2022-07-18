@@ -1,4 +1,4 @@
-import { MessageEmbed } from 'discord.js';
+import { EmbedBuilder } from 'discord.js';
 import { translate } from 'googletrans';
 
 import Command from '../../core/Command';
@@ -93,11 +93,13 @@ export default class Translate extends Command {
       return interaction.reply({ content: 'Unknown Error', ephemeral: true });
     }
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setColor(this.config.colours.default)
       .setAuthor(user.nickname || user.user.username, user.user.avatarURL())
-      .addField(this.validate(from || response.src).name, query)
-      .addField(this.validate(to).name, response.text);
+      .addFields([
+        { name: this.validate(from || response.src).name, value: query },
+        { name: this.validate(to).name, value: response.text }
+      ]);
 
     if (deferred) return interaction.editReply({ embeds: [embed] });
     return interaction.reply({ embeds: [embed] });
