@@ -21,7 +21,7 @@
     "discord.js": "^14.0.2",
     "google-dictionary-api": "^1.0.8",
     "googletrans": "^1.0.4",
-    "moment": "^2.29.3",
+    "moment": "^2.29.4",
     "moment-duration-format": "^2.3.2",
     "moment-timezone": "^0.5.34",
     "node-fetch": "^3.2.5",
