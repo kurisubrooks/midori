@@ -43,7 +43,7 @@ export default class CommandManager {
       }
     }
 
-    this.registerCommands(this.slashCommands);
+    // this.registerCommands(this.slashCommands);
   }
 
   async startModule(location, reloaded) {
@@ -60,7 +60,7 @@ export default class CommandManager {
 
     Logger.info(`${reloaded ? 'Reloaded' : 'Loaded'} Command`, toUpper(commandName));
     this.commands.set(commandName, instance);
-    this.slashCommands.set(commandName, instance.generateSlashCommand().toJSON());
+    // this.slashCommands.set(commandName, instance.generateSlashCommand().toJSON());
 
     for (const alias of instance.aliases) {
       if (this.aliases.has(alias)) {
@@ -132,6 +132,7 @@ export default class CommandManager {
     const channel = interaction.channel;
     const user = interaction.member;
     interaction.type = 'interaction';
+    interaction.prefix = '/';
     this.giveCoins(user);
 
     // Check if Command requires Admin
