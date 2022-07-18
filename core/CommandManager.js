@@ -120,6 +120,7 @@ export default class CommandManager {
     return { command, commandName };
   }
 
+  /*
   async handleInteraction(interaction) {
     if (!interaction.isCommand()) return false;
     const { commandName } = interaction;
@@ -147,6 +148,7 @@ export default class CommandManager {
     // Run Command
     return this.runCommand(command, interaction, channel, user, interaction.options);
   }
+  */
 
   async handleMessage(message) {
     // Don't Parse Bot Messages
@@ -220,7 +222,7 @@ export default class CommandManager {
     let owners = '';
 
     for (const member of guild.members.cache.values()) {
-      if (member.permissions.has(PermissionsBitField.Administrator)) {
+      if (member.permissions.has(PermissionsBitField.Flags.Administrator)) {
         owners = owners === '' ? member.user.id : `${owners},${member.user.id}`;
       }
     }
