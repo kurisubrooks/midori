@@ -18,7 +18,7 @@
     "cheerio": "^1.0.0-rc.11",
     "core-worker": "^0.3.5",
     "discord-api-types": "^0.33.3",
-    "discord.js": "^13.8.0",
+    "discord.js": "^14.0.2",
     "google-dictionary-api": "^1.0.8",
     "googletrans": "^1.0.4",
     "moment": "^2.29.3",
