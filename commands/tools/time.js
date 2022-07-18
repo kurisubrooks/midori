@@ -40,7 +40,7 @@ export default class Time extends Command {
 
     const embed = new EmbedBuilder()
       .setColor(this.config.colours.default)
-      .setAuthor(user.nickname || user.user.username, user.user.avatarURL())
+      .setAuthor({ name: user.nickname || user.user.username, iconURL: user.user.avatarURL() })
       .addFields([
         { name: 'Location', value: place.replace('Time in ', '').replace(' now', '') },
         { name: 'Time', value: moment(`${time}`, 'HH:mm:ssA').format('h:mm a'), inline: true },

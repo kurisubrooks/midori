@@ -41,7 +41,7 @@ export default class Pay extends Command {
 
     const embed = new EmbedBuilder()
       .setColor(this.config.colours.default)
-      .setAuthor(user.nickname || user.user.username, user.user.avatarURL())
+      .setAuthor({ name: user.nickname || user.user.username, iconURL: user.user.avatarURL() })
       .addFields([
         { name: 'Paid', value: `${this.config.economy.emoji} ${amount}` },
         { name: 'Balance', value: `${this.config.economy.emoji} ${balance}` }

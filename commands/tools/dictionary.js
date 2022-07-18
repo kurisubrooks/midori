@@ -37,7 +37,7 @@ export default class Dictionary extends Command {
     }
 
     const embed = new EmbedBuilder()
-      .setAuthor(message.author.tag, message.author.displayAvatarURL())
+      .setAuthor({ name: message.author.tag, iconURL: message.author.displayAvatarURL() })
       .setTitle(`${word}`)
       .addFields(fields);
 

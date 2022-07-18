@@ -31,7 +31,7 @@ export default class Currency extends Command {
 
     const embed = new EmbedBuilder()
       .setColor(this.config.colours.default)
-      .setAuthor(user.nickname || user.user.username, user.user.avatarURL())
+      .setAuthor({ name: user.nickname || user.user.username, iconURL: user.user.avatarURL() })
       .addFields([
         { name: 'Query', value: response.query },
         { name: 'Result', value: response.output.display }

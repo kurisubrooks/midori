@@ -95,7 +95,7 @@ export default class Translate extends Command {
 
     const embed = new EmbedBuilder()
       .setColor(this.config.colours.default)
-      .setAuthor(user.nickname || user.user.username, user.user.avatarURL())
+      .setAuthor({ name: user.nickname || user.user.username, iconURL: user.user.avatarURL() })
       .addFields([
         { name: this.validate(from || response.src).name, value: query },
         { name: this.validate(to).name, value: response.text }

@@ -42,7 +42,7 @@ export default class Help extends Command {
     if (!command) return message.reply('That command does not exist!');
 
     const embed = new EmbedBuilder()
-      .setAuthor(`${message.author.username}#${message.author.discriminator}`, message.author.displayAvatarURL())
+      .setAuthor({ name: `${message.author.username}#${message.author.discriminator}`, iconURL: message.author.displayAvatarURL() })
       .setThumbnail(this.client.user.displayAvatarURL())
       .addFields([
         { name: 'Usage', value: `\`${config.sign}${command.name.toLowerCase()}\``, inline: true },

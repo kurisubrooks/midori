@@ -24,7 +24,7 @@ export default class Balance extends Command {
 
     const embed = new EmbedBuilder()
       .setColor(this.config.colours.default)
-      .setAuthor(user.nickname || user.user.username, user.user.avatarURL())
+      .setAuthor({ name: user.nickname || user.user.username, iconURL: user.user.avatarURL() })
       .addFields([{ name: 'Balance', value: `${this.config.economy.emoji} ${balance}` }]);
 
     return channel.send({ embeds: [embed] });
