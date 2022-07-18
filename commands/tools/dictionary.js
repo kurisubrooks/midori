@@ -1,8 +1,8 @@
-const { search } = require('google-dictionary-api');
-const { MessageEmbed } = require('discord.js');
-const Command = require('../../core/Command');
+import { EmbedBuilder } from 'discord.js';
+import { search } from 'google-dictionary-api';
+import Command from '../../core/Command';
 
-class Dictionary extends Command {
+export default class Dictionary extends Command {
   constructor(client) {
     super(client, {
       name: 'Dictionary',
@@ -36,13 +36,11 @@ class Dictionary extends Command {
       fields.push({ name: type, value: typeArray.join('\n\n') });
     }
 
-    const embed = new MessageEmbed()
-      .setAuthor(message.author.tag, message.author.displayAvatarURL())
+    const embed = new EmbedBuilder()
+      .setAuthor({ name: message.author.tag, iconURL: message.author.displayAvatarURL() })
       .setTitle(`${word}`)
       .addFields(fields);
 
     return channel.send({ embeds: [embed] });
   }
 }
-
-module.exports = Dictionary;

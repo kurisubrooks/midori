@@ -1,9 +1,10 @@
-const config = require('../config');
-const keychain = require('../keychain.json');
-const Logger = require('./Util/Logger');
-const { error, toUpper } = require('./Util/Util');
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { error, toUpper } from './Util/Util';
+import Logger from './Util/Logger';
+import keychain from '../keychain.json';
+import config from '../config';
 
-module.exports = class Command {
+export default class Command {
   constructor(client, data = {}) {
     if (typeof data !== 'object') throw new TypeError('Client data parameter must be an object');
 
@@ -14,6 +15,7 @@ module.exports = class Command {
     this.name = data.name;
     this.description = data.description;
     this.aliases = data.aliases || [];
+    this.args = data.args || [];
     this.process = data.process || false;
     this.usage = data.usage || '';
     this.guild = data.guild || false;
@@ -43,12 +45,43 @@ module.exports = class Command {
     return error(this.name, message, channel);
   }
 
-  delete() {
-    return true;
-    // return message.delete().catch(err => err.message);
+  generateSlashCommand() {
+    const slashCommand = new SlashCommandBuilder()
+      .setName(this.name.toLowerCase())
+      .setDescription(this.description);
+
+    if (this.args) {
+      const handle = (opt, i) => {
+        const option = opt.setName(i.name)
+          .setDescription(i.desc)
+          .setRequired(i.required || false);
+
+        if (i.choices) {
+          option.addChoices(i.choices);
+        }
+
+        return option;
+      };
+
+      this.args.forEach(i => {
+        switch(i.takes) {
+          case 'string':
+            slashCommand.addStringOption(opt => handle(opt, i));
+            break;
+          case 'boolean':
+            slashCommand.addBooleanOption(opt => handle(opt, i));
+            break;
+          case 'user':
+            slashCommand.addUserOption(opt => handle(opt, i));
+            break;
+        }
+      });
+    }
+
+    return slashCommand;
   }
 
   hasAdmin(user) {
     return config.admin.includes(user.id);
   }
-};
+}

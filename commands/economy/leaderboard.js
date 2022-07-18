@@ -1,42 +1,34 @@
-const Command = require('../../core/Command');
-const Database = require('../../core/Database');
-const { MessageEmbed } = require('discord.js');
+import { EmbedBuilder } from 'discord.js';
+import Command from '../../core/Command';
+import Database from '../../core/Database';
 
-class Leaderboard extends Command {
+export default class Leaderboard extends Command {
   constructor(client) {
     super(client, {
       name: 'Leaderboard',
       description: 'Get the richest users.',
-      aliases: ['top', 'richest', 'list'],
-      disabled: true
+      aliases: []
     });
   }
 
   async run(message, channel) {
-    const db = await Database.Models.Bank.findAll({ order: [['balance', 'DESC']] });
-    const embed = new MessageEmbed()
+    const Bank = (await Database.Models.Bank).default;
+    const db = await Bank.findAll({ order: [['balance', 'DESC']] });
+    const embed = new EmbedBuilder()
       .setTitle('Leaderboard')
       .setColor(this.config.colours.default);
 
-    let total = 0;
+    db.slice(0, 9).map(i => i.id).forEach((value, index) => {
+      const user = message.guild.members.cache.get(value);
+      if (user && !user.user.bot) {
+        embed.addFields([{
+          name: `${index + 1}. ${user.nickname || user.user.username}`,
+          value: `${this.config.economy.emoji} ${db.find(i => i.id === value).balance}`,
+          inline: true
+        }]);
+      }
+    });
 
-    for (const index of db) {
-      if (total > 9) break;
-
-      const user = message.guild.members.cache.get(db[index].id);
-      console.log(total, user);
-      if (!user || user.user.bot) continue;
-
-      embed.addField(
-        `${total + 1}. ${user.nickname || user.user.username}`,
-        `${this.config.economy.emoji} ${db[index].balance}`, true);
-
-      total += 1;
-    }
-
-    await channel.send({ embeds: [embed] });
-    return this.delete(message);
+    return channel.send({ embeds: [embed] });
   }
 }
-
-module.exports = Leaderboard;

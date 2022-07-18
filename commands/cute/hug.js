@@ -1,8 +1,8 @@
-const Command = require('../../core/Command');
-const request = require('request-promise');
-const { MessageEmbed } = require('discord.js');
+import { EmbedBuilder } from 'discord.js';
+import request from 'request-promise';
+import Command from '../../core/Command';
 
-class Hug extends Command {
+export default class Hug extends Command {
   constructor(client) {
     super(client, {
       name: 'Hug',
@@ -12,11 +12,11 @@ class Hug extends Command {
   }
 
   async run(message, channel, user) {
-    if (message.pung.length === 0) {
+    if (message.pingedUsers.length === 0) {
       return message.reply("You didn't specify whom you want to hug!");
     }
 
-    const target = message.pung[0];
+    const target = message.pingedUsers[0];
 
     if (target.id === user.id) {
       user = this.client.user;
@@ -31,14 +31,11 @@ class Hug extends Command {
 
     if (!response) return false;
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setColor(this.config.colours.default)
       .setDescription(`**${user.tag}** hugs **${target.user.tag}**`)
       .setImage(`https://cdn.ram.moe${response.path.replace('i/', '')}`);
 
-    await channel.send({ embeds: [embed] });
-    return this.delete(message);
+    return channel.send({ embeds: [embed] });
   }
 }
-
-module.exports = Hug;

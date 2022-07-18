@@ -1,5 +1,5 @@
-const Sequelize = require('sequelize');
-const Database = require('../Database');
+import Sequelize from 'sequelize';
+import Database from '../Database';
 
 const Bank = Database.db.define('bank', {
   id: {
@@ -10,4 +10,4 @@ const Bank = Database.db.define('bank', {
 });
 
 Bank.sync();
-module.exports = Bank;
+export default Bank;

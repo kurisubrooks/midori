@@ -1,8 +1,8 @@
-const request = require('request-promise');
-const { MessageEmbed } = require('discord.js');
-const Command = require('../../core/Command');
+import { EmbedBuilder } from 'discord.js';
+import request from 'request-promise';
+import Command from '../../core/Command';
 
-class Search extends Command {
+export default class Search extends Command {
   constructor(client) {
     super(client, {
       name: 'Search',
@@ -34,22 +34,19 @@ class Search extends Command {
       const result = response.items[0];
       const link = decodeURIComponent(result.link);
 
-      const embed = new MessageEmbed()
+      const embed = new EmbedBuilder()
         .setColor(this.config.colours.default)
-        .setAuthor(user.nickname, user.avatarURL())
+        .setAuthor({ name: user.nickname || user.user.username, iconURL: user.user.avatarURL() })
         .setURL(link)
         .setTitle(result.title)
         .setDescription(result.snippet)
-        .setFooter(result.link, result.link);
+        .setFooter({ text: result.link, url: result.link });
 
       if (result.pagemap && result.pagemap.cse_thumbnail) embed.setThumbnail(result.pagemap.cse_thumbnail[0].src);
 
-      await channel.send({ embeds: [embed] });
-      return this.delete(message);
+      return channel.send({ embeds: [embed] });
     }
 
     return false;
   }
 }
-
-module.exports = Search;

@@ -1,8 +1,8 @@
-const { MessageEmbed } = require('discord.js');
-const request = require('request-promise');
-const Command = require('../../core/Command');
+import { EmbedBuilder } from 'discord.js';
+import request from 'request-promise';
+import Command from '../../core/Command';
 
-class Compute extends Command {
+export default class Compute extends Command {
   constructor(client) {
     super(client, {
       name: 'Compute',
@@ -29,15 +29,14 @@ class Compute extends Command {
 
     if (!response) return false;
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setColor(this.config.colours.default)
-      .setAuthor(user.nickname, user.avatarURL())
-      .addField('Query', response.query)
-      .addField('Result', response.output.display);
+      .setAuthor({ name: user.nickname || user.user.username, iconURL: user.user.avatarURL() })
+      .addFields([
+        { name: 'Query', value: response.query },
+        { name: 'Result', value: response.output.display }
+      ]);
 
-    await channel.send({ embeds: [embed] });
-    return this.delete(message);
+    return channel.send({ embeds: [embed] });
   }
 }
-
-module.exports = Compute;

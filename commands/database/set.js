@@ -1,12 +1,15 @@
-const Command = require('../../core/Command');
-const Database = require('../../core/Database');
-const { MessageEmbed } = require('discord.js');
+import { EmbedBuilder } from 'discord.js';
+import os from 'os';
+
+import Command from '../../core/Command';
+import Database from '../../core/Database';
+import { geolocation } from '../weather/conditions';
 
 function cap(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-class Set extends Command {
+export default class Set extends Command {
   constructor(client) {
     super(client, {
       name: 'Set',
@@ -27,7 +30,8 @@ class Set extends Command {
   }
 
   static async getUser(user) {
-    let db = await Database.Models.Users.findOne({ where: { id: user.id } });
+    const Users = (await Database.Models.Users).default;
+    let db = await Users.findOne({ where: { id: user.id } });
 
     // Preliminary Updates to DB
     if (db) {
@@ -47,13 +51,13 @@ class Set extends Command {
         await db.update({ data: JSON.stringify(update) });
       }
 
-      db = await Database.Models.Users.findOne({ where: { id: user.id } });
+      db = await Users.findOne({ where: { id: user.id } });
     }
 
     // Create User if not exists
     if (!db) {
-      await Database.Models.Users.create({ id: user.id, data: JSON.stringify(Set.getTemplate()) });
-      db = await Database.Models.Users.findOne({ where: { id: user.id } });
+      await Users.create({ id: user.id, data: JSON.stringify(Set.getTemplate()) });
+      db = await Users.findOne({ where: { id: user.id } });
     }
 
     return db;
@@ -67,20 +71,19 @@ class Set extends Command {
   }
 
   async run(message, channel, user, args) {
-    const fields = ['location'];
-    const etho = require('os').networkInterfaces().eth0;
+    const etho = os.networkInterfaces().eth0;
     let field, data, db;
 
     if (!etho || !etho[0] || etho[0].mac !== this.config.server) {
-      const embed = new MessageEmbed()
+      const embed = new EmbedBuilder()
         .setColor(this.config.colours.warn)
         .setTitle('Warning')
-        .setDescription("Midori isn't running from it's primary server so any saved data may not be saved.");
+        .setDescription(`${this.client.user.username} isn't running from it's primary server so any saved data may not be saved.`);
 
       channel.send({ embeds: [embed] });
     }
 
-    if (message.pung.length > 0) {
+    if (message.pingedUsers.length > 0) {
       if (!this.hasAdmin(message.author)) {
         return message.reply('Insufficient Permissions');
       }
@@ -91,6 +94,7 @@ class Set extends Command {
     // No Command Supplied
     /*
     if (args.length === 0) {
+      const fields = ['location'];
       await message.reply(`What field would you like to update? Available fields:\`${fields.join(', ')}\`. Expires in 30s.`);
       const filter = msg => msg.author.id === user.id;
       const res = await channel.awaitMessages(filter, { max: 1, time: 30 * 1000 });
@@ -143,7 +147,6 @@ class Set extends Command {
     }
 
     if (field === 'location') {
-      const { geolocation } = require('../weather/conditions');
       const parsed = await geolocation(data);
 
       // Handle Error
@@ -166,5 +169,3 @@ class Set extends Command {
     return message.reply("Unfortunately it doesn't look like that's a valid field.");
   }
 }
-
-module.exports = Set;

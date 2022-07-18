@@ -1,15 +1,25 @@
-const fs = require('fs');
-const path = require('path');
-const config = require('../config');
-const Logger = require('./Util/Logger');
-const Database = require('./Database');
-const { error, toUpper } = require('./Util/Util');
-const { Collection, Permissions, Client } = require('discord.js');
+import { Collection, PermissionsBitField, Client } from 'discord.js';
+import { Routes } from 'discord-api-types/v9';
+import { REST } from '@discordjs/rest';
 
-module.exports = class CommandManager {
+import fs from 'fs';
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+import config from '../config';
+import keys from '../keychain.json';
+import Logger from './Util/Logger';
+import Database from './Database';
+import { error, toUpper } from './Util/Util';
+
+const rest = new REST({ version: '9' }).setToken(keys.discord);
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+export default class CommandManager {
   constructor(client) {
     this.client = client;
     this.commands = new Collection();
+    this.slashCommands = new Collection();
     this.aliases = new Collection();
 
     if (!this.client || !(this.client instanceof Client)) {
@@ -17,7 +27,7 @@ module.exports = class CommandManager {
     }
   }
 
-  loadCommands(directory) {
+  async loadCommands(directory) {
     const folders = fs.readdirSync(path.join(__dirname, '..', directory));
 
     for (const folder of folders) {
@@ -29,15 +39,16 @@ module.exports = class CommandManager {
         if (path.extname(file) !== '.js') continue;
 
         const location = path.join(__dirname, '..', directory, folder, file);
-
-        this.startModule(location);
+        await this.startModule(location);
       }
     }
+
+    // this.registerCommands(this.slashCommands);
   }
 
-  startModule(location, reloaded) {
-    const Command = require(location);
-    const instance = new Command(this.client);
+  async startModule(location, reloaded) {
+    const Command = (await import(`${location}?t=${new Date().getTime()}`)).default;
+    const instance = new Command(this.client); // eslint-disable-line new-cap
     const commandName = instance.name.toLowerCase();
     instance.location = location;
 
@@ -49,6 +60,7 @@ module.exports = class CommandManager {
 
     Logger.info(`${reloaded ? 'Reloaded' : 'Loaded'} Command`, toUpper(commandName));
     this.commands.set(commandName, instance);
+    // this.slashCommands.set(commandName, instance.generateSlashCommand().toJSON());
 
     for (const alias of instance.aliases) {
       if (this.aliases.has(alias)) {
@@ -59,9 +71,19 @@ module.exports = class CommandManager {
     }
   }
 
+  async registerCommands(commands) {
+    const botId = this.client.user.id;
+    const guildId = '824959087724068884';
+    commands = Array.from(commands, ([, v]) => v);
+    await rest.put(Routes.applicationGuildCommands(botId, guildId), { body: commands })
+      .then(() => console.log('Successfully registered application commands.'))
+      .catch(console.error);
+  }
+
   reloadCommands() {
     Logger.warn('Reload Manager', 'Clearing Module Cache');
     this.commands = new Collection();
+    this.slashCommands = new Collection();
     this.aliases = new Collection();
 
     Logger.warn('Reload Manager', 'Reinitialising Modules');
@@ -77,7 +99,6 @@ module.exports = class CommandManager {
     const location = existingCommand.location;
     for (const alias of existingCommand.aliases) this.aliases.delete(alias);
     this.commands.delete(commandName);
-    delete require.cache[require.resolve(location)];
     this.startModule(location, true);
     return true;
   }
@@ -86,7 +107,8 @@ module.exports = class CommandManager {
     try {
       return command.run(message, channel, user, args);
     } catch(err) {
-      return error('Command', err);
+      Logger.error('Command', err);
+      return error('Command', 'An error occurred while executing this command. Please try again later.', channel);
     }
   }
 
@@ -98,6 +120,36 @@ module.exports = class CommandManager {
     return { command, commandName };
   }
 
+  /*
+  async handleInteraction(interaction) {
+    if (!interaction.isCommand()) return false;
+    const { commandName } = interaction;
+
+    // Find Command
+    const command = this.commands.get(commandName) || this.aliases.get(commandName);
+    if (!command) return false;
+
+    // Helper Variables
+    const channel = interaction.channel;
+    const user = interaction.member;
+    interaction.type = 'interaction';
+    interaction.prefix = '/';
+    this.giveCoins(user);
+
+    // Check if Command requires Admin
+    if (command.admin && !config.admin.includes(user.user.id)) {
+      interaction.reply({ content: 'You don\'t have access to this command.', ephemeral: true });
+      return false;
+    }
+
+    // Log Message
+    Logger.warn('Ran Command', `<${user.user.username}#${user.user.discriminator}>: ${interaction.commandName} ${JSON.stringify(interaction.options._hoistedOptions)}`);
+
+    // Run Command
+    return this.runCommand(command, interaction, channel, user, interaction.options);
+  }
+  */
+
   async handleMessage(message) {
     // Don't Parse Bot Messages
     if (message.author.bot) return false;
@@ -108,8 +160,7 @@ module.exports = class CommandManager {
     let text = message.cleanContent;
     let args = message.content.split(' ');
     const channel = message.channel;
-    // const server = message.guild ? message.guild.name : "DM";
-    const user = message.author;
+    const user = message.member || message.guild.members.cache.get(message.author.id);
     const attachments = message.attachments.size > 0;
     const pattern = new RegExp(`<@!?${this.client.user.id}>`, 'i');
     const mentioned = message.mentions.has(this.client.user) && pattern.test(args[0]);
@@ -121,43 +172,24 @@ module.exports = class CommandManager {
     if (attachments) text += attachments && text.length < 1 ? '<file>' : ' <file>';
     if (!triggered && !mentioned) return false;
 
-    // Bot was mentioned but no command supplied, await command
-    /*
-    if (mentioned && args.length === 1) {
-      await message.reply('Hi, how can I help? Respond with the command you want to use. Expires in 60s, otherwise use `cancel` to close this prompt.');
-      const filter = msg => msg.author.id === user.id;
-      const res = await channel.awaitMessages(filter, { max: 1, time: 60000 });
-      message = res.first();
-
-      if (message.content === 'cancel') {
-        channel.send('Got it.');
-        return false;
-      }
-
-      // check if they responded with a command
-
-      text += ` ${message.content}`;
-      args = [args[0], ...message.content.split(' ')];
-    }
-    */
-
     // Find Command
     const instance = this.findCommand(mentioned, args);
     const command = instance.command;
 
     // Set Variables
+    message.type = 'message';
     message.context = this;
     message.command = instance.commandName;
     message.prefix = prefix;
-    message.pung = [];
-    user.nickname = message.member?.displayName || message.author.username;
+    message.pingedUsers = [];
+    if (!user.nickname) user.nickname = message.member?.displayName || message.author.username;
 
     // Check for Pinged user
     for (let index = 0; index < args.length; index++) {
       const userMatched = /<@!?([0-9]+)>/g.exec(args[index]);
 
       if (userMatched && userMatched.length > 1) {
-        message.pung.push(message.guild.members.cache.get(userMatched[1]));
+        message.pingedUsers.push(message.guild.members.cache.get(userMatched[1]));
         args.splice(index, 1);
       }
     }
@@ -180,7 +212,7 @@ module.exports = class CommandManager {
     if (command.admin && !config.admin.includes(user.id)) return false;
 
     // Log Message
-    Logger.warn('Ran Command', `<${user.tag}}>: ${text}`);
+    Logger.warn('Ran Command', `<${message.author.tag}>: ${text}`);
 
     // Run Command
     return this.runCommand(command, message, channel, user, args);
@@ -190,7 +222,7 @@ module.exports = class CommandManager {
     let owners = '';
 
     for (const member of guild.members.cache.values()) {
-      if (member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) {
+      if (member.permissions.has(PermissionsBitField.Flags.Administrator)) {
         owners = owners === '' ? member.user.id : `${owners},${member.user.id}`;
       }
     }
@@ -203,11 +235,12 @@ module.exports = class CommandManager {
 
     const id = guild.id;
     const owners = this.getAdministrators(guild);
+    const Config = (await Database.Models.Config).default;
 
-    let db = await Database.Models.Config.findOne({ where: { id } });
+    let db = await Config.findOne({ where: { id } });
 
     if (!db) {
-      db = await Database.Models.Config.create({ id, owners, prefix: config.sign, disabled: false, permissions: '' });
+      db = await Config.create({ id, owners, prefix: config.sign, disabled: false, permissions: '' });
     }
 
     if (!db.owners || db.owners === '') {
@@ -220,13 +253,13 @@ module.exports = class CommandManager {
   }
 
   async giveCoins(user) {
-    const db = Database.Models.Bank;
-    const person = await db.findOne({ where: { id: user.id } });
+    const Bank = (await Database.Models.Bank).default;
+    const person = await Bank.findOne({ where: { id: user.id } });
 
     if (person) {
       return person.update({ balance: person.balance + 1 });
     } else {
-      return db.create({ id: user.id, balance: 1 });
+      return Bank.create({ id: user.id, balance: 1 });
     }
   }
-};
+}

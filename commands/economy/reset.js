@@ -1,7 +1,7 @@
-const Command = require('../../core/Command');
-const Database = require('../../core/Database');
+import Command from '../../core/Command';
+import Database from '../../core/Database';
 
-class ResetBalance extends Command {
+export default class ResetBalance extends Command {
   constructor(client) {
     super(client, {
       name: 'reset',
@@ -13,13 +13,14 @@ class ResetBalance extends Command {
   }
 
   async run(message, channel, user) {
-    if (message.pung.length === 0) {
+    if (message.pingedUsers.length === 0) {
       return message.reply("You didn't specify whom you want to pay!");
     }
 
-    user = message.pung[0];
+    user = message.pingedUsers[0];
 
-    const recipient = await Database.Models.Bank.findOne({ where: { id: user.id } });
+    const Bank = (await Database.Models.Bank).default;
+    const recipient = await Bank.findOne({ where: { id: user.id } });
 
     if (user.bot || user.user.bot) {
       return message.reply('Bots are not enabled for use with Economy.');
@@ -31,5 +32,3 @@ class ResetBalance extends Command {
     return message.reply('Balance Reset.');
   }
 }
-
-module.exports = ResetBalance;

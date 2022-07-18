@@ -1,5 +1,6 @@
 {
   "name": "midori",
+  "type": "module",
   "version": "5.0.0",
   "description": "advanced modular discord.js bot/framework",
   "main": "index.js",
@@ -7,28 +8,31 @@
   "license": "SEE LICENSE IN LICENSE.md",
   "repository": "kurisubrooks/midori",
   "scripts": {
-    "start": "node index",
+    "start": "node --experimental-specifier-resolution=node --no-warnings index",
     "lint": "./node_modules/.bin/eslint ."
   },
   "dependencies": {
-    "canvas": "^2.8.0",
-    "chalk": "^4.1.2",
-    "cheerio": "^1.0.0-rc.10",
+    "@discordjs/rest": "^0.5.0",
+    "canvas": "^2.9.1",
+    "chalk": "^5.0.1",
+    "cheerio": "^1.0.0-rc.11",
     "core-worker": "^0.3.5",
-    "discord.js": "^13.1.0",
+    "discord-api-types": "^0.33.3",
+    "discord.js": "^14.0.2",
     "google-dictionary-api": "^1.0.8",
-    "googletrans": "^1.0.3",
-    "moment": "^2.29.1",
+    "googletrans": "^1.0.4",
+    "moment": "^2.29.3",
     "moment-duration-format": "^2.3.2",
-    "moment-timezone": "^0.5.33",
+    "moment-timezone": "^0.5.34",
+    "node-fetch": "^3.2.5",
     "request-promise": "^4.2.6",
-    "sequelize": "^6.6.5",
-    "socket.io-client": "^4.2.0",
-    "sqlite3": "^5.0.2"
+    "sequelize": "^6.20.1",
+    "socket.io-client": "^4.5.1",
+    "sqlite3": "^5.0.8"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.5",
-    "@babel/eslint-parser": "^7.15.7",
-    "eslint": "^7.32.0"
+    "@babel/core": "^7.18.2",
+    "@babel/eslint-parser": "^7.18.2",
+    "eslint": "^8.17.0"
   }
 }

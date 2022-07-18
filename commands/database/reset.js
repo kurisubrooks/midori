@@ -1,7 +1,7 @@
-const Database = require('./set');
-const Command = require('../../core/Command');
+import Command from '../../core/Command';
+import Database from './set';
 
-class Reset extends Command {
+export default class Reset extends Command {
   constructor(client) {
     super(client, {
       name: 'Reset',
@@ -18,4 +18,3 @@ class Reset extends Command {
   }
 }
 
-module.exports = Reset;

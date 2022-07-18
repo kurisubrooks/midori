@@ -1,10 +1,12 @@
-const Command = require('../../core/Command');
-const moment = require('moment');
-require('moment-duration-format');
-const worker = require('core-worker');
-const { MessageEmbed } = require('discord.js');
+import { EmbedBuilder } from 'discord.js';
+import moment from 'moment';
+import 'moment-duration-format';
+import worker from 'core-worker';
+import os from 'os';
 
-class Status extends Command {
+import Command from '../../core/Command';
+
+export default class Status extends Command {
   constructor(client) {
     super(client, {
       name: 'Status',
@@ -15,28 +17,30 @@ class Status extends Command {
 
   async run(message, channel) {
     const npmv = await worker.process('npm -v').death();
-    const etho = require('os').networkInterfaces().eth0;
+    const etho = os.networkInterfaces().eth0;
+    const embeds = [];
 
     if (!etho || !etho[0] || etho[0].mac !== this.config.server) {
-      const embed = new MessageEmbed()
+      const embed = new EmbedBuilder()
         .setColor(this.config.colours.warn)
         .setTitle('Warning')
-        .setDescription("Midori doesn't seem to be running from it's usual server, this usually means it's running in Development Mode, which may add extra latency to command response time.");
+        .setDescription(`${this.client.user.username} doesn't seem to be running from it's usual server, this usually means it's running in Development Mode, which may add extra latency to command response time.`);
 
-      channel.send({ embeds: [embed] });
+      embeds.push(embed);
     }
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setColor(this.config.colours.default)
-      .setTitle('Midori Status')
+      .setTitle(`${this.client.user.username} Status`)
       .setThumbnail(this.client.user.avatarURL())
-      .addField('Uptime', moment.duration(this.client.uptime).format('d[d] h[h] m[m] s[s]'), true)
-      .addField('Memory Usage', `${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)} MB`, true)
-      .addField('Node Version', process.version.replace('v', ''), true)
-      .addField('NPM Version', npmv.data.replace('\n', ''), true);
+      .addFields([
+        { name: 'Uptime', value: moment.duration(this.client.uptime).format('d[d] h[h] m[m] s[s]'), inline: true },
+        { name: 'Memory Usage', value: `${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)} MB`, inline: true },
+        { name: 'Node Version', value: process.version.replace('v', ''), inline: true },
+        { name: 'NPM Version', value: npmv.data.replace('\n', ''), inline: true }
+      ]);
 
-    return channel.send({ embeds: [embed] });
+    embeds.push(embed);
+    return channel.send({ embeds: embeds });
   }
 }
-
-module.exports = Status;

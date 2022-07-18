@@ -2,34 +2,34 @@
 // by @kurisubrooks
 
 // Core
-const { Client, Intents } = require('discord.js');
-const { error } = require('./core/Util/Util');
-const keys = require('./keychain.json');
-const config = require('./config.js');
-const Logger = require('./core/Util/Logger');
-const CommandManager = require('./core/CommandManager');
+import { Client, GatewayIntentBits } from 'discord.js';
+import { error } from './core/Util/Util';
+import keys from './keychain.json';
+import config from './config.js';
+import Logger from './core/Util/Logger';
+import CommandManager from './core/CommandManager';
 // const SubprocessManager = require("./core/SubprocessManager");
 
 // Initialise
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_INVITES] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildInvites, GatewayIntentBits.MessageContent] });
 const Manager = new CommandManager(client);
 // const Subprocesses = new SubprocessManager(client);
 
 const onReady = () => {
+  Manager.loadCommands(config.directory);
   Logger.success('Discord', `Ready, Logged in as ${client.user.username}`);
   // Subprocesses.loadModules("./subprocesses/");
 };
-
-Manager.loadCommands(config.directory);
 
 // Handle Discord
 client.login(keys.discord);
 client.once('ready', onReady);
 client.on('warn', warn => error('Core', warn));
 client.on('error', err => error('Core', err));
+// client.on('interactionCreate', interaction => Manager.handleInteraction(interaction));
 client.on('messageCreate', message => Manager.handleMessage(message));
 client.on('messageUpdate', (old, _new) => {
   if (old.content !== _new.content) Manager.handleMessage(_new);
 });
 
-module.exports = client;
+export default client;

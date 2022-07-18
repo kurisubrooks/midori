@@ -1,33 +1,32 @@
-const Command = require('../../core/Command');
-const Database = require('../../core/Database');
-const { MessageEmbed } = require('discord.js');
+import { EmbedBuilder } from 'discord.js';
+import Command from '../../core/Command';
+import Database from '../../core/Database';
 
-class Balance extends Command {
+export default class Balance extends Command {
   constructor(client) {
     super(client, {
       name: 'Balance',
       description: "Get a user's balance.",
-      aliases: ['balance', 'bal', 'coins', 'cheese'],
-      disabled: true
+      aliases: []
     });
   }
 
   async run(message, channel, user) {
-    if (message.pung.length > 0) {
-      user = message.pung[0];
+    if (message.pingedUsers.length > 0) {
+      user = message.pingedUsers[0];
     }
 
-    const data = await Database.Models.Bank.findOne({ where: { id: user.id } });
+    const Bank = (await Database.Models.Bank).default;
+    const data = await Bank.findOne({ where: { id: user.id } });
     const balance = data === null ? 0 : data.balance;
 
-    const embed = new MessageEmbed()
-      .setColor(this.config.colours.default)
-      .setAuthor(user.nickname || user.user.username, user.avatarURL() || user.user.avatarURL())
-      .addField('Balance', `${this.config.economy.emoji} ${balance}`);
+    console.log(user);
 
-    await channel.send({ embeds: [embed] });
-    return this.delete(message);
+    const embed = new EmbedBuilder()
+      .setColor(this.config.colours.default)
+      .setAuthor({ name: user.nickname || user.user.username, iconURL: user.user.avatarURL() })
+      .addFields([{ name: 'Balance', value: `${this.config.economy.emoji} ${balance}` }]);
+
+    return channel.send({ embeds: [embed] });
   }
 }
-
-module.exports = Balance;

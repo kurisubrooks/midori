@@ -1,10 +1,10 @@
-const moment = require('moment');
-const cheerio = require('cheerio');
-const request = require('request-promise');
-const { MessageEmbed } = require('discord.js');
-const Command = require('../../core/Command');
+import { EmbedBuilder } from 'discord.js';
+import request from 'request-promise';
+import moment from 'moment';
+import cheerio from 'cheerio';
+import Command from '../../core/Command';
 
-class Time extends Command {
+export default class Time extends Command {
   constructor(client) {
     super(client, {
       name: 'Time',
@@ -38,16 +38,15 @@ class Time extends Command {
       return this.error('No Results', channel);
     }
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setColor(this.config.colours.default)
-      .setAuthor(user.nickname, user.avatarURL())
-      .addField('Location', place.replace('Time in ', '').replace(' now', ''))
-      .addField('Time', moment(`${time}`, 'HH:mm:ssA').format('h:mm a'), true)
-      .addField('Date', date, true);
+      .setAuthor({ name: user.nickname || user.user.username, iconURL: user.user.avatarURL() })
+      .addFields([
+        { name: 'Location', value: place.replace('Time in ', '').replace(' now', '') },
+        { name: 'Time', value: moment(`${time}`, 'HH:mm:ssA').format('h:mm a'), inline: true },
+        { name: 'Date', value: date, inline: true }
+      ]);
 
-    await channel.send({ embeds: [embed] });
-    return this.delete(message);
+    return channel.send({ embeds: [embed] });
   }
 }
-
-module.exports = Time;

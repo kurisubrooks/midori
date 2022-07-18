@@ -1,6 +1,6 @@
-const Command = require('../../core/Command');
+import Command from '../../core/Command';
 
-class Ping extends Command {
+export default class Ping extends Command {
   constructor(client) {
     super(client, {
       name: 'Ping',
@@ -10,10 +10,7 @@ class Ping extends Command {
   }
 
   async run(message, channel) {
-    this.delete(message);
     return channel.send('Ping...')
       .then(msg => msg.edit(`Pong! \`${msg.createdTimestamp - message.createdTimestamp}ms\``));
   }
 }
-
-module.exports = Ping;

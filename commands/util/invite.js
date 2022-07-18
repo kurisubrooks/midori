@@ -1,7 +1,7 @@
-const Command = require('../../core/Command');
-const { Permissions, MessageEmbed } = require('discord.js');
+import { PermissionsBitField, EmbedBuilder } from 'discord.js';
+import Command from '../../core/Command';
 
-class Invite extends Command {
+export default class Invite extends Command {
   constructor(client) {
     super(client, {
       name: 'Invite',
@@ -12,18 +12,20 @@ class Invite extends Command {
 
   async run(message, channel) {
     const invite = await this.client.generateInvite({
-      scopes: ['bot'], permissions: [Permissions.FLAGS.SEND_MESSAGES, Permissions.FLAGS.MANAGE_MESSAGES]
+      scopes: ['bot', 'applications.commands'], permissions: [
+        PermissionsBitField.Flags.SendMessages,
+        PermissionsBitField.Flags.ManageMessages,
+        PermissionsBitField.Flags.UseApplicationCommands
+      ]
     });
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setColor(this.config.colours.default)
-      .setTitle('Midori')
-      .setDescription('Thanks for showing interest in Midori! Click the\nlink below to invite her to your server.')
+      .setTitle(this.client.user.username)
+      .setDescription(`Thanks for showing interest in ${this.client.user.username}! Click the\nlink below to invite her to your server.`)
       .setThumbnail(this.client.user.avatarURL())
-      .addField('\u200b', `[Click Here](${invite})`);
+      .addFields([{ name: '\u200b', value: `[Click Here](${invite})` }]);
 
     return channel.send({ embeds: [embed] });
   }
 }
-
-module.exports = Invite;

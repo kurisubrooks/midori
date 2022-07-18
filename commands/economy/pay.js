@@ -1,8 +1,8 @@
-const Command = require('../../core/Command');
-const Database = require('../../core/Database');
-const { MessageEmbed } = require('discord.js');
+import { EmbedBuilder } from 'discord.js';
+import Command from '../../core/Command';
+import Database from '../../core/Database';
 
-class Pay extends Command {
+export default class Pay extends Command {
   constructor(client) {
     super(client, {
       name: 'Pay',
@@ -15,14 +15,15 @@ class Pay extends Command {
   async run(message, channel, user, args) {
     const amount = args[0];
 
-    if (message.pung.length === 0) {
+    if (message.pingedUsers.length === 0) {
       return message.reply("You didn't specify whom you want to pay!");
     }
 
-    user = message.pung[0];
+    user = message.pingedUsers[0];
 
-    const payee = await Database.Models.Bank.findOne({ where: { id: message.author.id } });
-    const recipient = await Database.Models.Bank.findOne({ where: { id: user.id } });
+    const Bank = (await Database.Models.Bank).default;
+    const payee = await Bank.findOne({ where: { id: message.author.id } });
+    const recipient = await Bank.findOne({ where: { id: user.id } });
 
     if (amount < 1) {
       return message.reply('Amount must be greater than 0!');
@@ -38,15 +39,14 @@ class Pay extends Command {
     await recipient.update({ balance });
     await payee.update({ balance: payee.balance - amount });
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setColor(this.config.colours.default)
-      .setAuthor(user.nickname || user.user.username, user.avatarURL() || user.user.avatarURL())
-      .addField('Paid', `${this.config.economy.emoji} ${amount}`)
-      .addField('Balance', `${this.config.economy.emoji} ${balance}`);
+      .setAuthor({ name: user.nickname || user.user.username, iconURL: user.user.avatarURL() })
+      .addFields([
+        { name: 'Paid', value: `${this.config.economy.emoji} ${amount}` },
+        { name: 'Balance', value: `${this.config.economy.emoji} ${balance}` }
+      ]);
 
-    await channel.send({ embeds: [embed] });
-    return this.delete(message);
+    return channel.send({ embeds: [embed] });
   }
 }
-
-module.exports = Pay;

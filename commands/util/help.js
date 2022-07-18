@@ -1,13 +1,13 @@
-const Command = require('../../core/Command');
-const config = require('../../config.js');
-const { MessageEmbed } = require('discord.js');
+import { EmbedBuilder } from 'discord.js';
+import Command from '../../core/Command';
+import config from '../../config.js';
 
-class Help extends Command {
+export default class Help extends Command {
   constructor(client) {
     super(client, {
       name: 'Help',
       description: 'Gets Help On Commands',
-      aliases: ['halp']
+      aliases: ['commands']
     });
   }
 
@@ -35,23 +35,21 @@ class Help extends Command {
       text.unshift('__**List of available commands**__\n');
 
       if (channel.type !== 'dm') await message.reply('Sent you a DM with information!');
-      await user.send(text.join('\n'), { split: true });
-      return this.delete(message);
+      return user.send(text.join('\n'), { split: true });
     }
 
     const command = this.findCommand(commands, args[0]);
     if (!command) return message.reply('That command does not exist!');
 
-    const embed = new MessageEmbed()
-      .setAuthor(`${message.author.username}#${message.author.discriminator}`, message.author.displayAvatarURL())
+    const embed = new EmbedBuilder()
+      .setAuthor({ name: `${message.author.username}#${message.author.discriminator}`, iconURL: message.author.displayAvatarURL() })
       .setThumbnail(this.client.user.displayAvatarURL())
-      .addField('Usage', `\`${config.sign}${command.name.toLowerCase()}\``, true)
-      .addField('Aliases', [command.name, ...command.aliases].map(name => name.toLowerCase()).join(', '), true)
-      .addField('Description', command.description);
+      .addFields([
+        { name: 'Usage', value: `\`${config.sign}${command.name.toLowerCase()}\``, inline: true },
+        { name: 'Aliases', value: [command.name, ...command.aliases].map(name => name.toLowerCase()).join(', '), inline: true },
+        { name: 'Description', value: command.description }
+      ]);
 
-    await channel.send({ embeds: [embed] });
-    return this.delete(message);
+    return channel.send({ embeds: [embed] });
   }
 }
-
-module.exports = Help;
