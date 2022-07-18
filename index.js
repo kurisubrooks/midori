@@ -11,7 +11,7 @@ import CommandManager from './core/CommandManager';
 // const SubprocessManager = require("./core/SubprocessManager");
 
 // Initialise
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildInvites] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildInvites, GatewayIntentBits.MessageContent] });
 const Manager = new CommandManager(client);
 // const Subprocesses = new SubprocessManager(client);
 

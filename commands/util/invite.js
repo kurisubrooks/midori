@@ -13,9 +13,9 @@ export default class Invite extends Command {
   async run(message, channel) {
     const invite = await this.client.generateInvite({
       scopes: ['bot', 'applications.commands'], permissions: [
-        PermissionsBitField.SendMessages,
-        PermissionsBitField.ManageMessages,
-        PermissionsBitField.UseApplicationCommands
+        PermissionsBitField.Flags.SendMessages,
+        PermissionsBitField.Flags.ManageMessages,
+        PermissionsBitField.Flags.UseApplicationCommands
       ]
     });
 
