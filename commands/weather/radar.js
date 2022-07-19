@@ -12,7 +12,8 @@ export default class Radar extends Command {
           { name: 'Sydney', value: 'loc_sydney' },
           { name: 'Melbourne', value: 'loc_melbourne' },
           { name: 'Canberra', value: 'loc_canberra' },
-          { name: 'Adelaide', value: 'loc_adelaide' }
+          { name: 'Adelaide', value: 'loc_adelaide' },
+          { name: 'Brisbane', value: 'loc_brisbane' }
         ] },
         { name: 'animated', desc: 'Animated', type: 'BOOLEAN' }
       ]
@@ -20,7 +21,7 @@ export default class Radar extends Command {
   }
 
   async run(message, channel, user, args) {
-    const locations = ['sydney', 'canberra', 'adelaide', 'melbourne'];
+    const locations = ['sydney', 'canberra', 'adelaide', 'melbourne', 'brisbane'];
 
     // Check if user was pinged, or didn't provide any args
     if (message.pingedUsers.length > 0 || (args.length === 0 && message.pingedUsers.length === 0)) {
