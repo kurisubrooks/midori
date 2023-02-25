@@ -26,7 +26,7 @@
     "moment-timezone": "^0.5.34",
     "node-fetch": "^3.2.5",
     "request-promise": "^4.2.6",
-    "sequelize": "^6.20.1",
+    "sequelize": "^6.29.0",
     "socket.io-client": "^4.5.1",
     "sqlite3": "^5.0.8"
   },
